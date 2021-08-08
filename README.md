@@ -71,3 +71,7 @@ Batter voltage monitor: https://www.instructables.com/1S-6S-Battery-Voltage-Moni
 https://gitlab.com/bradanlane/ros-i2cpwmboard.git
 
 sudo apt-get install libi2c-dev
+
+sudo usermod -a -G i2c ubuntu
+sudo usermod -a -G dialout ubuntu
+
