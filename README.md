@@ -66,7 +66,7 @@ rostopic echo /battery_state
 rosrun rosserial_python serial_node.py /dev/ttyUSB0
 
 ## For the motors
-https://github.com/dheera/ros-pwm-pca9685
+https://gitlab.com/bradanlane/ros-i2cpwmboard.git
 
 Batter voltage monitor: https://www.instructables.com/1S-6S-Battery-Voltage-Monitor-ROS/ 
 
