@@ -65,8 +65,9 @@ https://answers.ros.org/question/361930/rosserial-arduino-compilation-error-no-c
 rostopic echo /battery_state
 rosrun rosserial_python serial_node.py /dev/ttyUSB0
 
+Batter voltage monitor: https://www.instructables.com/1S-6S-Battery-Voltage-Monitor-ROS/ 
+
 ## For the motors
 https://gitlab.com/bradanlane/ros-i2cpwmboard.git
 
-Batter voltage monitor: https://www.instructables.com/1S-6S-Battery-Voltage-Monitor-ROS/ 
-
+sudo apt-get install libi2c-dev
