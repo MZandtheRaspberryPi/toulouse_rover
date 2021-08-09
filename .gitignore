@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+# catkin workspace compiled stuff
+devel/*
+build/*
