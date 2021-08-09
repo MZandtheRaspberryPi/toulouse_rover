@@ -76,3 +76,6 @@ sudo apt-get install libi2c-dev
 sudo usermod -a -G i2c ubuntu
 sudo usermod -a -G dialout ubuntu
 
+guide on how to include WiringPi:
+https://roboticsbackend.com/use-and-compile-wiringpi-with-ros-on-raspberry-pi/
+
