@@ -65,8 +65,14 @@ https://answers.ros.org/question/361930/rosserial-arduino-compilation-error-no-c
 rostopic echo /battery_state
 rosrun rosserial_python serial_node.py /dev/ttyUSB0
 
-## For the motors
-https://github.com/dheera/ros-pwm-pca9685
-
 Batter voltage monitor: https://www.instructables.com/1S-6S-Battery-Voltage-Monitor-ROS/ 
+
+## For the motors
+https://gitlab.com/bradanlane/ros-i2cpwmboard.git
+git submodule add https://gitlab.com/bradanlane/ros-i2cpwmboard.git src/ros-i2cpwmboard
+
+sudo apt-get install libi2c-dev
+
+sudo usermod -a -G i2c ubuntu
+sudo usermod -a -G dialout ubuntu
 
