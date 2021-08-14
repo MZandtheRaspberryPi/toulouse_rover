@@ -60,7 +60,9 @@ install rosserial arduino
 http://wiki.ros.org/rosserial_arduino/Tutorials/Arduino%20IDE%20Setup
 
 on newest arduino lib ros
-https://answers.ros.org/question/361930/rosserial-arduino-compilation-error-no-cstring/
+https://answers.ros.org/question/361930/rosserial-arduino-compilation-error-no-cstring/  
+
+for rosserial commands: http://wiki.ros.org/rosserial_python  
 
 rostopic echo /battery_state
 rosrun rosserial_python serial_node.py /dev/ttyUSB0
