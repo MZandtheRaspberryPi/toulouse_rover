@@ -83,3 +83,10 @@ Running the motors
 ```
 rosrun i2cpwm_board i2cpwm_board
 ```
+
+resources i2cpwm board
+https://www.youtube.com/watch?v=iLiI_IRedhI
+http://bradanlane.gitlab.io/ros-i2cpwmboard/
+https://github.com/mike4192/spotMicro/blob/master/spot_micro_motion_cmd/src/spot_micro_motion_cmd.cpp
+https://github.com/tizianofiorenzani/ros_tutorials/blob/master/donkey_car/src/low_level_control.py
+
