@@ -1,5 +1,5 @@
 #include <ros/ros.h>
-#ifdef __arm__
+#ifdef RPI
 #include <wiringPi.h>
 #endif
 #define LED_PIN 0 // change pin number here
@@ -7,7 +7,9 @@ int main (int argc, char **argv)
 {
     ros::init(argc, argv, "test_wiringpi_ros");
     ros::NodeHandle nh;
-#ifdef __arm__
+    ROS_INFO("set up node");
+
+#ifdef RPI
     wiringPiSetupGpio();
     pinMode(LED_PIN, OUTPUT);
     ROS_INFO("GPIO has been set as OUTPUT.");

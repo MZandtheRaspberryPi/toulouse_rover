@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   i2cpwm_board
   roscpp
   std_msgs
+  rosserial_python
 )
 
 ## System dependencies are found with CMake's conventions
@@ -206,9 +207,21 @@ include_directories(
 # catkin_add_nosetests(test)
 
 add_executable(test_wiringpi_ros src/test_wiringpi_ros.cpp)
-EXECUTE_PROCESS( COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE ARCHITECTURE )
-if (${ARCHITECTURE} MATCHES "arm")
+EXECUTE_PROCESS( COMMAND uname -r COMMAND tr -d '\n' OUTPUT_VARIABLE ARCHITECTURE )
+if (${ARCHITECTURE} MATCHES ".+raspi.+")
     target_link_libraries(test_wiringpi_ros ${catkin_LIBRARIES} -lwiringPi)
+    set_target_properties(test_wiringpi_ros PROPERTIES COMPILE_FLAGS "-DRPI")
 else()
     target_link_libraries(test_wiringpi_ros ${catkin_LIBRARIES})
+endif()
+
+message([STATUS] ${ARCHITECTURE})
+
+add_executable(test_motors_ros src/test_motors_ros.cpp)
+EXECUTE_PROCESS( COMMAND uname -r COMMAND tr -d '\n' OUTPUT_VARIABLE ARCHITECTURE )
+if (${ARCHITECTURE} MATCHES ".+raspi.+")
+    target_link_libraries(test_motors_ros ${catkin_LIBRARIES} -lwiringPi)
+    set_target_properties(test_motors_ros PROPERTIES COMPILE_FLAGS "-DRPI")
+else()
+    target_link_libraries(test_motors_ros ${catkin_LIBRARIES})
 endif()
