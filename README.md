@@ -23,7 +23,7 @@ Install an RPi library and add ubuntu to dailout group then reboot.
 
 In terms of controlling DC motors compile and run:
 ```
-g++ -g test_motor.cpp -o test_motor -lwiringPi
+g++ -g test_motors.cpp -o test_motors -lwiringPi
 sudo ./test_motor
 ```
 For a refresher on gpio pins, navigate to where you saved WiringPi
@@ -63,20 +63,40 @@ on newest arduino lib ros
 https://answers.ros.org/question/361930/rosserial-arduino-compilation-error-no-cstring/  
 
 for rosserial commands: http://wiki.ros.org/rosserial_python  
-
+sudo apt-get install ros-noetic-rosserial  
 rostopic echo /battery_state
-rosrun rosserial_python serial_node.py /dev/ttyUSB0
+screen -dmS batt rosrun rosserial_python serial_node.py _port:=/dev/ttyS0 _baud:=115200  
+
+
+
 
 Batter voltage monitor: https://www.instructables.com/1S-6S-Battery-Voltage-Monitor-ROS/ 
 
+
+
 ## For the motors
+To build catkin package, make sure you have build tools installed.  
+sudo apt-get update && sudo apt-get install build-essential    
+
+Init submodules
+```
+git submodule init
+git submodule update
+```
+```
+cd ~/toulouse_rover
+catkin_make
+```
+
+
 https://gitlab.com/bradanlane/ros-i2cpwmboard.git
 git submodule add https://gitlab.com/bradanlane/ros-i2cpwmboard.git src/ros-i2cpwmboard
 
-sudo apt-get install libi2c-dev
+sudo apt-get install libi2c-dev  
 
-sudo usermod -a -G i2c ubuntu
-sudo usermod -a -G dialout ubuntu
+sudo usermod -a -G i2c ubuntu  
+sudo usermod -a -G dialout ubuntu  
+sudo usermod -a -G tty $USER  
 
 guide on how to include WiringPi (namely add -lwiringPi to executable in CMakeLists and also add in some stuff to check if on windows and such).
 https://roboticsbackend.com/use-and-compile-wiringpi-with-ros-on-raspberry-pi/
@@ -86,9 +106,21 @@ Running the motors
 rosrun i2cpwm_board i2cpwm_board
 ```
 
+rosrun rosserial_python serial_node.py _port:=/dev/ttyACM1 _baud:=115200
+
+On checking if on a pi:
+https://www.raspberrypi.org/forums/viewtopic.php?t=20811
+
 resources i2cpwm board
-https://www.youtube.com/watch?v=iLiI_IRedhI
-http://bradanlane.gitlab.io/ros-i2cpwmboard/
-https://github.com/mike4192/spotMicro/blob/master/spot_micro_motion_cmd/src/spot_micro_motion_cmd.cpp
-https://github.com/tizianofiorenzani/ros_tutorials/blob/master/donkey_car/src/low_level_control.py
+https://www.youtube.com/watch?v=iLiI_IRedhI  
+http://bradanlane.gitlab.io/ros-i2cpwmboard/  
+https://github.com/mike4192/spotMicro/blob/master/spot_micro_motion_cmd/src/spot_micro_motion_cmd.cpp  
+https://github.com/tizianofiorenzani/ros_tutorials/blob/master/donkey_car/src/low_level_control.py  
+
+To start:
+source devel/setup.bash
+screen -dmS core roscore
+screen -dmS batt rosrun rosserial_python serial_node.py _port:=/dev/ttyUSB0 _baud:=57600 
+screen -dmS i2c rosrun i2cpwm_board i2cpwm_board
+
 
