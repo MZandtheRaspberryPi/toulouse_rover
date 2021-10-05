@@ -63,11 +63,13 @@ on newest arduino lib ros
 https://answers.ros.org/question/361930/rosserial-arduino-compilation-error-no-cstring/  
 
 for rosserial commands: http://wiki.ros.org/rosserial_python  
-
+sudo apt-get install ros-noetic-rosserial  
 rostopic echo /battery_state
 rosrun rosserial_python serial_node.py /dev/ttyUSB0
 
 Batter voltage monitor: https://www.instructables.com/1S-6S-Battery-Voltage-Monitor-ROS/ 
+
+
 
 ## For the motors
 To build catkin package, make sure you have build tools installed.  
@@ -99,6 +101,8 @@ Running the motors
 ```
 rosrun i2cpwm_board i2cpwm_board
 ```
+
+rosrun rosserial_python serial_node.py _port:=/dev/ttyACM1 _baud:=115200
 
 
 
