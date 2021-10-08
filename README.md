@@ -98,6 +98,10 @@ sudo usermod -a -G i2c ubuntu
 sudo usermod -a -G dialout ubuntu  
 sudo usermod -a -G tty $USER  
 
+Suggestion on gpio stuff. 
+chown -R root:dialout /sys/class/gpio && chmod -R 770 /sys/class/gpio;
+https://answers.ros.org/question/216441/raspberry-pi-2-ros-and-gpio-access/
+
 guide on how to include WiringPi (namely add -lwiringPi to executable in CMakeLists and also add in some stuff to check if on windows and such).
 https://roboticsbackend.com/use-and-compile-wiringpi-with-ros-on-raspberry-pi/
 
