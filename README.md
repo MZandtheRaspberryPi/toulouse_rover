@@ -106,7 +106,7 @@ Running the motors
 rosrun i2cpwm_board i2cpwm_board
 ```
 
-rosrun rosserial_python serial_node.py _port:=/dev/ttyACM1 _baud:=115200
+rosrun rosserial_python serial_node.py _port:=/dev/ttyUSB0 _baud:=57600
 
 On checking if on a pi:
 https://www.raspberrypi.org/forums/viewtopic.php?t=20811
