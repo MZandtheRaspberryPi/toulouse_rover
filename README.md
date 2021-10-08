@@ -64,8 +64,8 @@ https://answers.ros.org/question/361930/rosserial-arduino-compilation-error-no-c
 
 for rosserial commands: http://wiki.ros.org/rosserial_python  
 sudo apt-get install ros-noetic-rosserial  
-rostopic echo /battery_state
-screen -dmS batt rosrun rosserial_python serial_node.py _port:=/dev/ttyS0 _baud:=115200  
+rostopic echo /battery_state   
+screen -dmS batt rosrun rosserial_python serial_node.py _port:=/dev/ttyUSB0 _baud:=57600 
 
 
 
@@ -106,7 +106,7 @@ Running the motors
 rosrun i2cpwm_board i2cpwm_board
 ```
 
-rosrun rosserial_python serial_node.py _port:=/dev/ttyUSB0 _baud:=57600
+
 
 On checking if on a pi:
 https://www.raspberrypi.org/forums/viewtopic.php?t=20811
