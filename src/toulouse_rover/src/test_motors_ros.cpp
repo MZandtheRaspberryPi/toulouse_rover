@@ -51,6 +51,8 @@ int main (int argc, char **argv)
         ROS_INFO("Motor Off");
         ros::Duration(1.0).sleep();
     }
+    // 15 is front right
+    // 14 is front right
     servo_array.servos[15].value = 0;
     servo_array.servos[9].value = 0;
     servo_array.servos[11].value = 0;
