@@ -71,7 +71,7 @@ screen -dmS batt rosrun rosserial_python serial_node.py _port:=/dev/ttyS0 _baud:
 
 
 Batter voltage monitor: https://www.instructables.com/1S-6S-Battery-Voltage-Monitor-ROS/ 
-
+Bug for batt voltage: https://bugzilla.kernel.org/show_bug.cgi?id=46201
 
 
 ## For the motors
