@@ -206,20 +206,28 @@ include_directories(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
+# checkign if we are running on raspberry pi
+# as we want to compile the wiringPi library if so, and add a custom flag
+# so that in code we can tell what system we are running on
+EXECUTE_PROCESS(COMMAND uname -r COMMAND tr -d "\n" OUTPUT_VARIABLE KERNELRELEASE)
+message([DEBUG] Kernel release is: ${KERNELRELEASE})
+
+if (${KERNELRELEASE} MATCHES "raspi$")
+    message([DEBUG] Building on a Raspberry Pi)
+else()
+    message([DEBUG] Not building on a Raspberry Pi)
+endif()
+
 add_executable(test_wiringpi_ros src/test_wiringpi_ros.cpp)
-EXECUTE_PROCESS( COMMAND uname -r COMMAND tr -d '\n' OUTPUT_VARIABLE ARCHITECTURE )
-if (${ARCHITECTURE} MATCHES ".+raspi.+")
+if (${KERNELRELEASE} MATCHES "raspi$")
     target_link_libraries(test_wiringpi_ros ${catkin_LIBRARIES} -lwiringPi)
     set_target_properties(test_wiringpi_ros PROPERTIES COMPILE_FLAGS "-DRPI")
 else()
     target_link_libraries(test_wiringpi_ros ${catkin_LIBRARIES})
 endif()
 
-message([STATUS] ${ARCHITECTURE})
-
 add_executable(test_motors_ros src/test_motors_ros.cpp)
-EXECUTE_PROCESS( COMMAND uname -r COMMAND tr -d '\n' OUTPUT_VARIABLE ARCHITECTURE )
-if (${ARCHITECTURE} MATCHES ".+raspi.+")
+if (${KERNELRELEASE} MATCHES "raspi$")
     target_link_libraries(test_motors_ros ${catkin_LIBRARIES} -lwiringPi)
     set_target_properties(test_motors_ros PROPERTIES COMPILE_FLAGS "-DRPI")
 else()
