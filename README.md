@@ -64,14 +64,14 @@ https://answers.ros.org/question/361930/rosserial-arduino-compilation-error-no-c
 
 for rosserial commands: http://wiki.ros.org/rosserial_python  
 sudo apt-get install ros-noetic-rosserial  
-rostopic echo /battery_state
-screen -dmS batt rosrun rosserial_python serial_node.py _port:=/dev/ttyS0 _baud:=115200  
+rostopic echo /battery_state   
+screen -dmS batt rosrun rosserial_python serial_node.py _port:=/dev/ttyUSB0 _baud:=57600 
 
 
 
 
 Batter voltage monitor: https://www.instructables.com/1S-6S-Battery-Voltage-Monitor-ROS/ 
-
+Bug for batt voltage: https://bugzilla.kernel.org/show_bug.cgi?id=46201
 
 
 ## For the motors
@@ -98,6 +98,10 @@ sudo usermod -a -G i2c ubuntu
 sudo usermod -a -G dialout ubuntu  
 sudo usermod -a -G tty $USER  
 
+Suggestion on gpio stuff. 
+chown -R root:dialout /sys/class/gpio && chmod -R 770 /sys/class/gpio;
+https://answers.ros.org/question/216441/raspberry-pi-2-ros-and-gpio-access/
+
 guide on how to include WiringPi (namely add -lwiringPi to executable in CMakeLists and also add in some stuff to check if on windows and such).
 https://roboticsbackend.com/use-and-compile-wiringpi-with-ros-on-raspberry-pi/
 
@@ -106,7 +110,7 @@ Running the motors
 rosrun i2cpwm_board i2cpwm_board
 ```
 
-rosrun rosserial_python serial_node.py _port:=/dev/ttyACM1 _baud:=115200
+
 
 On checking if on a pi:
 https://www.raspberrypi.org/forums/viewtopic.php?t=20811
