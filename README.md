@@ -127,4 +127,4 @@ screen -dmS core roscore
 screen -dmS batt rosrun rosserial_python serial_node.py _port:=/dev/ttyUSB0 _baud:=57600 
 screen -dmS i2c rosrun i2cpwm_board i2cpwm_board
 
-
+## Kinematics for Mecanum Wheeled Robots
