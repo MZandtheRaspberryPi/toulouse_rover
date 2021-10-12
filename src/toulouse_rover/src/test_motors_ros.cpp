@@ -25,7 +25,7 @@ int main (int argc, char **argv)
 
     i2cpwm_board::ServoArray servo_array{};
     // Initialize servo array message with 12 servo objects
-    for (int i = 0; i <= 15; i++) {
+    for (int i = 1; i <= 16; i++) {
       i2cpwm_board::Servo temp_servo;
       temp_servo.servo = i;
       temp_servo.value = 0;
@@ -35,27 +35,39 @@ int main (int argc, char **argv)
     servos_absolute_pub.publish(servo_array);
     while (ros::ok())
     {
-        servo_array.servos[15].value = 1200;
+        servo_array.servos[14].value = 1200;
         servo_array.servos[9].value = 1200;
-	servo_array.servos[11].value = 1200;
+	servo_array.servos[10].value = 1200;
 	servo_array.servos[13].value = 1200;
         servos_absolute_pub.publish(servo_array);
         ROS_INFO("Motor On");
         ros::Duration(1.0).sleep();
 
-        servo_array.servos[15].value = 0;
+        servo_array.servos[14].value = 0;
         servo_array.servos[9].value = 0;
-        servo_array.servos[11].value = 0;
+        servo_array.servos[10].value = 0;
         servo_array.servos[13].value = 0;
         servos_absolute_pub.publish(servo_array);
         ROS_INFO("Motor Off");
         ros::Duration(1.0).sleep();
     }
-    // 15 is front right
-    // 14 is front right
-    servo_array.servos[15].value = 0;
+    // these are all by array index, not by servo number
+    // servo number starts at 1, but array index starts at 0
+    // 14 is front left, front as in by battery
+    // if 14 is high pwm like 1200, and 15 is low, then front left wheel forward
+    // if 15 is high pwm like 1200, and 14 is low, then front left wheel backward
+
+    // if 13 is pwm high like 1200, and 12 is low then front right wheel forward
+    // if 13 is low, and 12 is high pwm, then front right wheel backwards
+
+    // if 9 is pwm high and 8 is low, then back left wheel turns forward
+    // if 8 is pwm high, and 9 is pwm low, then back left wheel turns backward
+
+    // if 10 is pwm high and 11 is pwm low, then back right wheel turns forard
+    // if 11 is pwm high and 10 is pwm low, then back right wheel turns backward
+    servo_array.servos[14].value = 0;
     servo_array.servos[9].value = 0;
-    servo_array.servos[11].value = 0;
+    servo_array.servos[10].value = 0;
     servo_array.servos[13].value = 0;
     servos_absolute_pub.publish(servo_array);
 

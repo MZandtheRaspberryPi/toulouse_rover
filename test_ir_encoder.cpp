@@ -40,7 +40,7 @@ int main (void)
   wiringPiSetup () ;
 
   wiringPiISR (0, INT_EDGE_FALLING, &myInterrupt0) ;
-  wiringPiISR (1, INT_EDGE_FALLING, &myInterrupt1) ;
+  wiringPiISR (25, INT_EDGE_FALLING, &myInterrupt1) ;
   wiringPiISR (2, INT_EDGE_FALLING, &myInterrupt2) ;
   wiringPiISR (3, INT_EDGE_FALLING, &myInterrupt3) ;
 

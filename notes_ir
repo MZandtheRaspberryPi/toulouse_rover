@@ -1,0 +1,4 @@
+pin 3 is back right wheel
+pin 25 (wiring pi) is back left wheel
+pin 2 (wiring pi) is front right wheel
+pin 0 (wiring pi) is front left wheel
