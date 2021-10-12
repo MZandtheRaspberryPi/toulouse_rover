@@ -7,6 +7,7 @@
 #include <geometry_msgs/Twist.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <signal.h>
 #define SLP_PIN 22 // change pin number here
 
 float lin_vel_x_;
@@ -32,7 +33,17 @@ void velocityCallback(const geometry_msgs::Twist::ConstPtr& vel)
   ang_vel_ = vel->angular.z;
 }
 
-int 
+int check_wheel_direction(float wheel_speed) {
+  if (wheel_speed > 0) {
+    return 1;
+  }
+  else if (wheel_speed < 0) {
+    return -1;
+  }
+  else {
+    return 0;
+  }
+}
 
 // globalCounter:
 //      Global variable to count interrupts
@@ -40,28 +51,41 @@ int
 
 static volatile int globalCounter [4];
 
-void myInterrupt0 (void) { ++globalCounter [0] ; }
-void myInterrupt1 (void) { ++globalCounter [1] ; }
-void myInterrupt2 (void) { ++globalCounter [2] ; }
-void myInterrupt3 (void) { ++globalCounter [3] ; }
+void myInterrupt0 (void) { 
+  globalCounter [0] += check_wheel_direction(left_front_wheel);
+}
+void myInterrupt1 (void) {
+  globalCounter [1] += check_wheel_direction(left_back_wheel);
+}
+void myInterrupt2 (void) {
+  globalCounter [2] += check_wheel_direction(right_front_wheel);
+}
+void myInterrupt3 (void) {
+  globalCounter [3] += check_wheel_direction(right_back_wheel);
+}
 
-int main (void)
+void mySigintHandler(int sig)
 {
-  int gotOne, pin ;
-  int myCounter [4] ;
+  // Do some custom action.
+  servo_array.servos[14].value = 0;
+  servo_array.servos[9].value = 0;
+  servo_array.servos[10].value = 0;
+  servo_array.servos[13].value = 0;
+  servos_absolute_pub.publish(servo_array);
 
-  for (pin = 0 ; pin < 4 ; ++pin)
-    globalCounter [pin] = myCounter [pin] = 0 ;
+  digitalWrite(SLP_PIN, LOW);
 
-  wiringPiISR (0, INT_EDGE_FALLING, &myInterrupt0) ;
-  wiringPiISR (25, INT_EDGE_FALLING, &myInterrupt1) ;
-  wiringPiISR (2, INT_EDGE_FALLING, &myInterrupt2) ;
-  wiringPiISR (3, INT_EDGE_FALLING, &myInterrupt3) ;
+  // All the default sigint handler does is call shutdown()
+  ros::shutdown();
+}
 
-int main (int argc, char **argv)
-{
-    ros::init(argc, argv, "test_motors_ros");
+
+int main (int argc, char **argv) {
+    ros::init(argc, argv, "test_motors_ros", ros::init_options::NoSigintHandler);
     ros::NodeHandle nh;
+    // Override the default ros sigint handler.
+    // This must be set after the first NodeHandle is created.
+    signal(SIGINT, mySigintHandler);
     ros::Subscriber velocity_sub_ = nh.subscribe("cmd_vel", 1, velocityCallback);
 #ifdef RPI
     wiringPiSetupGpio();
@@ -70,7 +94,13 @@ int main (int argc, char **argv)
 
     digitalWrite(SLP_PIN, HIGH);
 
+    for (int pin = 0 ; pin < 4 ; ++pin)
+      globalCounter [pin] = 0 ;
 
+    wiringPiISR (0, INT_EDGE_FALLING, &myInterrupt0) ;
+    wiringPiISR (25, INT_EDGE_FALLING, &myInterrupt1) ;
+    wiringPiISR (2, INT_EDGE_FALLING, &myInterrupt2) ;
+    wiringPiISR (3, INT_EDGE_FALLING, &myInterrupt3) ;
     // servos_absolute publisher
     ros::Publisher servos_absolute_pub = nh.advertise<i2cpwm_board::ServoArray>("servos_absolute", 1);
 
