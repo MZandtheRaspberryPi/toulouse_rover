@@ -4,14 +4,28 @@
 #endif
 #include "i2cpwm_board/Servo.h"
 #include "i2cpwm_board/ServoArray.h"
+#include <geometry_msgs/Twist.h>
 
 #define SLP_PIN 22 // change pin number here
 
+float lin_vel_x_;
+float lin_vel_y_;
+float ang_vel_;
+ros::WallTime last_command_time_;
+
+void velocityCallback(const geometry_msgs::Twist::ConstPtr& vel)
+{
+  last_command_time_ = ros::WallTime::now();
+  lin_vel_x_ = vel->linear.x;
+  lin_vel_y_ = vel->linear.y;
+  ang_vel_ = vel->angular.z;
+}
 
 int main (int argc, char **argv)
 {
-    ros::init(argc, argv, "test_wiringpi_ros");
+    ros::init(argc, argv, "test_motors_ros");
     ros::NodeHandle nh;
+    ros::Subscriber velocity_sub_ = nh.subscribe("cmd_vel", 1, velocityCallback);
 #ifdef RPI
     wiringPiSetupGpio();
     pinMode(SLP_PIN, OUTPUT);

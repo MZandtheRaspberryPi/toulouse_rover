@@ -34,3 +34,4 @@
 # catkin workspace compiled stuff
 devel/*
 build/*
+.catkin_workspace
