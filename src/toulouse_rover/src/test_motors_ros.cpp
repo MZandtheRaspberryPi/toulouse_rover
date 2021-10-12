@@ -5,13 +5,24 @@
 #include "i2cpwm_board/Servo.h"
 #include "i2cpwm_board/ServoArray.h"
 #include <geometry_msgs/Twist.h>
-
+#include <stdlib.h>
+#include <errno.h>
 #define SLP_PIN 22 // change pin number here
 
 float lin_vel_x_;
 float lin_vel_y_;
 float ang_vel_;
 ros::WallTime last_command_time_;
+
+// speed in radians per second of wheels
+float left_front_wheel;
+float left_back_wheel;
+float right_front_wheel;
+float right_back_wheel;
+
+static constexpr int const& WHEEL_SEP_LENGTH = 130; // how far wheels are apart length
+static constexpr int const& WHEEL_SEP_WIDTH = 92; // how far wheels are apart width
+static constexpr int const& WHEEL_RADIUS = 24; // radius of wheels
 
 void velocityCallback(const geometry_msgs::Twist::ConstPtr& vel)
 {
@@ -20,6 +31,32 @@ void velocityCallback(const geometry_msgs::Twist::ConstPtr& vel)
   lin_vel_y_ = vel->linear.y;
   ang_vel_ = vel->angular.z;
 }
+
+int 
+
+// globalCounter:
+//      Global variable to count interrupts
+//      Should be declared volatile to make sure the compiler doesn't cache it.
+
+static volatile int globalCounter [4];
+
+void myInterrupt0 (void) { ++globalCounter [0] ; }
+void myInterrupt1 (void) { ++globalCounter [1] ; }
+void myInterrupt2 (void) { ++globalCounter [2] ; }
+void myInterrupt3 (void) { ++globalCounter [3] ; }
+
+int main (void)
+{
+  int gotOne, pin ;
+  int myCounter [4] ;
+
+  for (pin = 0 ; pin < 4 ; ++pin)
+    globalCounter [pin] = myCounter [pin] = 0 ;
+
+  wiringPiISR (0, INT_EDGE_FALLING, &myInterrupt0) ;
+  wiringPiISR (25, INT_EDGE_FALLING, &myInterrupt1) ;
+  wiringPiISR (2, INT_EDGE_FALLING, &myInterrupt2) ;
+  wiringPiISR (3, INT_EDGE_FALLING, &myInterrupt3) ;
 
 int main (int argc, char **argv)
 {
