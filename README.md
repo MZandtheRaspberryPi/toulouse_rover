@@ -130,4 +130,9 @@ screen -dmS i2c rosrun i2cpwm_board i2cpwm_board
 ## Kinematics for Mecanum Wheeled Robots
 https://howtomechatronics.com/projects/arduino-mecanum-wheels-robot/  
 
-http://robotsforroboticists.com/drive-kinematics/  
+http://robotsforroboticists.com/drive-kinematics/   
+
+```
+sudo apt-get install ros-noetic-teleop-twist-keyboard
+rosrun teleop_twist_keyboard teleop_twist_keyboard.py
+```
