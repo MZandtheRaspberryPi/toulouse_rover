@@ -128,3 +128,6 @@ screen -dmS batt rosrun rosserial_python serial_node.py _port:=/dev/ttyUSB0 _bau
 screen -dmS i2c rosrun i2cpwm_board i2cpwm_board
 
 ## Kinematics for Mecanum Wheeled Robots
+https://howtomechatronics.com/projects/arduino-mecanum-wheels-robot/  
+
+http://robotsforroboticists.com/drive-kinematics/  
