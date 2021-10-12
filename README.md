@@ -136,3 +136,9 @@ http://robotsforroboticists.com/drive-kinematics/
 sudo apt-get install ros-noetic-teleop-twist-keyboard
 rosrun teleop_twist_keyboard teleop_twist_keyboard.py
 ```
+
+We use these wheels, 48mm diameter: https://www.adafruit.com/product/4679 
+
+130mm wheel seperation length
+
+92mm wheel seperation width
