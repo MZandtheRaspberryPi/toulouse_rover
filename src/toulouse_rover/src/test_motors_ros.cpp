@@ -8,22 +8,28 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <signal.h>
+#include <stdio.h>
 #define SLP_PIN 22 // change pin number here
+
+#include <ros/xmlrpc_manager.h>
 
 float lin_vel_x_;
 float lin_vel_y_;
 float ang_vel_;
+
 ros::WallTime last_command_time_;
 
 // speed in radians per second of wheels
-float left_front_wheel;
-float left_back_wheel;
-float right_front_wheel;
-float right_back_wheel;
+float left_front_wheel = 1;
+float left_back_wheel = 1;
+float right_front_wheel = 1;
+float right_back_wheel = 1;
 
 static constexpr int const& WHEEL_SEP_LENGTH = 130; // how far wheels are apart length
 static constexpr int const& WHEEL_SEP_WIDTH = 92; // how far wheels are apart width
 static constexpr int const& WHEEL_RADIUS = 24; // radius of wheels
+
+i2cpwm_board::ServoArray servo_array{};
 
 void velocityCallback(const geometry_msgs::Twist::ConstPtr& vel)
 {
@@ -51,7 +57,7 @@ int check_wheel_direction(float wheel_speed) {
 
 static volatile int globalCounter [4];
 
-void myInterrupt0 (void) { 
+void myInterrupt0 (void) {
   globalCounter [0] += check_wheel_direction(left_front_wheel);
 }
 void myInterrupt1 (void) {
@@ -64,28 +70,43 @@ void myInterrupt3 (void) {
   globalCounter [3] += check_wheel_direction(right_back_wheel);
 }
 
-void mySigintHandler(int sig)
+// Signal-safe flag for whether shutdown is requested
+sig_atomic_t volatile g_request_shutdown = 0;
+
+// Replacement SIGINT handler
+void mySigIntHandler(int sig)
 {
-  // Do some custom action.
-  servo_array.servos[14].value = 0;
-  servo_array.servos[9].value = 0;
-  servo_array.servos[10].value = 0;
-  servo_array.servos[13].value = 0;
-  servos_absolute_pub.publish(servo_array);
+  g_request_shutdown = 1;
+}
 
-  digitalWrite(SLP_PIN, LOW);
+// Replacement "shutdown" XMLRPC callback
+void shutdownCallback(XmlRpc::XmlRpcValue& params, XmlRpc::XmlRpcValue& result)
+{
+  int num_params = 0;
+  if (params.getType() == XmlRpc::XmlRpcValue::TypeArray)
+    num_params = params.size();
+  if (num_params > 1)
+  {
+    std::string reason = params[1];
+    ROS_WARN("Shutdown request received. Reason: [%s]", reason.c_str());
+    g_request_shutdown = 1; // Set flag
+  }
 
-  // All the default sigint handler does is call shutdown()
-  ros::shutdown();
+  result = ros::xmlrpc::responseInt(1, "", 0);
 }
 
 
 int main (int argc, char **argv) {
-    ros::init(argc, argv, "test_motors_ros", ros::init_options::NoSigintHandler);
+    ros::init(argc, argv, "test_motors_ros");//, ros::init_options::NoSigintHandler);
     ros::NodeHandle nh;
     // Override the default ros sigint handler.
     // This must be set after the first NodeHandle is created.
-    signal(SIGINT, mySigintHandler);
+    // signal(SIGINT, mySigIntHandler);
+
+    // Override XMLRPC shutdown
+    //ros::XMLRPCManager::instance()->unbind("shutdown");
+    //ros::XMLRPCManager::instance()->bind("shutdown", shutdownCallback);
+
     ros::Subscriber velocity_sub_ = nh.subscribe("cmd_vel", 1, velocityCallback);
 #ifdef RPI
     wiringPiSetupGpio();
@@ -104,7 +125,6 @@ int main (int argc, char **argv) {
     // servos_absolute publisher
     ros::Publisher servos_absolute_pub = nh.advertise<i2cpwm_board::ServoArray>("servos_absolute", 1);
 
-    i2cpwm_board::ServoArray servo_array{};
     // Initialize servo array message with 12 servo objects
     for (int i = 1; i <= 16; i++) {
       i2cpwm_board::Servo temp_servo;
@@ -114,24 +134,49 @@ int main (int argc, char **argv) {
     }
 
     servos_absolute_pub.publish(servo_array);
-    while (ros::ok())
-    {
-        servo_array.servos[14].value = 1200;
-        servo_array.servos[9].value = 1200;
-	servo_array.servos[10].value = 1200;
-	servo_array.servos[13].value = 1200;
-        servos_absolute_pub.publish(servo_array);
-        ROS_INFO("Motor On");
-        ros::Duration(1.0).sleep();
+//    while (!g_request_shutdown)
+ //   {
+ //       servo_array.servos[14].value = 1200;
+  //      servo_array.servos[9].value = 1200;
+//	servo_array.servos[10].value = 1200;
+//	servo_array.servos[13].value = 1200;
+//        servos_absolute_pub.publish(servo_array);
+ //       ROS_INFO("Motor On");
+  //      ros::Duration(1.0).sleep();
 
-        servo_array.servos[14].value = 0;
-        servo_array.servos[9].value = 0;
-        servo_array.servos[10].value = 0;
-        servo_array.servos[13].value = 0;
-        servos_absolute_pub.publish(servo_array);
-        ROS_INFO("Motor Off");
-        ros::Duration(1.0).sleep();
+  //      servo_array.servos[14].value = 0;
+   //     servo_array.servos[9].value = 0;
+    //    servo_array.servos[10].value = 0;
+  //      servo_array.servos[13].value = 0;
+//        servos_absolute_pub.publish(servo_array);
+  //      ROS_INFO("Motor Off");
+        // ros::Duration(1.0).sleep();
+  //      ROS_INFO("Left front wheel is at %d\n", globalCounter[0]);
+    int myCounter[4];
+    int gotOne = 0;
+    int pin;
+    while (!g_request_shutdown) {
+    gotOne = 0;    
+    printf ("Waiting ... ") ; fflush (stdout) ;
+
+    while (!g_request_shutdown)
+    {
+      for ( pin = 0 ; pin < 4 ; ++pin)
+      {
+        if (globalCounter [pin] != myCounter [pin])
+        {
+          printf (" Int on pin %d: Counter: %5d\n", pin, globalCounter [pin]) ;
+          myCounter [pin] = globalCounter [pin] ;
+          ++gotOne ;
+        }
+      }
+      if (gotOne != 0)
+        break ;
     }
+}
+
+
+
     // these are all by array index, not by servo number
     // servo number starts at 1, but array index starts at 0
     // 14 is front left, front as in by battery
@@ -153,6 +198,7 @@ int main (int argc, char **argv) {
     servos_absolute_pub.publish(servo_array);
 
     digitalWrite(SLP_PIN, LOW);
+    ros::shutdown();
 #else
     // here you define the behavior of your node on non ARM systems
 #endif
