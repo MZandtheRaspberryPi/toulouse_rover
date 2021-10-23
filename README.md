@@ -143,4 +143,6 @@ We use these wheels, 48mm diameter: https://www.adafruit.com/product/4679
 
 92mm wheel seperation width  
 
+We use these optical encoder wheels: https://www.adafruit.com/product/3782  with 20 slots all the way round. So 20 slots is one wheel rotation.
+
 pre-node shutdown: https://answers.ros.org/question/27655/what-is-the-correct-way-to-do-stuff-before-a-node-is-shutdown/  
