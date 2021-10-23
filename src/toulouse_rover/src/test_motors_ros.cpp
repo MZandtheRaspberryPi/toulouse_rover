@@ -12,6 +12,8 @@
 #define SLP_PIN 22 // change pin number here
 
 #include <ros/xmlrpc_manager.h>
+// started at 900 can go to 4000
+#define SPEED 900
 
 float lin_vel_x_;
 float lin_vel_y_;
@@ -52,8 +54,8 @@ int check_wheel_direction(float wheel_speed) {
 }
 
 // globalCounter:
-//      Global variable to count interrupts
-//      Should be declared volatile to make sure the compiler doesn't cache it.
+// Global variable to count interrupts
+// Should be declared volatile to make sure the compiler doesn't cache it.
 
 static volatile int globalCounter [4];
 
@@ -95,35 +97,36 @@ void shutdownCallback(XmlRpc::XmlRpcValue& params, XmlRpc::XmlRpcValue& result)
   result = ros::xmlrpc::responseInt(1, "", 0);
 }
 
-
 int main (int argc, char **argv) {
-    ros::init(argc, argv, "test_motors_ros");//, ros::init_options::NoSigintHandler);
-    ros::NodeHandle nh;
-    // Override the default ros sigint handler.
-    // This must be set after the first NodeHandle is created.
-    // signal(SIGINT, mySigIntHandler);
-
-    // Override XMLRPC shutdown
-    //ros::XMLRPCManager::instance()->unbind("shutdown");
-    //ros::XMLRPCManager::instance()->bind("shutdown", shutdownCallback);
-
-    ros::Subscriber velocity_sub_ = nh.subscribe("cmd_vel", 1, velocityCallback);
 #ifdef RPI
-    wiringPiSetupGpio();
+    for (int pin = 0 ; pin < 4 ; ++pin) {
+      globalCounter [pin] = 0 ;
+    }
+    wiringPiSetup();
     pinMode(SLP_PIN, OUTPUT);
     ROS_INFO("GPIO has been set as OUTPUT.");
 
     digitalWrite(SLP_PIN, HIGH);
 
-    for (int pin = 0 ; pin < 4 ; ++pin)
-      globalCounter [pin] = 0 ;
-
     wiringPiISR (0, INT_EDGE_FALLING, &myInterrupt0) ;
     wiringPiISR (25, INT_EDGE_FALLING, &myInterrupt1) ;
     wiringPiISR (2, INT_EDGE_FALLING, &myInterrupt2) ;
     wiringPiISR (3, INT_EDGE_FALLING, &myInterrupt3) ;
+
+    ros::init(argc, argv, "test_motors_ros", ros::init_options::NoSigintHandler);
+    ros::NodeHandle nh;
+    // Override the default ros sigint handler.
+    // This must be set after the first NodeHandle is created.
+    signal(SIGINT, mySigIntHandler);
+
+    // Override XMLRPC shutdown
+    ros::XMLRPCManager::instance()->unbind("shutdown");
+    ros::XMLRPCManager::instance()->bind("shutdown", shutdownCallback);
+
+    ros::Subscriber velocity_sub_ = nh.subscribe("cmd_vel", 1, velocityCallback);
     // servos_absolute publisher
     ros::Publisher servos_absolute_pub = nh.advertise<i2cpwm_board::ServoArray>("servos_absolute", 1);
+
 
     // Initialize servo array message with 12 servo objects
     for (int i = 1; i <= 16; i++) {
@@ -134,49 +137,24 @@ int main (int argc, char **argv) {
     }
 
     servos_absolute_pub.publish(servo_array);
-//    while (!g_request_shutdown)
- //   {
- //       servo_array.servos[14].value = 1200;
-  //      servo_array.servos[9].value = 1200;
-//	servo_array.servos[10].value = 1200;
-//	servo_array.servos[13].value = 1200;
-//        servos_absolute_pub.publish(servo_array);
- //       ROS_INFO("Motor On");
-  //      ros::Duration(1.0).sleep();
-
-  //      servo_array.servos[14].value = 0;
-   //     servo_array.servos[9].value = 0;
-    //    servo_array.servos[10].value = 0;
-  //      servo_array.servos[13].value = 0;
-//        servos_absolute_pub.publish(servo_array);
-  //      ROS_INFO("Motor Off");
-        // ros::Duration(1.0).sleep();
-  //      ROS_INFO("Left front wheel is at %d\n", globalCounter[0]);
-    int myCounter[4];
-    int gotOne = 0;
-    int pin;
     while (!g_request_shutdown) {
-    gotOne = 0;    
-    printf ("Waiting ... ") ; fflush (stdout) ;
+      servo_array.servos[14].value = SPEED;
+      servo_array.servos[9].value = SPEED;
+      servo_array.servos[10].value = SPEED;
+      servo_array.servos[13].value = SPEED;
+      servos_absolute_pub.publish(servo_array);
+      ROS_INFO("Motor On");
+      ros::Duration(1.0).sleep();
 
-    while (!g_request_shutdown)
-    {
-      for ( pin = 0 ; pin < 4 ; ++pin)
-      {
-        if (globalCounter [pin] != myCounter [pin])
-        {
-          printf (" Int on pin %d: Counter: %5d\n", pin, globalCounter [pin]) ;
-          myCounter [pin] = globalCounter [pin] ;
-          ++gotOne ;
-        }
-      }
-      if (gotOne != 0)
-        break ;
+      servo_array.servos[14].value = 0;
+      servo_array.servos[9].value = 0;
+      servo_array.servos[10].value = 0;
+      servo_array.servos[13].value = 0;
+      servos_absolute_pub.publish(servo_array);
+      ROS_INFO("Motor Off");
+      ros::Duration(1.0).sleep();
+      ROS_INFO("Left front wheel is at %d\n", globalCounter[0]);
     }
-}
-
-
-
     // these are all by array index, not by servo number
     // servo number starts at 1, but array index starts at 0
     // 14 is front left, front as in by battery
