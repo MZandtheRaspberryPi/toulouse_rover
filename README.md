@@ -150,4 +150,10 @@ pre-node shutdown: https://answers.ros.org/question/27655/what-is-the-correct-wa
 using ROS PID
 sudo apt-get install ros-noetic-pid  
 
+sudo apt-get install ros-noetic-rqt
+sudo apt-get install ros-noetic-rqt-common-plugins
 
+rostopic pub -1 /left_front_wheel/state std_msgs/Float64 2
+rostopic echo left_front_wheel/control_effort
+
+rostopic pub -1 /left_front_wheel/setpoint std_msgs/Float64 6
