@@ -141,4 +141,6 @@ We use these wheels, 48mm diameter: https://www.adafruit.com/product/4679
 
 130mm wheel seperation length
 
-92mm wheel seperation width
+92mm wheel seperation width  
+
+pre-node shutdown: https://answers.ros.org/question/27655/what-is-the-correct-way-to-do-stuff-before-a-node-is-shutdown/  
