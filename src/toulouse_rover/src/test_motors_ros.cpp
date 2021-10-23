@@ -9,11 +9,15 @@
 #include <errno.h>
 #include <signal.h>
 #include <stdio.h>
+#include <std_msgs/Float64.h>
 #define SLP_PIN 22 // change pin number here
 
 #include <ros/xmlrpc_manager.h>
 // started at 900 can go to 4000
 #define SPEED 900
+
+#include <chrono>
+#include <math.h>
 
 float lin_vel_x_;
 float lin_vel_y_;
@@ -57,7 +61,8 @@ int check_wheel_direction(float wheel_speed) {
 // Global variable to count interrupts
 // Should be declared volatile to make sure the compiler doesn't cache it.
 
-static volatile int globalCounter [4];
+static volatile double globalCounter [4];
+static volatile double globalPrevCounter [4];
 
 void myInterrupt0 (void) {
   globalCounter [0] += check_wheel_direction(left_front_wheel);
@@ -97,10 +102,48 @@ void shutdownCallback(XmlRpc::XmlRpcValue& params, XmlRpc::XmlRpcValue& result)
   result = ros::xmlrpc::responseInt(1, "", 0);
 }
 
+/*
+/left_front_wheel/control_effort
+/left_front_wheel/pid_debug
+/left_front_wheel/pid_enable
+/left_front_wheel/setpoint
+/left_front_wheel/state
+/left_front_wheel/wheel_pid/parameter_descriptions
+/left_front_wheel/wheel_pid/parameter_updates
+/right_front_wheel/control_effort
+/right_front_wheel/pid_debug
+/right_front_wheel/pid_enable
+/right_front_wheel/setpoint
+/right_front_wheel/state
+/right_front_wheel/wheel_pid/parameter_description
+/right_front_wheel/wheel_pid/parameter_updates
+*/
+
+namespace left_front_wheel_control {
+// Global so it can be passed from the callback fxn to main
+static double control_effort = 0.0;
+static bool reverse_acting = false;
+}
+
+// Callback when something is published on 'control_effort'
+void controlEffortCallbackLFW(const std_msgs::Float64& control_effort_input)
+{
+  // the stabilizing control effort
+  if (left_front_wheel_control::reverse_acting)
+  {
+    left_front_wheel_control::control_effort = -control_effort_input.data;
+  }
+  else
+  {
+    left_front_wheel_control::control_effort = control_effort_input.data;
+  }
+}
+
 int main (int argc, char **argv) {
 #ifdef RPI
     for (int pin = 0 ; pin < 4 ; ++pin) {
-      globalCounter [pin] = 0 ;
+      globalCounter [pin] = 0.0 ;
+      globalPrevCounter [pin] = 0.0 ;
     }
     wiringPiSetup();
     pinMode(SLP_PIN, OUTPUT);
@@ -127,7 +170,22 @@ int main (int argc, char **argv) {
     // servos_absolute publisher
     ros::Publisher servos_absolute_pub = nh.advertise<i2cpwm_board::ServoArray>("servos_absolute", 1);
 
+    // Advertise a plant state msg
+    std_msgs::Float64 lfw_state;
+    ros::Publisher lfw_state_pub = nh.advertise<std_msgs::Float64>("/left_front_wheel/state", 1);
 
+    ros::Subscriber lfw_sub_ = nh.subscribe("/left_front_wheel/control_effort", 1, controlEffortCallbackLFW);
+    ros::Rate loop_rate(30);  // Control rate in Hz 
+
+/*
+/left_front_wheel/control_effort
+/left_front_wheel/pid_debug
+/left_front_wheel/pid_enable
+/left_front_wheel/setpoint
+/left_front_wheel/state
+/left_front_wheel/wheel_pid/parameter_descriptions
+/left_front_wheel/wheel_pid/parameter_updates
+*/
     // Initialize servo array message with 12 servo objects
     for (int i = 1; i <= 16; i++) {
       i2cpwm_board::Servo temp_servo;
@@ -137,7 +195,26 @@ int main (int argc, char **argv) {
     }
 
     servos_absolute_pub.publish(servo_array);
+    auto t_start = std::chrono::high_resolution_clock::now();
+    double lfw_change = 0.0;
     while (!g_request_shutdown) {
+
+      ros::spinOnce();
+       // the work...
+      auto t_end = std::chrono::high_resolution_clock::now();
+
+      double elapsed_time_ms = std::chrono::duration<double, std::milli>(t_end-t_start).count();
+      lfw_change = globalCounter[0] - globalPrevCounter[0];
+      lfw_state.data = lfw_change * 2 * M_PI / 20 / elapsed_time_ms * 1000; // 2 pi radians is 20 encoder counts, so this will give us radians per second
+      lfw_state_pub.publish(lfw_state);
+      globalPrevCounter[0] = globalCounter[0];
+      servo_array.servos[14].value = left_front_wheel_control::control_effort;
+      servos_absolute_pub.publish(servo_array);
+      t_start = std::chrono::high_resolution_clock::now();
+
+
+      loop_rate.sleep();
+      /*
       servo_array.servos[14].value = SPEED;
       servo_array.servos[9].value = SPEED;
       servo_array.servos[10].value = SPEED;
@@ -145,7 +222,7 @@ int main (int argc, char **argv) {
       servos_absolute_pub.publish(servo_array);
       ROS_INFO("Motor On");
       ros::Duration(1.0).sleep();
-
+      
       servo_array.servos[14].value = 0;
       servo_array.servos[9].value = 0;
       servo_array.servos[10].value = 0;
@@ -154,6 +231,7 @@ int main (int argc, char **argv) {
       ROS_INFO("Motor Off");
       ros::Duration(1.0).sleep();
       ROS_INFO("Left front wheel is at %d\n", globalCounter[0]);
+      */
     }
     // these are all by array index, not by servo number
     // servo number starts at 1, but array index starts at 0

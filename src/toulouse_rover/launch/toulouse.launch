@@ -1,0 +1,29 @@
+<launch>
+
+    <node name="wheel_pid" pkg="pid" type="controller" ns="left_front_wheel">
+      <param name="Kp" value="1.0" />
+      <param name="Ki" value="0.0" />
+      <param name="Kd" value="0.1" />
+      <param name="upper_limit" value="4000" />
+      <param name="lower_limit" value="900" />
+      <param name="windup_limit" value="500" />
+      <param name="max_loop_frequency" value="100.0" />
+      <param name="min_loop_frequency" value="100.0" />
+    </node>
+
+    <node name="wheel_pid" pkg="pid" type="controller" ns="right_front_wheel">
+      <param name="Kp" value="1.0" />
+      <param name="Ki" value="0.0" />
+      <param name="Kd" value="0.1" />
+      <param name="upper_limit" value="4000" />
+      <param name="lower_limit" value="900" />
+      <param name="windup_limit" value="500" />
+      <param name="max_loop_frequency" value="100.0" />
+      <param name="min_loop_frequency" value="100.0" />
+    </node>
+
+
+  <node pkg="i2cpwm_board" name="i2cpwm_board" type="i2cpwm_board">
+  </node>
+
+</launch>
