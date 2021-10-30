@@ -161,3 +161,4 @@ rostopic pub -1 /left_front_wheel/setpoint std_msgs/Float64 6
 for pifi:  
 https://packages.ubiquityrobotics.com/  add to packages
 https://github.com/rohbotics/pifi  
+https://github.com/IntelRealSense/librealsense/issues/9506  to add key
