@@ -172,10 +172,11 @@ int main (int argc, char **argv) {
 
     // Advertise a plant state msg
     std_msgs::Float64 lfw_state;
+    std_msgs::Float64 lfw_set;
     ros::Publisher lfw_state_pub = nh.advertise<std_msgs::Float64>("/left_front_wheel/state", 1);
-
+    ros::Publisher lfw_set_pub = nh.advertise<std_msgs::Float64>("/left_front_wheel/setpoint", 1);
     ros::Subscriber lfw_sub_ = nh.subscribe("/left_front_wheel/control_effort", 1, controlEffortCallbackLFW);
-    ros::Rate loop_rate(30);  // Control rate in Hz 
+    ros::Rate loop_rate(8);  // Control rate in Hz 
 
 /*
 /left_front_wheel/control_effort
@@ -199,18 +200,39 @@ int main (int argc, char **argv) {
     double lfw_change = 0.0;
     while (!g_request_shutdown) {
 
+
       ros::spinOnce();
        // the work...
       auto t_end = std::chrono::high_resolution_clock::now();
 
       double elapsed_time_ms = std::chrono::duration<double, std::milli>(t_end-t_start).count();
       lfw_change = globalCounter[0] - globalPrevCounter[0];
+      ROS_INFO("change in encoder count: %f", lfw_change);
       lfw_state.data = lfw_change * 2 * M_PI / 20 / elapsed_time_ms * 1000; // 2 pi radians is 20 encoder counts, so this will give us radians per second
       lfw_state_pub.publish(lfw_state);
       globalPrevCounter[0] = globalCounter[0];
-      servo_array.servos[14].value = left_front_wheel_control::control_effort;
+      
+      if (left_front_wheel_control::control_effort < 0) {
+        servo_array.servos[14].value = 0;
+        servo_array.servos[15].value = left_front_wheel_control::control_effort * 4000 / 100;
+      }
+      else {
+        servo_array.servos[15].value = 0;
+        servo_array.servos[14].value = left_front_wheel_control::control_effort * 4000 / 100;
+
+      }
+      
+      // 2000 pwm yields about 15 radians per second. this is like 5 pi, so 2.5 rotations of wheel per second
+      // 900 pwm yields about 6.2 radians per second. this is like 2 pi, so 1 rotation of wheel per second
+      // with a loop rate of 10hz, i see about 2 (somteimes 3) rotations per loop. so 20 encoder per sec, so ties out.
+      //servo_array.servos[14].value = 900;
       servos_absolute_pub.publish(servo_array);
       t_start = std::chrono::high_resolution_clock::now();
+
+      if (lfw_set.data != lin_vel_x_) {
+        lfw_set.data = lin_vel_x_;
+        lfw_set_pub.publish(lfw_set);
+      }
 
 
       loop_rate.sleep();
