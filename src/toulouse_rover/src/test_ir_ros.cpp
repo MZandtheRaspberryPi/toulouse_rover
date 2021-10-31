@@ -3,7 +3,10 @@
 #include <string.h>
 #include <errno.h>
 #include <stdlib.h>
+
+#ifdef RPI
 #include <wiringPi.h>
+#endif
 
 
 // globalCounter:
@@ -31,6 +34,7 @@ void myInterrupt3 (void) { ++globalCounter [3] ; }
 
 int main (int argc, char **argv)
 {
+  #ifdef RPI
   int gotOne, pin ;
   int myCounter [4] ;
 
@@ -67,6 +71,6 @@ int main (int argc, char **argv)
         break ;
     }
   }
-
+  #endif
   return 0 ;
 }
