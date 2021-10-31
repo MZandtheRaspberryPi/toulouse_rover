@@ -1,0 +1,13 @@
+<launch>
+    
+    <!-- rqt_plot is a resource hog, so if you're seeing high CPU usage, don't launch it  -->
+    <node name="rqt_plot" pkg="rqt_plot" type="rqt_plot"
+    args="/left_front_wheel/control_effort/data /left_front_wheel/state/data
+     /left_front_wheel/setpoint/data" />
+
+    <node name="setpoint_node" pkg="pid" type="setpoint_node" output="screen" />
+
+    <node name="rqt_reconfigure" pkg="rqt_reconfigure" type="rqt_reconfigure" />
+
+    <node name="rqt_robot_monitor" pkg="rqt_robot_monitor" type="rqt_robot_monitor" />
+</launch>
