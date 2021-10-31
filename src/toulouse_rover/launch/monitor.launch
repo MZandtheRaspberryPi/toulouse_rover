@@ -5,7 +5,7 @@
     args="/left_front_wheel/control_effort/data /left_front_wheel/state/data
      /left_front_wheel/setpoint/data" />
 
-    <node name="setpoint_node" pkg="pid" type="setpoint_node" output="screen" />
+    <node name="setpoint_node" pkg="pid" type="setpoint_node" output="screen" ns="left_front_wheel"/>
 
     <node name="rqt_reconfigure" pkg="rqt_reconfigure" type="rqt_reconfigure" />
 
