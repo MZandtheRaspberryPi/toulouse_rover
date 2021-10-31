@@ -164,5 +164,5 @@ https://github.com/rohbotics/pifi
 https://github.com/IntelRealSense/librealsense/issues/9506  to add key
 
 
-export ROS_HOSTNAME=ubuntu
+export ROS_HOSTNAME=mz-VirtualBox
 export ROS_MASTER_URI=http://192.168.178.64:11311
