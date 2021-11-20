@@ -170,3 +170,6 @@ export ROS_MASTER_URI=http://192.168.178.64:11311
 Ideas for next time:  
 Use arduino or 3.3v board for interupts from encoders, battery voltage measurement, and pwm signals to motor drivers.
 Serial could be interface to arduino to command it.
+
+Internet on Pi:
+https://raspberrypi.stackexchange.com/questions/109425/ubuntu-server-18-wifi-hotspot-setup 
