@@ -176,7 +176,7 @@ int main (int argc, char **argv) {
     ros::Publisher lfw_state_pub = nh.advertise<std_msgs::Float64>("/left_front_wheel/state", 1);
     ros::Publisher lfw_set_pub = nh.advertise<std_msgs::Float64>("/left_front_wheel/setpoint", 1);
     ros::Subscriber lfw_sub_ = nh.subscribe("/left_front_wheel/control_effort", 1, controlEffortCallbackLFW);
-    ros::Rate loop_rate(8);  // Control rate in Hz 
+    ros::Rate loop_rate(5);  // Control rate in Hz 
 
 /*
 /left_front_wheel/control_effort
@@ -214,14 +214,18 @@ int main (int argc, char **argv) {
       
       if (left_front_wheel_control::control_effort < 0) {
         servo_array.servos[14].value = 0;
-        servo_array.servos[15].value = left_front_wheel_control::control_effort * 4000 / 100;
+        servo_array.servos[15].value = left_front_wheel_control::control_effort *(-1) * 4000;
       }
       else {
         servo_array.servos[15].value = 0;
-        servo_array.servos[14].value = left_front_wheel_control::control_effort * 4000 / 100;
+        servo_array.servos[14].value = left_front_wheel_control::control_effort * 4000;
 
       }
-      
+      if (lin_vel_x_ == 0) {
+        servo_array.servos[14].value = 0;
+        servo_array.servos[15].value = 0;
+      }
+
       // 2000 pwm yields about 15 radians per second. this is like 5 pi, so 2.5 rotations of wheel per second
       // 900 pwm yields about 6.2 radians per second. this is like 2 pi, so 1 rotation of wheel per second
       // with a loop rate of 10hz, i see about 2 (somteimes 3) rotations per loop. so 20 encoder per sec, so ties out.
@@ -229,11 +233,8 @@ int main (int argc, char **argv) {
       servos_absolute_pub.publish(servo_array);
       t_start = std::chrono::high_resolution_clock::now();
 
-      if (lfw_set.data != lin_vel_x_) {
-        lfw_set.data = lin_vel_x_;
-        lfw_set_pub.publish(lfw_set);
-      }
-
+      lfw_set.data = lin_vel_x_;
+      lfw_set_pub.publish(lfw_set);
 
       loop_rate.sleep();
       /*

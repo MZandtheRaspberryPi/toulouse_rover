@@ -1,4 +1,4 @@
-include "toulouse_rover/wheels.h"
+#include "wheels.h"
 
 WheelController::WheelController(ros::NodeHandle& nh, std::string wheel_namespace, int interuptPin) : interuptPin_(interuptPin), wheel_namespace_(wheel_namespace)
 {

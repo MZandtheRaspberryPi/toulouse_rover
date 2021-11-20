@@ -19,7 +19,7 @@
 #include <chrono>
 #include <math.h>
 
-#include "toulouse_rover/wheels.h"
+#include "wheels.h"
 
 float lin_vel_x_;
 float lin_vel_y_;

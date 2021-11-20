@@ -13,7 +13,6 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   rosserial_python
   teleop_twist_keyboard
-  pid
 )
 
 ## System dependencies are found with CMake's conventions
@@ -106,7 +105,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include
+  INCLUDE_DIRS include/${PROJECT_NAME}
   LIBRARIES toulouse_rover
   CATKIN_DEPENDS i2cpwm_board roscpp std_msgs pid
 #  DEPENDS wiringPi
@@ -125,7 +124,7 @@ include_directories(
 
 ## Declare a C++ library
 add_library(${PROJECT_NAME}
-   src/${PROJECT_NAME}/wheels.cpp
+   src/wheels.cpp
 )
 
 ## Add cmake target dependencies of the library
