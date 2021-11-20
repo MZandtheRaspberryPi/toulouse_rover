@@ -8,8 +8,7 @@ WheelController::WheelController(ros::NodeHandle& nh, std::string wheel_namespac
         // assume wiring pi setup has been called
         wiringPiISR (0, INT_EDGE_FALLING, &wheelInterupt);
     #endif
-    ros::Rate loop_rate(CHECK_RATE_CTRL);
-    loop_rate_ = loop_rate;
+
     setupPubsSubs(nh, wheel_namespace);
 
 }
@@ -57,11 +56,12 @@ int WheelController::ctrlWheel(float speed)
     }
 
     pubSpeedError();
-    
+    ros::Rate loop_rate(CHECK_RATE_CTRL); 
     // waiting for update from PID on how to control system
     while (ros::ok() && control_effort_.empty())
     {
-        loop_rate_.sleep();
+        ros::spinOnce();
+        loop_rate.sleep();
     }
 
     if (!ros::ok())

@@ -163,7 +163,7 @@ endif()
 
 add_executable(robot_control_node src/robot_control_node.cpp)
 if (${KERNELRELEASE} MATCHES "raspi$")
-    target_link_libraries(robot_control_node ${catkin_LIBRARIES} -lwiringPi)
+    target_link_libraries(robot_control_node ${PROJECT_NAME} ${catkin_LIBRARIES} -lwiringPi)
     set_target_properties(robot_control_node PROPERTIES COMPILE_FLAGS "-DRPI")
 else()
     target_link_libraries(robot_control_node ${catkin_LIBRARIES})
