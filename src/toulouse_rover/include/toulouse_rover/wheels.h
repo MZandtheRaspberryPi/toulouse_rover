@@ -17,14 +17,12 @@ class WheelController {
 public:
 
   WheelController(ros::NodeHandle& nh, std::string wheel_namespace, int interuptPin);
-  void setupPubsSubs(std::string wheel_namespace)
+  void setupPubsSubs(ros::NodeHandle& nh, std::string wheel_namespace);
 
   void controlEffortCallback(const std_msgs::Float64& control_effort_input);
 
   // scaling the output from PID, into PWM space and returning PWM signal value for wheel
   int getPWM();
-
-  void pubSpeedError();
 
   int setRadPerSec(int radPerSec);
 

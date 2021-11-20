@@ -8,12 +8,12 @@ WheelController::WheelController(ros::NodeHandle& nh, std::string wheel_namespac
         // assume wiring pi setup has been called
         wiringPiISR (0, INT_EDGE_FALLING, &wheelInterupt);
     #endif
-    loop_rate_(CHECK_RATE_CTRL);
+    loop_rate_ =  ros::Rate(CHECK_RATE_CTRL);
     setupPubsSubs(wheel_namespace);
 
 }
 
-void WheelController::setupPubsSubs(std::string wheel_namespace)
+void WheelController::setupPubsSubs(ros::NodeHandle& nh, std::string wheel_namespace)
 {
 
     ros::Publisher state_pub_ = nh.advertise<std_msgs::Float64>("/" + wheel_namespace + "/state", 1);
@@ -37,9 +37,9 @@ void WheelController::pubSpeedError()
     ros::Time now = ros::Time::now();
     ros::Duration elapsed_time_s = now - encoderStartTime_;
     encoderStartTime_ = now;
-    ROS_INFO("%s: change in encoder count: %f", wheel_namespace_, changeEncoderCounts);
-    state.data = changeEncoderCounts * 2 * M_PI / encTicksPerRotation_ / elapsed_time_s; // 2 pi radians is 20 encoder counts, so this will give us radians per second
-    state_pub_.publish(lfw_state);
+    ROS_INFO("%s: change in encoder count: %d", wheel_namespace_.c_str(), changeEncoderCounts);
+    state.data = changeEncoderCounts * 2 * M_PI / encTicksPerRotation_ / elapsed_time_s.toSec(); // 2 pi radians is 20 encoder counts, so this will give us radians per second
+    state_pub_.publish(state);
     ros::spinOnce();
 }
 
@@ -76,7 +76,7 @@ int WheelController::ctrlWheel(float speed)
 
 int WheelController::getPWM(float control_effort)
 {
-    float scaled_control_effort = MIN_PWM + SLOPE * (control_effort - MIN_PID_CONTROL)
+    float scaled_control_effort = MIN_PWM + SLOPE * (control_effort - MIN_PID_CONTROL);
     if (commandRadPerSec_ < 0)
     {
         scaled_control_effort *= -1;
