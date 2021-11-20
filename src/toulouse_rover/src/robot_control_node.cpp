@@ -140,7 +140,7 @@ int main (int argc, char **argv) {
 
       ros::spinOnce();
        // the work...
-      left_front_wheel_pwm = left_front_wheel(lin_vel_x_);
+      left_front_wheel_pwm = left_front_wheel.ctrlWheel(lin_vel_x_);
       
       if (left_front_wheel_pwm < 0) {
         servo_array.servos[14].value = 0;

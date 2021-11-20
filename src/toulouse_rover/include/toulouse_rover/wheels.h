@@ -53,6 +53,6 @@ private:
   ros::Publisher state_pub_;
   ros::Publisher set_pub_;
   ros::Subscriber ctrl_sub_;
-  ros::Rate loop_rate_;
+  ros::Rate::Rate loop_rate_;
   int CHECK_RATE_CTRL{60};
 };
