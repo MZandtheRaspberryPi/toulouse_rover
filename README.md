@@ -166,3 +166,7 @@ https://github.com/IntelRealSense/librealsense/issues/9506  to add key
 
 export ROS_HOSTNAME=mz-VirtualBox
 export ROS_MASTER_URI=http://192.168.178.64:11311
+
+Ideas for next time:  
+Use arduino or 3.3v board for interupts from encoders, battery voltage measurement, and pwm signals to motor drivers.
+Serial could be interface to arduino to command it.
