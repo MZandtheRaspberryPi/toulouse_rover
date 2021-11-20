@@ -93,22 +93,13 @@ void shutdownCallback(XmlRpc::XmlRpcValue& params, XmlRpc::XmlRpcValue& result)
 
 int main (int argc, char **argv) {
 #ifdef RPI
-    for (int pin = 0 ; pin < 4 ; ++pin) {
-      globalCounter [pin] = 0.0 ;
-      globalPrevCounter [pin] = 0.0 ;
-    }
-    wiringPiSetup();
+       wiringPiSetup();
     pinMode(SLP_PIN, OUTPUT);
     ROS_INFO("GPIO has been set as OUTPUT.");
 
     digitalWrite(SLP_PIN, HIGH);
 
-    wiringPiISR (0, INT_EDGE_FALLING, &myInterrupt0) ;
-    wiringPiISR (25, INT_EDGE_FALLING, &myInterrupt1) ;
-    wiringPiISR (2, INT_EDGE_FALLING, &myInterrupt2) ;
-    wiringPiISR (3, INT_EDGE_FALLING, &myInterrupt3) ;
-
-    ros::init(argc, argv, "test_motors_ros", ros::init_options::NoSigintHandler);
+    ros::init(argc, argv, "robot_control_node", ros::init_options::NoSigintHandler);
     ros::NodeHandle nh;
     // Override the default ros sigint handler.
     // This must be set after the first NodeHandle is created.
@@ -122,12 +113,6 @@ int main (int argc, char **argv) {
     // servos_absolute publisher
     ros::Publisher servos_absolute_pub = nh.advertise<i2cpwm_board::ServoArray>("servos_absolute", 1);
 
-    // Advertise a plant state msg
-    std_msgs::Float64 lfw_state;
-    std_msgs::Float64 lfw_set;
-    ros::Publisher lfw_state_pub = nh.advertise<std_msgs::Float64>("/left_front_wheel/state", 1);
-    ros::Publisher lfw_set_pub = nh.advertise<std_msgs::Float64>("/left_front_wheel/setpoint", 1);
-    ros::Subscriber lfw_sub_ = nh.subscribe("/left_front_wheel/control_effort", 1, controlEffortCallbackLFW);
     ros::Rate loop_rate(8);  // Control rate in Hz 
 
     WheelController left_front_wheel(nh, "left_front_wheel", 0);
