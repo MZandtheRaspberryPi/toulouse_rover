@@ -8,7 +8,7 @@ WheelController::WheelController(ros::NodeHandle& nh, std::string wheel_namespac
         // assume wiring pi setup has been called
         wiringPiISR (0, INT_EDGE_FALLING, &wheelInterupt);
     #endif
-    ros::Rate loop_rate_(CHECK_RATE_CTRL);
+    ros::Rate::Rate loop_rate_(CHECK_RATE_CTRL);
     setupPubsSubs(nh, wheel_namespace);
 
 }
@@ -81,7 +81,7 @@ int WheelController::getPWM(float control_effort)
     {
         scaled_control_effort *= -1;
     }
-    int pwm = std::static_cast<int>(scaled_control_effort);
+    int pwm = static_cast<int>(scaled_control_effort);
     return pwm;
 }
 
