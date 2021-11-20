@@ -115,7 +115,7 @@ int main (int argc, char **argv) {
 
     ros::Rate loop_rate(8);  // Control rate in Hz 
 
-    WheelController left_front_wheel(nh, "left_front_wheel", 0);
+    toulouse_rover::WheelController left_front_wheel(nh, "left_front_wheel", 0);
 
 /*
 /left_front_wheel/control_effort

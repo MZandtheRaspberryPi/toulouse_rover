@@ -8,7 +8,8 @@ WheelController::WheelController(ros::NodeHandle& nh, std::string wheel_namespac
         // assume wiring pi setup has been called
         wiringPiISR (0, INT_EDGE_FALLING, &wheelInterupt);
     #endif
-    ros::Rate loop_rate_(CHECK_RATE_CTRL);
+    ros::Rate loop_rate(CHECK_RATE_CTRL);
+    loop_rate_ = loop_rate;
     setupPubsSubs(nh, wheel_namespace);
 
 }
