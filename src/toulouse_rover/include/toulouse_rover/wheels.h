@@ -17,19 +17,20 @@ class WheelController {
 public:
 
   WheelController(ros::NodeHandle& nh, std::string wheel_namespace, int interuptPin);
-
-  void setupPubsSubs();
+  void setupPubsSubs(std::string wheel_namespace)
 
   void controlEffortCallback(const std_msgs::Float64& control_effort_input);
 
   // scaling the output from PID, into PWM space and returning PWM signal value for wheel
   int getPWM();
 
+  void pubSpeedError();
 
-  int setRadPerSec(int radPerSec):
+  int setRadPerSec(int radPerSec);
 
-  int update():
+  int update();
 
+  int getPWM(float control_effort);
 
   void pubSpeedError();
   int ctrlWheel(float speed);
@@ -37,9 +38,7 @@ public:
 
   int const& WHEEL_RADIUS = 24; // radius of wheels
 private:
-  // function to convert radians per second of wheel rotation into
-  // encoder counts per second of rotation
-  int convertRadToEnc(int rps);
+
   void wheelInterupt();
   int encTicksPerRotation_ {20};
   bool oppositeSide_;
@@ -57,5 +56,5 @@ private:
   ros::Publisher set_pub_;
   ros::Subscriber ctrl_sub_;
   ros::Rate loop_rate_;
-  constexpr int CHECK_RATE_CTRL = 60;
+  int CHECK_RATE_CTRL{60};
 };

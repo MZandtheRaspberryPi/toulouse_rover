@@ -13,7 +13,7 @@ WheelController::WheelController(ros::NodeHandle& nh, std::string wheel_namespac
 
 }
 
-WheelController::setupPubsSubs(std::string wheel_namespace)
+void WheelController::setupPubsSubs(std::string wheel_namespace)
 {
 
     ros::Publisher state_pub_ = nh.advertise<std_msgs::Float64>("/" + wheel_namespace + "/state", 1);
@@ -84,14 +84,6 @@ int WheelController::getPWM(float control_effort)
     return std::static_cast<int>(scaled_control_effort);
 }
 
-
-// function to convert radians per second of wheel rotation into
-// encoder counts per second of rotation
-int WheelController::convertRadToEnc(int rps)
-{
-
-}
-
 void WheelController::wheelInterupt() 
 {
     if (commandRadPerSec_ > 0) {
@@ -99,6 +91,7 @@ void WheelController::wheelInterupt()
     }
     else {
         encoderCounts_--;
+    }
 }
 
  
