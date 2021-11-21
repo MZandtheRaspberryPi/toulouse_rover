@@ -114,9 +114,8 @@ int main (int argc, char **argv) {
 
     ros::Rate loop_rate(8);  // Control rate in Hz 
 
-    WheelController left_front_wheel(nh, "front_left_wheel", 0);
-    wiringPiISR (0, INT_EDGE_FALLING, &frontLeftInterupt);
-    ros::Duration(1.0).sleep();
+    WheelController left_front_wheel(nh, "left_front_wheel", 0);
+
 /*
 /left_front_wheel/control_effort
 /left_front_wheel/pid_debug

@@ -163,10 +163,15 @@ https://packages.ubiquityrobotics.com/  add to packages
 https://github.com/rohbotics/pifi  
 https://github.com/IntelRealSense/librealsense/issues/9506  to add key
 
+on toulouse_robot:  
+export ROS_IP=10.42.0.1
 
-export ROS_HOSTNAME=mz-VirtualBox
-export ROS_MASTER_URI=http://192.168.178.64:11311
+on other PC 
+export ROS_MASTER_URI=http://10.42.0.1:11311  
 
 Ideas for next time:  
 Use arduino or 3.3v board for interupts from encoders, battery voltage measurement, and pwm signals to motor drivers.
 Serial could be interface to arduino to command it.
+
+Internet on Pi:
+https://raspberrypi.stackexchange.com/questions/109425/ubuntu-server-18-wifi-hotspot-setup 
