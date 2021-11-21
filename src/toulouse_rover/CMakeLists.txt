@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(toulouse_rover)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -163,7 +163,7 @@ endif()
 
 add_executable(robot_control_node src/robot_control_node.cpp)
 if (${KERNELRELEASE} MATCHES "raspi$")
-    target_link_libraries(robot_control_node ${catkin_LIBRARIES} -lwiringPi)
+    target_link_libraries(robot_control_node ${PROJECT_NAME} ${catkin_LIBRARIES} -lwiringPi)
     set_target_properties(robot_control_node PROPERTIES COMPILE_FLAGS "-DRPI")
 else()
     target_link_libraries(robot_control_node ${catkin_LIBRARIES})

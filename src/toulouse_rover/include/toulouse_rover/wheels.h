@@ -11,6 +11,14 @@ constexpr float MIN_PWM = 900;
 constexpr float MAX_PID_CONTROL = 100;
 constexpr float MIN_PID_CONTROL = 0;
 constexpr float SLOPE = (MAX_PWM - MIN_PWM) / (MAX_PID_CONTROL - MIN_PID_CONTROL);
+static volatile double globalEncCounter [4];
+static volatile double globalSpeedCounter [4];
+
+void genericInterupt(int index);
+void frontLeftInterupt();
+void frontRightInterupt();
+void backRightInterupt();
+void backLeftInterupt();
 
 class WheelController {
 
@@ -32,20 +40,18 @@ public:
 
   void pubSpeedError();
   int ctrlWheel(float speed);
-  
+  static void wheelInterupt();  
 
   int const& WHEEL_RADIUS = 24; // radius of wheels
 private:
 
-  void wheelInterupt();
+  int encoderIndex_;
   int encTicksPerRotation_ {20};
   bool oppositeSide_;
 
-  std::queue<float> control_effort_;
-  volatile int priorEncoderCounts_ = 0;
-  volatile int encoderCounts_ = 0;
+  float control_effort_;
+  double priorEncoderCounts_ = 0;
   int interuptPin_;
-  float commandRadPerSec_;
   std::string wheel_namespace_;
 
   ros::Time encoderStartTime_;
@@ -53,6 +59,5 @@ private:
   ros::Publisher state_pub_;
   ros::Publisher set_pub_;
   ros::Subscriber ctrl_sub_;
-  ros::Rate loop_rate_;
   double CHECK_RATE_CTRL{60};
 };

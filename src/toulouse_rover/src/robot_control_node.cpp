@@ -93,12 +93,11 @@ void shutdownCallback(XmlRpc::XmlRpcValue& params, XmlRpc::XmlRpcValue& result)
 
 int main (int argc, char **argv) {
 #ifdef RPI
-       wiringPiSetup();
+    wiringPiSetup();
     pinMode(SLP_PIN, OUTPUT);
     ROS_INFO("GPIO has been set as OUTPUT.");
 
     digitalWrite(SLP_PIN, HIGH);
-
     ros::init(argc, argv, "robot_control_node", ros::init_options::NoSigintHandler);
     ros::NodeHandle nh;
     // Override the default ros sigint handler.
@@ -115,8 +114,9 @@ int main (int argc, char **argv) {
 
     ros::Rate loop_rate(8);  // Control rate in Hz 
 
-    toulouse_rover::WheelController left_front_wheel(nh, "left_front_wheel", 0);
-
+    WheelController left_front_wheel(nh, "front_left_wheel", 0);
+    wiringPiISR (0, INT_EDGE_FALLING, &frontLeftInterupt);
+    ros::Duration(1.0).sleep();
 /*
 /left_front_wheel/control_effort
 /left_front_wheel/pid_debug
