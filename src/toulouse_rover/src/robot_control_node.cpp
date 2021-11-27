@@ -9,6 +9,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <stdio.h>
+#include <cmath> 
 #include <std_msgs/Float64.h>
 #define SLP_PIN 22 // change pin number here
 
@@ -146,18 +147,42 @@ int main (int argc, char **argv) {
       int back_left_wheel_pwm = back_left_wheel.ctrlWheelCmdVel(latest_vel_msg);
       int back_right_wheel_pwm = back_right_wheel.ctrlWheelCmdVel(latest_vel_msg);
       ROS_INFO("FL: %d, FR: %d, BL: %d, BR: %d", front_left_wheel_pwm, front_right_wheel_pwm, back_left_wheel_pwm, back_right_wheel_pwm );
-      
-      /* 
+
       if (left_front_wheel_pwm < 0) {
         servo_array.servos[14].value = 0;
-        servo_array.servos[15].value = left_front_wheel_pwm;
+        servo_array.servos[15].value = std::abs(left_front_wheel_pwm);
       }
       else {
         servo_array.servos[15].value = 0;
-        servo_array.servos[14].value = left_front_wheel_pwm;
-        //servo_array.servos[14].value = 3000;
+        servo_array.servos[14].value = std::abs(left_front_wheel_pwm);
       }
-      */
+
+      if (front_right_wheel_pwm < 0) {
+        servo_array.servos[13].value = 0;
+        servo_array.servos[12].value = std::abs(front_right_wheel_pwm);
+      }
+      else {
+        servo_array.servos[13].value = 0;
+        servo_array.servos[12].value = std::abs(front_right_wheel_pwm);
+      }
+
+      if (back_left_wheel_pwm < 0) {
+        servo_array.servos[9].value = 0;
+        servo_array.servos[8].value = std::abs(back_left_wheel_pwm);
+      }
+      else {
+        servo_array.servos[8].value = 0;
+        servo_array.servos[9].value = std::abs(back_left_wheel_pwm);
+      }
+
+      if (back_right_wheel_pwm < 0) {
+        servo_array.servos[10].value = 0;
+        servo_array.servos[11].value = std::abs(back_right_wheel_pwm);
+      }
+      else {
+        servo_array.servos[11].value = 0;
+        servo_array.servos[10].value = std::abs(back_right_wheel_pwm);
+      }
       
       // 2000 pwm yields about 15 radians per second. this is like 5 pi, so 2.5 rotations of wheel per second
       // 900 pwm yields about 6.2 radians per second. this is like 2 pi, so 1 rotation of wheel per second
