@@ -109,13 +109,13 @@ int main (int argc, char **argv) {
 
     ros::Rate loop_rate(2);  // Control rate in Hz 
 
-    FrontLeftWheel front_left_wheel(nh, "front_left_wheel");
+    FrontLeftWheel front_left_wheel(nh, "front_left_wheel", false);
     wiringPiISR (0, INT_EDGE_FALLING, &frontLeftInterupt);
-    FrontRightWheel front_right_wheel(nh, "front_right_wheel");
+    FrontRightWheel front_right_wheel(nh, "front_right_wheel", false);
     wiringPiISR (25, INT_EDGE_FALLING, &frontRightInterupt);
-    BackLeftWheel back_left_wheel(nh, "back_left_wheel");
+    BackLeftWheel back_left_wheel(nh, "back_left_wheel", false);
     wiringPiISR (2, INT_EDGE_FALLING, &backLeftInterupt);
-    BackRightWheel back_right_wheel(nh, "back_right_wheel");
+    BackRightWheel back_right_wheel(nh, "back_right_wheel", false);
     wiringPiISR (3, INT_EDGE_FALLING, &backRightInterupt);
     ros::Duration(1.0).sleep();
 /*
