@@ -98,7 +98,7 @@ int main (int argc, char **argv) {
     wiringPiISR (3, INT_EDGE_FALLING, &backRightInterupt);
 
     ros::Publisher odom_pub = nh.advertise<nav_msgs::Odometry>("odom", 50);
-    tf2_ros::TransformBroadcaster br;
+    static tf2_ros::TransformBroadcaster br;
     geometry_msgs::TransformStamped transformStamped;
     ros::Time current_time, last_time;
     current_time = ros::Time::now();

@@ -178,6 +178,17 @@ Internet on Pi:
 https://raspberrypi.stackexchange.com/questions/109425/ubuntu-server-18-wifi-hotspot-setup 
 
 
+ROSDEP
+```
+sudo apt-get install python3-rosdep
+sudo rosdep init
+rosdep update
+cd ~/toulouse_rover
+rosdep install --from-paths src --ignore-src -r -y
+
+```
+
+
 Things to do differently
 Encoders to real time controller like arduino using interupts, serial to pi
 Motor Driver PWM from Arduino as well if possible
