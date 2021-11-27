@@ -140,7 +140,7 @@ int main (int argc, char **argv) {
     while (!g_request_shutdown) {
 
        // the work...
-      ROS_INFO("x: %f", latest_vel_msg.linear.x);
+      ROS_INFO("x: %f, y: %f, angl_y: %f", latest_vel_msg.linear.x, latest_vel_msg.linear.y, latest_vel_msg.angular.z);
       int front_left_wheel_pwm = front_left_wheel.ctrlWheelCmdVel(latest_vel_msg);
       int front_right_wheel_pwm = front_right_wheel.ctrlWheelCmdVel(latest_vel_msg);
       int back_left_wheel_pwm = back_left_wheel.ctrlWheelCmdVel(latest_vel_msg);
