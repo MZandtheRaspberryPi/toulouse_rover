@@ -144,6 +144,7 @@ int WheelController::pwmFromWheelSpeed(float wheel_speed)
  int WheelController::ctrlWheelCmdVel(const geometry_msgs::Twist& cmd_vel_msg)
  {
     float wheel_speed = calcWheelSpeed(cmd_vel_msg);
+    globalSpeedCounter[encoderIndex_] = wheel_speed;
     std_msgs::Float64 setpoint;
     setpoint.data = wheel_speed;
     set_pub_.publish(setpoint);
