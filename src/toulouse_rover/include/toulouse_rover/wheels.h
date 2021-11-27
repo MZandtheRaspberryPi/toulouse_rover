@@ -67,6 +67,7 @@ public:
   int getPWMCtrlEff(float control_effort);
 
   void pubSpeedError();
+  void pubEncCounts();
   int ctrlWheelPID(float speed);
   static void wheelInterupt();
 
