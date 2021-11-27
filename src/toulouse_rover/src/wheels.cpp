@@ -163,7 +163,7 @@ FrontRightWheel::FrontRightWheel(ros::NodeHandle& nh, std::string wheel_namespac
 float FrontRightWheel::calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg)
 {
     float wheel_front_right = (1 / WHEEL_RADIUS) * (cmd_vel_msg.linear.x + cmd_vel_msg.linear.y + (WHEEL_SEP_WIDTH + WHEEL_SEP_LENGTH) * cmd_vel_msg.angular.z);
-    return wheel_front_left;
+    return wheel_front_right;
 }
 
 BackRightWheel::BackRightWheel(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid)
