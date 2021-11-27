@@ -77,6 +77,14 @@ void WheelController::pubSpeedError()
     ros::spinOnce();
 }
 
+void WheelController::pubEncCounts() 
+{
+    std_msgs::Float64 counts;
+    counts.data =  globalEncCounter[encoderIndex_];
+    state_pub_.publish(counts);
+    ros::spinOnce();
+}
+
 int WheelController::ctrlWheelPID(float speed)
 {
     if (speed != globalSpeedCounter[encoderIndex_])
@@ -139,7 +147,7 @@ int WheelController::pwmFromWheelSpeed(float wheel_speed)
     std_msgs::Float64 setpoint;
     setpoint.data = wheel_speed;
     set_pub_.publish(setpoint);
-    pubSpeedError();
+    pubEncCounts();
     int pwm = pwmFromWheelSpeed(wheel_speed);
     return pwm;
  }
