@@ -22,21 +22,7 @@
 
 #include "wheels.h"
 
-float lin_vel_x_;
-float lin_vel_y_;
-float ang_vel_;
-
-ros::WallTime last_command_time_;
-
-// speed in radians per second of wheels
-float left_front_wheel_speed = 1;
-float left_back_wheel_speed = 1;
-float right_front_wheel_speed = 1;
-float right_back_wheel_speed = 1;
-
-int left_front_wheel_pwm = 0;
-
-
+const int LOOP_RATE = 10;
 
 i2cpwm_board::ServoArray servo_array{};
 geometry_msgs::Twist latest_vel_msg;
@@ -70,23 +56,6 @@ void shutdownCallback(XmlRpc::XmlRpcValue& params, XmlRpc::XmlRpcValue& result)
   result = ros::xmlrpc::responseInt(1, "", 0);
 }
 
-/*
-/left_front_wheel/control_effort
-/left_front_wheel/pid_debug
-/left_front_wheel/pid_enable
-/left_front_wheel/setpoint
-/left_front_wheel/state
-/left_front_wheel/wheel_pid/parameter_descriptions
-/left_front_wheel/wheel_pid/parameter_updates
-/right_front_wheel/control_effort
-/right_front_wheel/pid_debug
-/right_front_wheel/pid_enable
-/right_front_wheel/setpoint
-/right_front_wheel/state
-/right_front_wheel/wheel_pid/parameter_description
-/right_front_wheel/wheel_pid/parameter_updates
-*/
-
 int main (int argc, char **argv) {
 #ifdef RPI
     wiringPiSetup();
@@ -108,7 +77,7 @@ int main (int argc, char **argv) {
     // servos_absolute publisher
     ros::Publisher servos_absolute_pub = nh.advertise<i2cpwm_board::ServoArray>("servos_absolute", 1);
 
-    ros::Rate loop_rate(2);  // Control rate in Hz 
+    ros::Rate loop_rate(LOOP_RATE);  // Control rate in Hz 
 
     FrontLeftWheel front_left_wheel(nh, "front_left_wheel", false);
     wiringPiISR (0, INT_EDGE_FALLING, &frontLeftInterupt);
@@ -119,15 +88,7 @@ int main (int argc, char **argv) {
     BackRightWheel back_right_wheel(nh, "back_right_wheel", false);
     wiringPiISR (3, INT_EDGE_FALLING, &backRightInterupt);
     ros::Duration(1.0).sleep();
-/*
-/left_front_wheel/control_effort
-/left_front_wheel/pid_debug
-/left_front_wheel/pid_enable
-/left_front_wheel/setpoint
-/left_front_wheel/state
-/left_front_wheel/wheel_pid/parameter_descriptions
-/left_front_wheel/wheel_pid/parameter_updates
-*/
+
     // Initialize servo array message with 12 servo objects
     for (int i = 1; i <= 16; i++) {
       i2cpwm_board::Servo temp_servo;
@@ -183,46 +144,11 @@ int main (int argc, char **argv) {
         servo_array.servos[10].value = std::abs(back_right_wheel_pwm);
       }
       
-      // 2000 pwm yields about 15 radians per second. this is like 5 pi, so 2.5 rotations of wheel per second
-      // 900 pwm yields about 6.2 radians per second. this is like 2 pi, so 1 rotation of wheel per second
-      // with a loop rate of 10hz, i see about 2 (somteimes 3) rotations per loop. so 20 encoder per sec, so ties out.
-      //servo_array.servos[14].value = 900;
+      
       servos_absolute_pub.publish(servo_array);
       ros::spinOnce();
       loop_rate.sleep();
-      /*
-      servo_array.servos[14].value = SPEED;
-      servo_array.servos[9].value = SPEED;
-      servo_array.servos[10].value = SPEED;
-      servo_array.servos[13].value = SPEED;
-      servos_absolute_pub.publish(servo_array);
-      ROS_INFO("Motor On");
-      ros::Duration(1.0).sleep();
-      
-      servo_array.servos[14].value = 0;
-      servo_array.servos[9].value = 0;
-      servo_array.servos[10].value = 0;
-      servo_array.servos[13].value = 0;
-      servos_absolute_pub.publish(servo_array);
-      ROS_INFO("Motor Off");
-      ros::Duration(1.0).sleep();
-      ROS_INFO("Left front wheel is at %d\n", globalCounter[0]);
-      */
-    }
-    // these are all by array index, not by servo number
-    // servo number starts at 1, but array index starts at 0
-    // 14 is front left, front as in by battery
-    // if 14 is high pwm like 1200, and 15 is low, then front left wheel forward
-    // if 15 is high pwm like 1200, and 14 is low, then front left wheel backward
 
-    // if 13 is pwm high like 1200, and 12 is low then front right wheel forward
-    // if 13 is low, and 12 is high pwm, then front right wheel backwards
-
-    // if 9 is pwm high and 8 is low, then back left wheel turns forward
-    // if 8 is pwm high, and 9 is pwm low, then back left wheel turns backward
-
-    // if 10 is pwm high and 11 is pwm low, then back right wheel turns forard
-    // if 11 is pwm high and 10 is pwm low, then back right wheel turns backward
     for (int i = 1; i <= 16; i++) {
       servo_array.servos[i].value = 0;
     }
