@@ -134,7 +134,7 @@ http://robotsforroboticists.com/drive-kinematics/
 
 ```
 sudo apt-get install ros-noetic-teleop-twist-keyboard
-rosrun teleop_twist_keyboard teleop_twist_keyboard.py
+rosrun teleop_twist_keyboard teleop_twist_keyboard.py _key_timeout:=0.6
 ```
 
 We use these wheels, 48mm diameter: https://www.adafruit.com/product/4679 
