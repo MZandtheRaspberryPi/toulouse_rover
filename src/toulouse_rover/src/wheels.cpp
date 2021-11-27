@@ -139,6 +139,7 @@ int WheelController::pwmFromWheelSpeed(float wheel_speed)
     std_msgs::Float64 setpoint;
     setpoint.data = wheel_speed;
     set_pub_.publish(setpoint);
+    pubSpeedError();
     int pwm = pwmFromWheelSpeed(wheel_speed);
     return pwm;
  }
