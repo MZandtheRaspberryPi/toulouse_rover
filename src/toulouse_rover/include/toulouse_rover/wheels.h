@@ -16,9 +16,9 @@ constexpr float SLOPE_PID = (MAX_PWM - MIN_PWM) / (MAX_PID_CONTROL - MIN_PID_CON
 static volatile double globalEncCounter [4];
 static volatile double globalSpeedCounter [4];
 
-static constexpr int const& WHEEL_SEP_LENGTH = .130; // how far wheels are apart length meters
-static constexpr int const& WHEEL_SEP_WIDTH = .092; // how far wheels are apart width meters
-static constexpr int const& WHEEL_RADIUS = .024; // radius of wheels meters
+static constexpr float const& WHEEL_SEP_LENGTH = .130; // how far wheels are apart length meters
+static constexpr float const& WHEEL_SEP_WIDTH = .092; // how far wheels are apart width meters
+static constexpr float const& WHEEL_RADIUS = .024; // radius of wheels meters
 
 // MAX I saw, with wheels not on ground, was about 60 encoder ticks per second
 // this would translate to 3 rotations, given 20 ticks per rotation, which would translate to
