@@ -148,7 +148,7 @@ int main (int argc, char **argv) {
       servos_absolute_pub.publish(servo_array);
       ros::spinOnce();
       loop_rate.sleep();
-
+    }
     for (int i = 1; i <= 16; i++) {
       servo_array.servos[i].value = 0;
     }
