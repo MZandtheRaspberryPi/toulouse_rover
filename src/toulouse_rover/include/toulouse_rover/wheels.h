@@ -71,7 +71,7 @@ public:
 
   double getEncoderCounts();
 
-  virtual float calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg);
+  virtual float calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg) = 0;
   int pwmFromWheelSpeed(float wheel_speed);
   int ctrlWheelCmdVel(const geometry_msgs::Twist& cmd_vel_msg);
 
