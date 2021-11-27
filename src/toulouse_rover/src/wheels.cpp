@@ -150,7 +150,7 @@ FrontLeftWheel::FrontLeftWheel(ros::NodeHandle& nh, std::string wheel_namespace)
 
 float FrontLeftWheel::calcWheelSpeed(const geometry_msgs::Twist cmd_vel_msg)
 {
-    float wheel_front_left = (1 / WHEEL_RADIUS) * (cmd_vel_msg.linear.x – cmd_vel_msg.linear.y – (WHEEL_SEPARATION_WIDTH + WHEEL_SEPARATION_LENGTH) * cmd_vel_msg.angular.z);
+    float wheel_front_left = (1 / WHEEL_RADIUS) * (cmd_vel_msg.linear.x - cmd_vel_msg.linear.y - (WHEEL_SEPARATION_WIDTH + WHEEL_SEPARATION_LENGTH) * cmd_vel_msg.angular.z);
     return wheel_front_left;
 }
 
@@ -174,8 +174,8 @@ BackRightWheel::BackRightWheel(ros::NodeHandle& nh, std::string wheel_namespace)
 
 float BackRightWheel::calcWheelSpeed(const geometry_msgs::Twist cmd_vel_msg)
 {
-    float wheel_front_right = (1 / WHEEL_RADIUS) * (cmd_vel_msg.linear.x - cmd_vel_msg.linear.y + (WHEEL_SEPARATION_WIDTH + WHEEL_SEPARATION_LENGTH) * cmd_vel_msg.angular.z);
-    return wheel_front_left;
+    float wheel_back_right = (1 / WHEEL_RADIUS) * (cmd_vel_msg.linear.x - cmd_vel_msg.linear.y + (WHEEL_SEPARATION_WIDTH + WHEEL_SEPARATION_LENGTH) * cmd_vel_msg.angular.z);
+    return wheel_back_right;
 }
 
 BackLeftWheel::BackLeftWheel(ros::NodeHandle& nh, std::string wheel_namespace)
@@ -186,6 +186,6 @@ BackLeftWheel::BackLeftWheel(ros::NodeHandle& nh, std::string wheel_namespace)
 
 float BackLeftWheel::calcWheelSpeed(const geometry_msgs::Twist cmd_vel_msg)
 {
-    float wheel_front_right = (1 / WHEEL_RADIUS) * (cmd_vel_msg.linear.x + cmd_vel_msg.linear.y - (WHEEL_SEPARATION_WIDTH + WHEEL_SEPARATION_LENGTH) * cmd_vel_msg.angular.z);
-    return wheel_front_left;
+    float wheel_back_left = (1 / WHEEL_RADIUS) * (cmd_vel_msg.linear.x + cmd_vel_msg.linear.y - (WHEEL_SEPARATION_WIDTH + WHEEL_SEPARATION_LENGTH) * cmd_vel_msg.angular.z);
+    return wheel_back_left;
 }
