@@ -72,6 +72,7 @@ public:
   static void wheelInterupt();
 
   double getEncoderCounts();
+  double getWheelSpeed()
 
   virtual float calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg) = 0;
   int pwmFromWheelSpeed(float wheel_speed);

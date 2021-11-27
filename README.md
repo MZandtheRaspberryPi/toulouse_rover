@@ -134,7 +134,8 @@ http://robotsforroboticists.com/drive-kinematics/
 
 ```
 sudo apt-get install ros-noetic-teleop-twist-keyboard
-rosrun teleop_twist_keyboard teleop_twist_keyboard.py _key_timeout:=0.6
+rosrun teleop_twist_keyboard teleop_twist_keyboard.py _key_timeout:=0.6 _speed:=0.1 _turn:=0.2
+
 ```
 
 We use these wheels, 48mm diameter: https://www.adafruit.com/product/4679 
@@ -181,3 +182,4 @@ Things to do differently
 Encoders to real time controller like arduino using interupts, serial to pi
 Motor Driver PWM from Arduino as well if possible
 Higher resolution encoders (20 ticks per rotation is tough to do PID with)
+Make cable connectors better. Currently dupont, but self made and some of them dont plug in too well and hold.
