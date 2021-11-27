@@ -27,7 +27,7 @@
 
 #include "wheels.h"
 
-const int LOOP_RATE = 10;
+const int LOOP_RATE = 2;
 
 i2cpwm_board::ServoArray servo_array{};
 geometry_msgs::Twist latest_vel_msg;
