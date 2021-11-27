@@ -35,18 +35,13 @@ float right_back_wheel_speed = 1;
 
 int left_front_wheel_pwm = 0;
 
-static constexpr int const& WHEEL_SEP_LENGTH = 130; // how far wheels are apart length
-static constexpr int const& WHEEL_SEP_WIDTH = 92; // how far wheels are apart width
-static constexpr int const& WHEEL_RADIUS = 24; // radius of wheels
+
 
 i2cpwm_board::ServoArray servo_array{};
-
+geometry_msgs::Twist latest_vel_msg;
 void velocityCallback(const geometry_msgs::Twist::ConstPtr& vel)
 {
-  last_command_time_ = ros::WallTime::now();
-  lin_vel_x_ = vel->linear.x;
-  lin_vel_y_ = vel->linear.y;
-  ang_vel_ = vel->angular.z;
+  latest_vel_msg = *vel;
 }
 
 // Signal-safe flag for whether shutdown is requested
@@ -114,8 +109,14 @@ int main (int argc, char **argv) {
 
     ros::Rate loop_rate(2);  // Control rate in Hz 
 
-    WheelController left_front_wheel(nh, "front_left_wheel", 0);
+    FrontLeftWheel front_left_wheel(nh, "front_left_wheel");
     wiringPiISR (0, INT_EDGE_FALLING, &frontLeftInterupt);
+    FrontRightWheel front_right_wheel(nh, "front_right_wheel");
+    wiringPiISR (25, INT_EDGE_FALLING, &frontRightInterupt);
+    BackLeftWheel back_left_wheel(nh, "back_left_wheel");
+    wiringPiISR (2, INT_EDGE_FALLING, &backLeftInterupt);
+    BackRightWheel back_right_wheel(nh, "back_right_wheel");
+    wiringPiISR (3, INT_EDGE_FALLING, &backRightInterupt);
     ros::Duration(1.0).sleep();
 /*
 /left_front_wheel/control_effort
@@ -137,11 +138,14 @@ int main (int argc, char **argv) {
     servos_absolute_pub.publish(servo_array);
     while (!g_request_shutdown) {
 
-
-      ros::spinOnce();
        // the work...
-      left_front_wheel_pwm = left_front_wheel.ctrlWheel(lin_vel_x_);
+      front_left_wheel_pwm = front_left_wheel.ctrlWheelCmdVel(latest_vel_msg);
+      front_right_wheel_pwm = front_right_wheel.ctrlWheelCmdVel(latest_vel_msg);
+      back_left_wheel_pwm = back_left_wheel.ctrlWheelCmdVel(latest_vel_msg);
+      back_right_wheel_pwm = back_right_wheel.ctrlWheelCmdVel(latest_vel_msg);
+      ROS_INFO("FL: %d, FR: %d, BL: %d, BR: %d", front_left_wheel_pwm, front_right_wheel_pwm, back_left_wheel_pwm, back_right_wheel_pwm );
       
+      /* 
       if (left_front_wheel_pwm < 0) {
         servo_array.servos[14].value = 0;
         servo_array.servos[15].value = left_front_wheel_pwm;
@@ -151,13 +155,14 @@ int main (int argc, char **argv) {
         servo_array.servos[14].value = left_front_wheel_pwm;
         //servo_array.servos[14].value = 3000;
       }
+      */
       
       // 2000 pwm yields about 15 radians per second. this is like 5 pi, so 2.5 rotations of wheel per second
       // 900 pwm yields about 6.2 radians per second. this is like 2 pi, so 1 rotation of wheel per second
       // with a loop rate of 10hz, i see about 2 (somteimes 3) rotations per loop. so 20 encoder per sec, so ties out.
       //servo_array.servos[14].value = 900;
       servos_absolute_pub.publish(servo_array);
-
+      ros::spinOnce();
       loop_rate.sleep();
       /*
       servo_array.servos[14].value = SPEED;

@@ -175,3 +175,9 @@ Serial could be interface to arduino to command it.
 
 Internet on Pi:
 https://raspberrypi.stackexchange.com/questions/109425/ubuntu-server-18-wifi-hotspot-setup 
+
+
+Things to do differently
+Encoders to real time controller like arduino using interupts, serial to pi
+Motor Driver PWM from Arduino as well if possible
+Higher resolution encoders (20 ticks per rotation is tough to do PID with)
