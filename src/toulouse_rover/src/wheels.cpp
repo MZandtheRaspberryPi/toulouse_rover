@@ -111,7 +111,7 @@ int WheelController::getPWMCtrlEff(float control_effort)
         scaled_control_effort *= -1;
     }
     int pwm = static_cast<int>(scaled_control_effort);
-    pwm = std::min(MAX_PID_CONTROL, pwm)
+    pwm = std::min(static_cast<int>(MAX_PID_CONTROL), pwm)
     return pwm;
 }
 
