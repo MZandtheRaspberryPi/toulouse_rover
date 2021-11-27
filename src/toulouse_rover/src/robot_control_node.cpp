@@ -42,7 +42,6 @@ i2cpwm_board::ServoArray servo_array{};
 geometry_msgs::Twist latest_vel_msg;
 void velocityCallback(const geometry_msgs::Twist::ConstPtr& vel)
 {
-  ROS_INFO("Got Vel Msg");
   latest_vel_msg = *vel;
 }
 
@@ -148,13 +147,13 @@ int main (int argc, char **argv) {
       int back_right_wheel_pwm = back_right_wheel.ctrlWheelCmdVel(latest_vel_msg);
       ROS_INFO("FL: %d, FR: %d, BL: %d, BR: %d", front_left_wheel_pwm, front_right_wheel_pwm, back_left_wheel_pwm, back_right_wheel_pwm );
 
-      if (left_front_wheel_pwm < 0) {
+      if (front_left_wheel_pwm < 0) {
         servo_array.servos[14].value = 0;
-        servo_array.servos[15].value = std::abs(left_front_wheel_pwm);
+        servo_array.servos[15].value = std::abs(front_left_wheel_pwm);
       }
       else {
         servo_array.servos[15].value = 0;
-        servo_array.servos[14].value = std::abs(left_front_wheel_pwm);
+        servo_array.servos[14].value = std::abs(front_left_wheel_pwm);
       }
 
       if (front_right_wheel_pwm < 0) {
@@ -162,8 +161,8 @@ int main (int argc, char **argv) {
         servo_array.servos[12].value = std::abs(front_right_wheel_pwm);
       }
       else {
-        servo_array.servos[13].value = 0;
-        servo_array.servos[12].value = std::abs(front_right_wheel_pwm);
+        servo_array.servos[12].value = 0;
+        servo_array.servos[13].value = std::abs(front_right_wheel_pwm);
       }
 
       if (back_left_wheel_pwm < 0) {
