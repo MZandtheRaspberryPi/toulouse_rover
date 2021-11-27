@@ -38,6 +38,15 @@ void frontRightInterupt();
 void backRightInterupt();
 void backLeftInterupt();
 
+
+class FrontLeftWheel;
+
+class FrontRightWheel;
+
+class BackRightWheel;
+
+class BackLeftWheel;
+
 class WheelController {
 
 public:
@@ -65,6 +74,11 @@ public:
   virtual float calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg);
   int pwmFromWheelSpeed(float wheel_speed);
   int ctrlWheelCmdVel(const geometry_msgs::Twist& cmd_vel_msg);
+
+  friend FrontLeftWheel;
+  friend FrontRightWheel;
+  friend BackRightWheel;
+  friend BackLeftWheel;
 
 private:
 

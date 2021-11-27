@@ -132,7 +132,7 @@ int WheelController::pwmFromWheelSpeed(float wheel_speed)
     return pwm;
 }
 
- int WheelController::ctrlWheelCmdVel(const geometry_msgs::Twist cmd_vel_msg)
+ int WheelController::ctrlWheelCmdVel(const geometry_msgs::Twist& cmd_vel_msg)
  {
     float wheel_speed = calcWheelSpeed(const geometry_msgs::Twist cmd_vel_msg);
     std_msgs::Float64 setpoint;
@@ -143,48 +143,48 @@ int WheelController::pwmFromWheelSpeed(float wheel_speed)
  }
 
 FrontLeftWheel::FrontLeftWheel(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid)
-    : WheelController(ros::NodeHandle& nh, std::string wheel_namespace, use_pid)
+    : WheelController(nh, wheel_namespace, use_pid)
 {
     encoderIndex_ = 0;
 }
 
-float FrontLeftWheel::calcWheelSpeed(const geometry_msgs::Twist cmd_vel_msg)
+float FrontLeftWheel::calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg)
 {
     float wheel_front_left = (1 / WHEEL_RADIUS) * (cmd_vel_msg.linear.x - cmd_vel_msg.linear.y - (WHEEL_SEPARATION_WIDTH + WHEEL_SEPARATION_LENGTH) * cmd_vel_msg.angular.z);
     return wheel_front_left;
 }
 
 FrontRightWheel::FrontRightWheel(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid)
-    : WheelController(ros::NodeHandle& nh, std::string wheel_namespace, use_pid)
+    : WheelController(nh, wheel_namespace, use_pid)
 {
     encoderIndex_ = 1;
 }
 
-float FrontRightWheel::calcWheelSpeed(const geometry_msgs::Twist cmd_vel_msg)
+float FrontRightWheel::calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg)
 {
     float wheel_front_right = (1 / WHEEL_RADIUS) * (cmd_vel_msg.linear.x + cmd_vel_msg.linear.y + (WHEEL_SEPARATION_WIDTH + WHEEL_SEPARATION_LENGTH) * cmd_vel_msg.angular.z);
     return wheel_front_left;
 }
 
 BackRightWheel::BackRightWheel(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid)
-    : WheelController(ros::NodeHandle& nh, std::string wheel_namespace, use_pid)
+    : WheelController(nh, wheel_namespace, use_pid)
 {
     encoderIndex_ = 2;
 }
 
-float BackRightWheel::calcWheelSpeed(const geometry_msgs::Twist cmd_vel_msg)
+float BackRightWheel::calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg)
 {
     float wheel_back_right = (1 / WHEEL_RADIUS) * (cmd_vel_msg.linear.x - cmd_vel_msg.linear.y + (WHEEL_SEPARATION_WIDTH + WHEEL_SEPARATION_LENGTH) * cmd_vel_msg.angular.z);
     return wheel_back_right;
 }
 
 BackLeftWheel::BackLeftWheel(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid)
-    : WheelController(ros::NodeHandle& nh, std::string wheel_namespace, use_pid)
+    : WheelController(nh, wheel_namespace, use_pid)
 {
     encoderIndex_ = 3;
 }
 
-float BackLeftWheel::calcWheelSpeed(const geometry_msgs::Twist cmd_vel_msg)
+float BackLeftWheel::calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg)
 {
     float wheel_back_left = (1 / WHEEL_RADIUS) * (cmd_vel_msg.linear.x + cmd_vel_msg.linear.y - (WHEEL_SEPARATION_WIDTH + WHEEL_SEPARATION_LENGTH) * cmd_vel_msg.angular.z);
     return wheel_back_left;
