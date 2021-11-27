@@ -150,10 +150,7 @@ FrontLeftWheel::FrontLeftWheel(ros::NodeHandle& nh, std::string wheel_namespace,
 
 float FrontLeftWheel::calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg)
 {
-    ROS_INFO("x in calc wheel is: %f", cmd_vel_msg.linear.x);
-    ROS_INFO("y in calc wheel is: %f", cmd_vel_msg.linear.y);
     float wheel_front_left = (1 / WHEEL_RADIUS) * (cmd_vel_msg.linear.x - cmd_vel_msg.linear.y - (WHEEL_SEP_WIDTH + WHEEL_SEP_LENGTH) * cmd_vel_msg.angular.z);
-    ROS_INFO("Calculated %f", wheel_front_left);
     return wheel_front_left;
 }
 
