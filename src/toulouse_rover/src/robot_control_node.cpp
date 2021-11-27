@@ -139,10 +139,10 @@ int main (int argc, char **argv) {
     while (!g_request_shutdown) {
 
        // the work...
-      front_left_wheel_pwm = front_left_wheel.ctrlWheelCmdVel(latest_vel_msg);
-      front_right_wheel_pwm = front_right_wheel.ctrlWheelCmdVel(latest_vel_msg);
-      back_left_wheel_pwm = back_left_wheel.ctrlWheelCmdVel(latest_vel_msg);
-      back_right_wheel_pwm = back_right_wheel.ctrlWheelCmdVel(latest_vel_msg);
+      int front_left_wheel_pwm = front_left_wheel.ctrlWheelCmdVel(latest_vel_msg);
+      int front_right_wheel_pwm = front_right_wheel.ctrlWheelCmdVel(latest_vel_msg);
+      int back_left_wheel_pwm = back_left_wheel.ctrlWheelCmdVel(latest_vel_msg);
+      int back_right_wheel_pwm = back_right_wheel.ctrlWheelCmdVel(latest_vel_msg);
       ROS_INFO("FL: %d, FR: %d, BL: %d, BR: %d", front_left_wheel_pwm, front_right_wheel_pwm, back_left_wheel_pwm, back_right_wheel_pwm );
       
       /* 
