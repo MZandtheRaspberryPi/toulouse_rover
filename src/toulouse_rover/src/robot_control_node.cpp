@@ -5,6 +5,7 @@
 #include "i2cpwm_board/Servo.h"
 #include "i2cpwm_board/ServoArray.h"
 #include <tf2_ros/transform_broadcaster.h>
+ #include <tf2/LinearMath/Quaternion.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Twist.h>
@@ -169,8 +170,8 @@ int main (int argc, char **argv) {
       double speedBackRight = back_right_wheel.getWheelSpeed();
 
       double vx = (speedFrontLeft + speedFrontRight + speedBackLeft + speedBackRight) * (WHEEL_RADIUS/4);
-      double vy = ( -speedFrontLeft + speedFrontRight + speedBackLeft – speedBackRight) * (WHEEL_RADIUS/4)
-      double vth = ( -speedFrontLeft + speedFrontRight – speedBackLeft + speedBackRight) * (WHEEL_RADIUS/(4 * (WHEEL_SEP_WIDTH + WHEEL_SEP_LENGTH)))
+      double vy = ( -speedFrontLeft + speedFrontRight + speedBackLeft - speedBackRight) * (WHEEL_RADIUS/4)
+      double vth = ( -speedFrontLeft + speedFrontRight - speedBackLeft + speedBackRight) * (WHEEL_RADIUS/(4 * (WHEEL_SEP_WIDTH + WHEEL_SEP_LENGTH)))
 
       double dt = (current_time - last_time).toSec();
       double delta_x = (vx * cos(th) - vy * sin(th)) * dt;
@@ -193,10 +194,10 @@ int main (int argc, char **argv) {
       odom_trans.transform.translation.x = x;
       odom_trans.transform.translation.y = y;
       odom_trans.transform.translation.z = 0.0;
-      odom_trans.transform.rotation = odom_quat;
+      odom_trans.transform.rotation = myQuaternion;
 
       //send the transform
-      odom_broadcaster.sendTransform(odom_trans);
+      br.sendTransform(odom_trans);
 
       //next, we'll publish the odometry message over ROS
       nav_msgs::Odometry odom;
@@ -207,7 +208,7 @@ int main (int argc, char **argv) {
       odom.pose.pose.position.x = x;
       odom.pose.pose.position.y = y;
       odom.pose.pose.position.z = 0.0;
-      odom.pose.pose.orientation = odom_quat;
+      odom.pose.pose.orientation = myQuaternion;
 
       //set the velocity
       odom.child_frame_id = "base_link";
