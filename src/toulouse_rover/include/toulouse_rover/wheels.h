@@ -23,13 +23,13 @@ static constexpr int const& WHEEL_RADIUS = .024; // radius of wheels meters
 // MAX I saw, with wheels not on ground, was about 60 encoder ticks per second
 // this would translate to 3 rotations, given 20 ticks per rotation, which would translate to
 // 2 * PI * RADIUS * 3 ~= .452304 meters in one second
-static constexpr float const& MAX_ROBOT_SPEED = 2 * M_PI * WHEEL_RADIUS * 3;
-static constexpr float const& MIN_ROBOT_SPEED = 0.;
+constexpr float const& MAX_ROBOT_SPEED = 2 * M_PI * WHEEL_RADIUS * 3;
+constexpr float const& MIN_ROBOT_SPEED = 0.;
 constexpr float SLOPE_ROBOT_SPEED = (MAX_PWM - MIN_PWM) / (MAX_ROBOT_SPEED - MIN_ROBOT_SPEED);
 
 // MAX I saw, with wheels not on ground, was about 60 encoder ticks per second, so 3 rotations, so 3 PI.
-static constexpr float const& MAX_WHEEL_SPEED = 3 * M_PI;
-static constexpr float const& MIN_WHEEL_SPEED = 0.;
+constexpr float const& MAX_WHEEL_SPEED = 3 * M_PI;
+constexpr float const& MIN_WHEEL_SPEED = 0.;
 constexpr float SLOPE_WHEEL_SPEED = (MAX_PWM - MIN_PWM) / (MAX_WHEEL_SPEED - MIN_WHEEL_SPEED);
 
 void genericInterupt(int index);
@@ -58,7 +58,6 @@ public:
 
   void pubSpeedError();
   int ctrlWheelPID(float speed);
-  int ctrlWheelCmdVel(geometry_msgs::Twist cmd_vel_msg);
   static void wheelInterupt();
 
   double getEncoderCounts();
@@ -97,20 +96,20 @@ public:
 class FrontRightWheel : public WheelController
 {
 public:
-  FrontLeftWheel(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid);
+  FrontRightWheel(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid);
   int getPWMSpeed(float speed);
 };
 
 class BackRightWheel : public WheelController
 {
 public:
-  FrontLeftWheel(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid);
+  BackRightWheel(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid);
   int getPWMSpeed(float speed); 
 };
 
 class BackLeftWheel : public WheelController
 {
 public:
-  FrontLeftWheel(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid);
+  BackLeftWheel(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid);
   int getPWMSpeed(float speed);
 };
