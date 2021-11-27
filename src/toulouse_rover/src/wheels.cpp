@@ -163,7 +163,7 @@ double WheelController::getWheelSpeed()
     encoderStartTime_ = now;
     ROS_INFO("%s: change in encoder count: %f", wheel_namespace_.c_str(), changeEncoderCounts);
     double speedRadiansPerSec = changeEncoderCounts * 2 * M_PI / encTicksPerRotation_ / elapsed_time_s.toSec(); // 2 pi radians is 20 encoder counts, so this will give us radians per second
-    return speedRadiansPerSec
+    return speedRadiansPerSec;
 }
 
 FrontLeftWheel::FrontLeftWheel(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid)
