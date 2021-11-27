@@ -224,10 +224,9 @@ int main (int argc, char **argv) {
 
     // if 10 is pwm high and 11 is pwm low, then back right wheel turns forard
     // if 11 is pwm high and 10 is pwm low, then back right wheel turns backward
-    servo_array.servos[14].value = 0;
-    servo_array.servos[9].value = 0;
-    servo_array.servos[10].value = 0;
-    servo_array.servos[13].value = 0;
+    for (int i = 1; i <= 16; i++) {
+      servo_array.servos[i].value = 0;
+    }
     servos_absolute_pub.publish(servo_array);
 
     digitalWrite(SLP_PIN, LOW);
