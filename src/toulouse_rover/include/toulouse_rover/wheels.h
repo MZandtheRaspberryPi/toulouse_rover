@@ -104,26 +104,26 @@ class FrontLeftWheel : public WheelController
 {
 public:
   FrontLeftWheel(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid);
-  int getPWMSpeed(float speed);
+  float calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg);
 };
 
 class FrontRightWheel : public WheelController
 {
 public:
   FrontRightWheel(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid);
-  int getPWMSpeed(float speed);
+  float calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg);
 };
 
 class BackRightWheel : public WheelController
 {
 public:
   BackRightWheel(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid);
-  int getPWMSpeed(float speed); 
+  float calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg); 
 };
 
 class BackLeftWheel : public WheelController
 {
 public:
   BackLeftWheel(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid);
-  int getPWMSpeed(float speed);
+  float calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg);
 };
