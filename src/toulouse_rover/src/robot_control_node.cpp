@@ -112,10 +112,11 @@ int main (int argc, char **argv) {
     // servos_absolute publisher
     ros::Publisher servos_absolute_pub = nh.advertise<i2cpwm_board::ServoArray>("servos_absolute", 1);
 
-    ros::Rate loop_rate(8);  // Control rate in Hz 
+    ros::Rate loop_rate(2);  // Control rate in Hz 
 
-    WheelController left_front_wheel(nh, "left_front_wheel", 0);
-
+    WheelController left_front_wheel(nh, "front_left_wheel", 0);
+    wiringPiISR (0, INT_EDGE_FALLING, &frontLeftInterupt);
+    ros::Duration(1.0).sleep();
 /*
 /left_front_wheel/control_effort
 /left_front_wheel/pid_debug
@@ -148,7 +149,7 @@ int main (int argc, char **argv) {
       else {
         servo_array.servos[15].value = 0;
         servo_array.servos[14].value = left_front_wheel_pwm;
-
+        //servo_array.servos[14].value = 3000;
       }
       
       // 2000 pwm yields about 15 radians per second. this is like 5 pi, so 2.5 rotations of wheel per second

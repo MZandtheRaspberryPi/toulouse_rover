@@ -8,7 +8,7 @@
 
 constexpr float MAX_PWM = 4000;
 constexpr float MIN_PWM = 900;
-constexpr float MAX_PID_CONTROL = 100;
+constexpr float MAX_PID_CONTROL = 1;
 constexpr float MIN_PID_CONTROL = 0;
 constexpr float SLOPE = (MAX_PWM - MIN_PWM) / (MAX_PID_CONTROL - MIN_PID_CONTROL);
 static volatile double globalEncCounter [4];
