@@ -5,7 +5,8 @@
 #include "i2cpwm_board/Servo.h"
 #include "i2cpwm_board/ServoArray.h"
 #include <tf2_ros/transform_broadcaster.h>
- #include <tf2/LinearMath/Quaternion.h>
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Twist.h>
