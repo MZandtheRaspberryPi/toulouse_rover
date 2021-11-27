@@ -41,6 +41,7 @@ i2cpwm_board::ServoArray servo_array{};
 geometry_msgs::Twist latest_vel_msg;
 void velocityCallback(const geometry_msgs::Twist::ConstPtr& vel)
 {
+  ROS_INFO("Got Vel Msg");
   latest_vel_msg = *vel;
 }
 
@@ -139,6 +140,7 @@ int main (int argc, char **argv) {
     while (!g_request_shutdown) {
 
        // the work...
+      ROS_INFO("x: %f", latest_vel_msg.linear.x);
       int front_left_wheel_pwm = front_left_wheel.ctrlWheelCmdVel(latest_vel_msg);
       int front_right_wheel_pwm = front_right_wheel.ctrlWheelCmdVel(latest_vel_msg);
       int back_left_wheel_pwm = back_left_wheel.ctrlWheelCmdVel(latest_vel_msg);
