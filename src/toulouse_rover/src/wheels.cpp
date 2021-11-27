@@ -142,8 +142,8 @@ int WheelController::pwmFromWheelSpeed(float wheel_speed)
     return pwm;
  }
 
-FrontLeftWheel::FrontLeftWheel(ros::NodeHandle& nh, std::string wheel_namespace)
-    : WheelController(ros::NodeHandle& nh, std::string wheel_namespace)
+FrontLeftWheel::FrontLeftWheel(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid)
+    : WheelController(ros::NodeHandle& nh, std::string wheel_namespace, use_pid)
 {
     encoderIndex_ = 0;
 }
@@ -154,8 +154,8 @@ float FrontLeftWheel::calcWheelSpeed(const geometry_msgs::Twist cmd_vel_msg)
     return wheel_front_left;
 }
 
-FrontRightWheel::FrontRightWheel(ros::NodeHandle& nh, std::string wheel_namespace)
-    : WheelController(ros::NodeHandle& nh, std::string wheel_namespace)
+FrontRightWheel::FrontRightWheel(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid)
+    : WheelController(ros::NodeHandle& nh, std::string wheel_namespace, use_pid)
 {
     encoderIndex_ = 1;
 }
@@ -166,8 +166,8 @@ float FrontRightWheel::calcWheelSpeed(const geometry_msgs::Twist cmd_vel_msg)
     return wheel_front_left;
 }
 
-BackRightWheel::BackRightWheel(ros::NodeHandle& nh, std::string wheel_namespace)
-    : WheelController(ros::NodeHandle& nh, std::string wheel_namespace)
+BackRightWheel::BackRightWheel(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid)
+    : WheelController(ros::NodeHandle& nh, std::string wheel_namespace, use_pid)
 {
     encoderIndex_ = 2;
 }
@@ -178,8 +178,8 @@ float BackRightWheel::calcWheelSpeed(const geometry_msgs::Twist cmd_vel_msg)
     return wheel_back_right;
 }
 
-BackLeftWheel::BackLeftWheel(ros::NodeHandle& nh, std::string wheel_namespace)
-    : WheelController(ros::NodeHandle& nh, std::string wheel_namespace)
+BackLeftWheel::BackLeftWheel(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid)
+    : WheelController(ros::NodeHandle& nh, std::string wheel_namespace, use_pid)
 {
     encoderIndex_ = 3;
 }

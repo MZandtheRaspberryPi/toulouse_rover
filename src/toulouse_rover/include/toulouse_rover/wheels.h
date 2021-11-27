@@ -23,9 +23,9 @@ static constexpr int const& WHEEL_RADIUS = .024; // radius of wheels meters
 // MAX I saw, with wheels not on ground, was about 60 encoder ticks per second
 // this would translate to 3 rotations, given 20 ticks per rotation, which would translate to
 // 2 * PI * RADIUS * 3 ~= .452304 meters in one second
-constexpr float const& MAX_ROBOT_SPEED = 2 * M_PI * WHEEL_RADIUS * 3;
-constexpr float const& MIN_ROBOT_SPEED = 0.;
-constexpr float SLOPE_ROBOT_SPEED = (MAX_PWM - MIN_PWM) / (MAX_ROBOT_SPEED - MIN_ROBOT_SPEED);
+float const MAX_ROBOT_SPEED = 2 * M_PI * WHEEL_RADIUS * 3;
+float const MIN_ROBOT_SPEED = 0;
+float const SLOPE_ROBOT_SPEED = (MAX_PWM - MIN_PWM) / (MAX_ROBOT_SPEED - MIN_ROBOT_SPEED);
 
 // MAX I saw, with wheels not on ground, was about 60 encoder ticks per second, so 3 rotations, so 3 PI.
 constexpr float const& MAX_WHEEL_SPEED = 3 * M_PI;
@@ -62,9 +62,9 @@ public:
 
   double getEncoderCounts();
 
-  virtual float calcWheelSpeed(const geometry_msgs::Twist cmd_vel_msg);
+  virtual float calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg);
   int pwmFromWheelSpeed(float wheel_speed);
-  int ctrlWheelCmdVel(const geometry_msgs::Twist cmd_vel_msg);
+  int ctrlWheelCmdVel(const geometry_msgs::Twist& cmd_vel_msg);
 
 private:
 
