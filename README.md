@@ -194,3 +194,11 @@ Encoders to real time controller like arduino using interupts, serial to pi
 Motor Driver PWM from Arduino as well if possible
 Higher resolution encoders (20 ticks per rotation is tough to do PID with)
 Make cable connectors better. Currently dupont, but self made and some of them dont plug in too well and hold.
+
+
+install lidar packages:
+https://github.com/YDLIDAR/ydlidar_ros_driver
+
+https://github.com/YDLIDAR/YDLidar-SDK/blob/master/doc/howto/how_to_build_and_install.md
+
+
