@@ -201,4 +201,4 @@ https://github.com/YDLIDAR/ydlidar_ros_driver
 
 https://github.com/YDLIDAR/YDLidar-SDK/blob/master/doc/howto/how_to_build_and_install.md
 
-
+issue with power of ydlidar. Takes about an amp on spin up and my pi 4 with its power system cant provide from usb. results in other stuff in the usb ports losing power. should have seperate system for this ydlidar.
