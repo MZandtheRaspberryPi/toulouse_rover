@@ -3,20 +3,56 @@
 #endif
 #include <ros/ros.h>
 #include <std_msgs/Float64.h>
+#include <geometry_msgs/Twist.h>
 #include <math.h>
+#include <cmath> 
 #include <queue>
 
 constexpr float MAX_PWM = 4000;
 constexpr float MIN_PWM = 900;
-constexpr float MAX_PID_CONTROL = 100;
+constexpr float MAX_PID_CONTROL = 1;
 constexpr float MIN_PID_CONTROL = 0;
-constexpr float SLOPE = (MAX_PWM - MIN_PWM) / (MAX_PID_CONTROL - MIN_PID_CONTROL);
+constexpr float SLOPE_PID = (MAX_PWM - MIN_PWM) / (MAX_PID_CONTROL - MIN_PID_CONTROL);
+static volatile double globalEncCounter [4];
+static volatile double globalSpeedCounter [4];
+
+static constexpr float const& WHEEL_SEP_LENGTH = .130; // how far wheels are apart length meters
+static constexpr float const& WHEEL_SEP_WIDTH = .092; // how far wheels are apart width meters
+static constexpr float const& WHEEL_RADIUS = .024; // radius of wheels meters
+
+// MAX I saw, with wheels not on ground, was about 60 encoder ticks per second
+// this would translate to 3 rotations, given 20 ticks per rotation, which would translate to
+// 2 * PI * RADIUS * 3 ~= .452304 meters in one second
+float const MAX_ROBOT_SPEED = 2 * M_PI * WHEEL_RADIUS * 3;
+float const MIN_ROBOT_SPEED = 0;
+float const SLOPE_ROBOT_SPEED = (MAX_PWM - MIN_PWM) / (MAX_ROBOT_SPEED - MIN_ROBOT_SPEED);
+
+// MAX I saw, with wheels not on ground, was about 60 encoder ticks per second, so 3 rotations, so 3 PI.
+// we will get this by going about .22 meters per second in x direction, so this is our max speed
+constexpr float const& MAX_WHEEL_SPEED = 3 * M_PI;
+constexpr float const& MIN_WHEEL_SPEED = 0.;
+constexpr float const& SLOPE_WHEEL_SPEED = (MAX_PWM - MIN_PWM) / (MAX_WHEEL_SPEED - MIN_WHEEL_SPEED);
+
+void genericInterupt(int index);
+void frontLeftInterupt();
+void frontRightInterupt();
+void backRightInterupt();
+void backLeftInterupt();
+
+
+class FrontLeftWheel;
+
+class FrontRightWheel;
+
+class BackRightWheel;
+
+class BackLeftWheel;
 
 class WheelController {
 
 public:
 
-  WheelController(ros::NodeHandle& nh, std::string wheel_namespace, int interuptPin);
+  WheelController(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid);
   void setupPubsSubs(ros::NodeHandle& nh, std::string wheel_namespace);
 
   void controlEffortCallback(const std_msgs::Float64& control_effort_input);
@@ -28,24 +64,34 @@ public:
 
   int update();
 
-  int getPWM(float control_effort);
+  int getPWMCtrlEff(float control_effort);
 
   void pubSpeedError();
-  int ctrlWheel(float speed);
-  
+  void pubEncCounts();
+  int ctrlWheelPID(float speed);
+  static void wheelInterupt();
 
-  int const& WHEEL_RADIUS = 24; // radius of wheels
+  double getEncoderCounts();
+  double getWheelSpeed();
+
+  virtual float calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg) = 0;
+  int pwmFromWheelSpeed(float wheel_speed);
+  int ctrlWheelCmdVel(const geometry_msgs::Twist& cmd_vel_msg);
+
+  friend FrontLeftWheel;
+  friend FrontRightWheel;
+  friend BackRightWheel;
+  friend BackLeftWheel;
+
 private:
 
-  void wheelInterupt();
+  int encoderIndex_;
   int encTicksPerRotation_ {20};
   bool oppositeSide_;
 
-  std::queue<float> control_effort_;
-  volatile int priorEncoderCounts_ = 0;
-  volatile int encoderCounts_ = 0;
+  float control_effort_;
+  double priorEncoderCounts_ = 0;
   int interuptPin_;
-  float commandRadPerSec_;
   std::string wheel_namespace_;
 
   ros::Time encoderStartTime_;
@@ -54,4 +100,33 @@ private:
   ros::Publisher set_pub_;
   ros::Subscriber ctrl_sub_;
   double CHECK_RATE_CTRL{60};
+  bool use_pid_;
+};
+
+class FrontLeftWheel : public WheelController
+{
+public:
+  FrontLeftWheel(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid);
+  float calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg);
+};
+
+class FrontRightWheel : public WheelController
+{
+public:
+  FrontRightWheel(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid);
+  float calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg);
+};
+
+class BackRightWheel : public WheelController
+{
+public:
+  BackRightWheel(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid);
+  float calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg); 
+};
+
+class BackLeftWheel : public WheelController
+{
+public:
+  BackLeftWheel(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid);
+  float calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg);
 };

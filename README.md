@@ -134,7 +134,8 @@ http://robotsforroboticists.com/drive-kinematics/
 
 ```
 sudo apt-get install ros-noetic-teleop-twist-keyboard
-rosrun teleop_twist_keyboard teleop_twist_keyboard.py
+rosrun teleop_twist_keyboard teleop_twist_keyboard.py _key_timeout:=0.6 _speed:=0.1 _turn:=0.2
+
 ```
 
 We use these wheels, 48mm diameter: https://www.adafruit.com/product/4679 
@@ -163,10 +164,41 @@ https://packages.ubiquityrobotics.com/  add to packages
 https://github.com/rohbotics/pifi  
 https://github.com/IntelRealSense/librealsense/issues/9506  to add key
 
+on toulouse_robot:  
+export ROS_IP=10.42.0.1
 
-export ROS_HOSTNAME=mz-VirtualBox
-export ROS_MASTER_URI=http://192.168.178.64:11311
+on other PC 
+export ROS_MASTER_URI=http://10.42.0.1:11311  
 
 Ideas for next time:  
 Use arduino or 3.3v board for interupts from encoders, battery voltage measurement, and pwm signals to motor drivers.
 Serial could be interface to arduino to command it.
+
+Internet on Pi:
+https://raspberrypi.stackexchange.com/questions/109425/ubuntu-server-18-wifi-hotspot-setup 
+
+
+ROSDEP
+```
+sudo apt-get install python3-rosdep
+sudo rosdep init
+rosdep update
+cd ~/toulouse_rover
+rosdep install --from-paths src --ignore-src -r -y
+
+```
+
+
+Things to do differently
+Encoders to real time controller like arduino using interupts, serial to pi
+Motor Driver PWM from Arduino as well if possible
+Higher resolution encoders (20 ticks per rotation is tough to do PID with)
+Make cable connectors better. Currently dupont, but self made and some of them dont plug in too well and hold.
+
+
+install lidar packages:
+https://github.com/YDLIDAR/ydlidar_ros_driver
+
+https://github.com/YDLIDAR/YDLidar-SDK/blob/master/doc/howto/how_to_build_and_install.md
+
+issue with power of ydlidar. Takes about an amp on spin up and my pi 4 with its power system cant provide from usb. results in other stuff in the usb ports losing power. should have seperate system for this ydlidar.
