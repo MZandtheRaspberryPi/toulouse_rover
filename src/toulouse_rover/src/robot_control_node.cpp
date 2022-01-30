@@ -66,12 +66,13 @@ double y = 0.0;
 double th = 0.0;
 
 int main (int argc, char **argv) {
-#ifdef RPI
+    #ifdef RPI
     wiringPiSetup();
     pinMode(SLP_PIN, OUTPUT);
     ROS_INFO("GPIO has been set as OUTPUT.");
 
     digitalWrite(SLP_PIN, HIGH);
+    #endif
     ros::init(argc, argv, "robot_control_node", ros::init_options::NoSigintHandler);
     ros::NodeHandle nh;
     // Override the default ros sigint handler.
@@ -89,13 +90,16 @@ int main (int argc, char **argv) {
     ros::Rate loop_rate(LOOP_RATE);  // Control rate in Hz 
 
     FrontLeftWheel front_left_wheel(nh, "front_left_wheel", false);
-    wiringPiISR (0, INT_EDGE_FALLING, &frontLeftInterupt);
     FrontRightWheel front_right_wheel(nh, "front_right_wheel", false);
-    wiringPiISR (25, INT_EDGE_FALLING, &frontRightInterupt);
     BackLeftWheel back_left_wheel(nh, "back_left_wheel", false);
-    wiringPiISR (2, INT_EDGE_FALLING, &backLeftInterupt);
     BackRightWheel back_right_wheel(nh, "back_right_wheel", false);
+
+    #ifdef RPI
+    wiringPiISR (0, INT_EDGE_FALLING, &frontLeftInterupt);
+    wiringPiISR (25, INT_EDGE_FALLING, &frontRightInterupt);
+    wiringPiISR (2, INT_EDGE_FALLING, &backLeftInterupt);
     wiringPiISR (3, INT_EDGE_FALLING, &backRightInterupt);
+    #endif
 
     ros::Publisher odom_pub = nh.advertise<nav_msgs::Odometry>("odom", 50);
     static tf2_ros::TransformBroadcaster br;
@@ -232,10 +236,8 @@ int main (int argc, char **argv) {
       servo_array.servos[i].value = 0;
     }
     servos_absolute_pub.publish(servo_array);
-
+    #ifdef RPI
     digitalWrite(SLP_PIN, LOW);
+    #endif
     ros::shutdown();
-#else
-    // here you define the behavior of your node on non ARM systems
-#endif
 }

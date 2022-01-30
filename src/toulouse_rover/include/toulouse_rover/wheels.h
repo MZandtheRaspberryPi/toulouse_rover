@@ -23,12 +23,14 @@ static constexpr float const& WHEEL_RADIUS = .024; // radius of wheels meters
 // MAX I saw, with wheels not on ground, was about 60 encoder ticks per second
 // this would translate to 3 rotations, given 20 ticks per rotation, which would translate to
 // 2 * PI * RADIUS * 3 ~= .452304 meters in one second
+// TODO: Calculate MIN Speed by setting wheels to min PWM and seeing how fast they go in meters per sec
 float const MAX_ROBOT_SPEED = 2 * M_PI * WHEEL_RADIUS * 3;
 float const MIN_ROBOT_SPEED = 0;
 float const SLOPE_ROBOT_SPEED = (MAX_PWM - MIN_PWM) / (MAX_ROBOT_SPEED - MIN_ROBOT_SPEED);
 
 // MAX I saw, with wheels not on ground, was about 60 encoder ticks per second, so 3 rotations, so 3 PI.
 // we will get this by going about .22 meters per second in x direction, so this is our max speed
+// TODO: Calculate MIN Speed by setting wheels to min PWM and seeing how fast they go in radians
 constexpr float const& MAX_WHEEL_SPEED = 3 * M_PI;
 constexpr float const& MIN_WHEEL_SPEED = 0.;
 constexpr float const& SLOPE_WHEEL_SPEED = (MAX_PWM - MIN_PWM) / (MAX_WHEEL_SPEED - MIN_WHEEL_SPEED);

@@ -1,0 +1,15 @@
+<launch>
+
+  <node pkg="toulouse_rover" name="robot_control_node" type="robot_control_node"  output="screen"> </node>
+  
+  <!-- loading urdf model of robot -->
+  <param name="robot_description" textfile="$(find toulouse_rover)/urdf/toulouse.urdf.xacro"/>
+  
+  <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher" />
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" />
+
+
+  <!-- Run the map server args="$(find my_map_package)/my_map.pgm my_map_resolution" 
+  <node name="map_server" pkg="map_server" type="map_server" /> -->
+
+</launch>
