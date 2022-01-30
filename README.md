@@ -196,9 +196,9 @@ Higher resolution encoders (20 ticks per rotation is tough to do PID with)
 Make cable connectors better. Currently dupont, but self made and some of them dont plug in too well and hold.
 
 
-install lidar packages:
-https://github.com/YDLIDAR/ydlidar_ros_driver
 
-https://github.com/YDLIDAR/YDLidar-SDK/blob/master/doc/howto/how_to_build_and_install.md
+install lidar packages. had issues with sdk for most recent driver version (https://github.com/YDLIDAR/ydlidar_ros_driver).
+https://github.com/YDLIDAR/ydlidar_ros
+
 
 issue with power of ydlidar. Takes about an amp on spin up and my pi 4 with its power system cant provide from usb. results in other stuff in the usb ports losing power. should have seperate system for this ydlidar.
