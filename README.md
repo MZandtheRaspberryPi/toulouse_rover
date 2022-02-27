@@ -170,6 +170,8 @@ export ROS_IP=10.42.0.1
 on other PC 
 export ROS_MASTER_URI=http://10.42.0.1:11311  
 
+I was using a pi4 on the robot running ros, then a windows laptop running an ubuntu virtual machine to visualize stuff with rviz. I had a tough time getting the two to talk to each other, virtual machine and PI4. What ended up working was setting ROS_IP env variables in the .bashrc file for both (get ip from hostname -I for example), and then in the virtual machine settings under network, setting bridged, so it gets its own ip address.
+
 Ideas for next time:  
 Use arduino or 3.3v board for interupts from encoders, battery voltage measurement, and pwm signals to motor drivers.
 Serial could be interface to arduino to command it.
