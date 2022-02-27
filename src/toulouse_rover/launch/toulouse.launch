@@ -5,8 +5,9 @@
 
   <node pkg="toulouse_rover" name="robot_control_node" type="robot_control_node"  output="screen"> </node>
 
-  <include file="$(find ydlidar_ros_driver)/launch/X4.launch" />
-
+  <!-- -->
+  <include file="$(find ydlidar_ros)/launch/X4.launch" />
+  
   <!-- loading urdf model of robot -->
   <param name="robot_description" textfile="$(find toulouse_rover)/urdf/toulouse.urdf.xacro"/>
   
@@ -14,13 +15,15 @@
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" />
 
 
-  <!-- Run the map server 
-  <node name="map_server" pkg="map_server" type="map_server" args="$(find my_map_package)/my_map.pgm my_map_resolution"/>
-  -->
+  <!-- Run the map server args="$(find my_map_package)/my_map.pgm my_map_resolution" 
+  <node name="map_server" pkg="map_server" type="map_server" /> -->
 
-  <!--- Run AMCL 
-  <include file="$(find amcl)/examples/amcl_omni.launch" />
-  -->
+  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" args="scan:=scan"/>
+
+  <!--- Run AMCL -->
+  <remap from="/static_map" to="/dynamic_map"/>
+  <include file="$(find amcl)/examples/amcl_omni.launch" >
+  </include> 
 
  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
     <rosparam file="$(find toulouse_rover)/param/costmap_common_params.yaml" command="load" ns="global_costmap" /> 

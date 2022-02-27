@@ -168,7 +168,7 @@ if (${KERNELRELEASE} MATCHES "raspi$")
     target_link_libraries(robot_control_node ${PROJECT_NAME} ${catkin_LIBRARIES} -lwiringPi)
     set_target_properties(robot_control_node PROPERTIES COMPILE_FLAGS "-DRPI")
 else()
-    target_link_libraries(robot_control_node ${catkin_LIBRARIES})
+    target_link_libraries(robot_control_node ${PROJECT_NAME} ${catkin_LIBRARIES})
 endif()
 
 ## Add cmake target dependencies of the executable

@@ -133,6 +133,13 @@ int WheelController::pwmFromWheelSpeed(float wheel_speed)
     }
 
     float scaled_wheel_pwm = MIN_PWM + SLOPE_WHEEL_SPEED * (std::abs(wheel_speed) - MIN_WHEEL_SPEED);
+    
+    if (scaled_wheel_pwm > MAX_PWM)
+    {
+        ROS_WARN("Wheel commanded to %f pwm, capping to the max of %f", scaled_wheel_pwm, MAX_PWM);
+        scaled_wheel_pwm = MAX_PWM;
+    }
+    
     if (wheel_speed < 0)
     {
         scaled_wheel_pwm *= -1;
