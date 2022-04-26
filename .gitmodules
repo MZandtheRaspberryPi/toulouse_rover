@@ -1,6 +1,3 @@
 [submodule "src/ros-i2cpwmboard"]
 	path = src/ros-i2cpwmboard
 	url = https://gitlab.com/bradanlane/ros-i2cpwmboard.git
-[submodule "src/ydlidar_ros"]
-	path = src/ydlidar_ros
-	url = https://github.com/YDLIDAR/ydlidar_ros.git
