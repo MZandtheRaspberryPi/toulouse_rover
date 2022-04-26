@@ -3,6 +3,9 @@
   <node pkg="i2cpwm_board" name="i2cpwm_board" type="i2cpwm_board">
   </node>
 
+   <node pkg="rosserial_python" name="serial_node.py" type="serial_node.py" output="screen" args="_port:=/dev/ttyUSB0 _baud:=57600">
+   </node>
+  
   <node pkg="toulouse_rover" name="robot_control_node" type="robot_control_node"  output="screen"> </node>
 
   <!-- -->
