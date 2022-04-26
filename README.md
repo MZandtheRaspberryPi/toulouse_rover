@@ -170,6 +170,8 @@ export ROS_IP=10.42.0.1
 on other PC 
 export ROS_MASTER_URI=http://10.42.0.1:11311  
 
+I was using a pi4 on the robot running ros, then a windows laptop running an ubuntu virtual machine to visualize stuff with rviz. I had a tough time getting the two to talk to each other, virtual machine and PI4. What ended up working was setting ROS_IP env variables in the .bashrc file for both (get ip from hostname -I for example), and then in the virtual machine settings under network, setting bridged, so it gets its own ip address.
+
 Ideas for next time:  
 Use arduino or 3.3v board for interupts from encoders, battery voltage measurement, and pwm signals to motor drivers.
 Serial could be interface to arduino to command it.
@@ -196,9 +198,9 @@ Higher resolution encoders (20 ticks per rotation is tough to do PID with)
 Make cable connectors better. Currently dupont, but self made and some of them dont plug in too well and hold.
 
 
-install lidar packages:
-https://github.com/YDLIDAR/ydlidar_ros_driver
 
-https://github.com/YDLIDAR/YDLidar-SDK/blob/master/doc/howto/how_to_build_and_install.md
+install lidar packages. had issues with sdk for most recent driver version (https://github.com/YDLIDAR/ydlidar_ros_driver).
+https://github.com/YDLIDAR/ydlidar_ros
 
 
+issue with power of ydlidar. Takes about an amp on spin up and my pi 4 with its power system cant provide from usb. results in other stuff in the usb ports losing power. should have seperate system for this ydlidar.
