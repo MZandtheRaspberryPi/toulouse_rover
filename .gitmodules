@@ -3,4 +3,4 @@
 	url = https://gitlab.com/bradanlane/ros-i2cpwmboard.git
 [submodule "src/ydlidar_ros"]
 	path = src/ydlidar_ros
-	url = https://github.com/MZandtheRaspberryPi/ydlidar_ros.git
+	url = git@github.com:MZandtheRaspberryPi/ydlidar_ros.git
