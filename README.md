@@ -132,6 +132,11 @@ https://howtomechatronics.com/projects/arduino-mecanum-wheels-robot/
 
 http://robotsforroboticists.com/drive-kinematics/   
 
+## Kinematics for Dif Drive Robots
+https://www.hmc.edu/lair/ARW/ARW-Lecture01-Odometry.pdf  
+To solve for odom, take arc length left wheels went, arc length right wheels went, and the arc length robot drove is equal to the average of them. Can solve for that analytically too.
+https://answers.ros.org/question/231942/computing-odometry-from-two-velocities/ also as well as https://robohub.org/drive-kinematics-skid-steer-and-mecanum-ros-twist-included/
+
 ```
 sudo apt-get install ros-noetic-teleop-twist-keyboard
 rosrun teleop_twist_keyboard teleop_twist_keyboard.py _key_timeout:=0.6 _speed:=0.1 _turn:=0.2
@@ -204,3 +209,17 @@ https://github.com/YDLIDAR/ydlidar_ros
 
 
 issue with power of ydlidar. Takes about an amp on spin up and my pi 4 with its power system cant provide from usb. results in other stuff in the usb ports losing power. should have seperate system for this ydlidar.
+
+# Formating and Linting
+We use google style for the clang-format, and default clang-tidy settings.
+```
+clang-format -style=google -dump-config > .clang-format
+clang-format --style=file -i src\toulouse_rover\include\toulouse_rover\odom_calc.h
+```
+
+for clang tidy, need to know compile flags. so when building, generate .json
+```
+catkin_make toulouse_rover -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+clang-tidy -p ./build --format-style="file" src/toulouse_rover/src/wheels.cpp
+```
