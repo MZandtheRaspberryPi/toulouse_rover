@@ -3,6 +3,7 @@ project(toulouse_rover)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
