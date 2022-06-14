@@ -2,42 +2,6 @@
 
 namespace odom_calc {
 
-enum OdomType {
-  OMNI_WHEELS,
-  SKID_STEERING
-}
-
-struct Velocities {
-  double vx;
-  double vy;
-  double vth;
-};
-
-struct PositionChange {
-  double dt;
-  double delta_x;
-  double delta_y;
-  double delta_th;
-};
-
-struct Position {
-  double x;
-  double y;
-  double th;
-};
-
-struct OdomRosMessages {
-  geometry_msgs::Quaternion quat_msg;
-  nav_msgs::Odometry odom;
-};
-
-class OdomCalculator {
- private:
-  OdomType odom_type_;
-  Position position_;
-  ros::time last_call_time_;
-};
-
 OdomCalculator::OdomCalculator(OdomType odom_type) : odom_type_(odom_type) {
   Position position_{0.0,   // x
                      0.0,   // y
@@ -56,43 +20,51 @@ Velocities OdomCalculator::calc_velocities(double speed_front_left,
   Velocities velocities{};
   switch (odom_type_) {
     case OMNI_WHEELS:
-      velocities.vx =
-          (speed_front_left + speed_front_right + speed_back_left + speed_back_right) *
-          (WHEEL_RADIUS / 4);
-      velocities.vy =
-          (-speed_front_left + speed_front_right + speed_back_left - speed_back_right) *
-          (WHEEL_RADIUS / 4);
-      velocities.vth =
-          (-speed_front_left + speed_front_right - speed_back_left + speed_back_right) *
-          (WHEEL_RADIUS / (4 * (wheels::WHEEL_SEP_WIDTH + wheels::WHEEL_SEP_LENGTH)));
+      velocities.vx = (speed_front_left + speed_front_right + speed_back_left +
+                       speed_back_right) *
+                      (util::WHEEL_RADIUS / 4);
+      velocities.vy = (-speed_front_left + speed_front_right + speed_back_left -
+                       speed_back_right) *
+                      (util::WHEEL_RADIUS / 4);
+      velocities.vth = (-speed_front_left + speed_front_right -
+                        speed_back_left + speed_back_right) *
+                       (util::WHEEL_RADIUS /
+                        (4 * (util::WHEEL_SEP_WIDTH + util::WHEEL_SEP_LENGTH)));
       break;
-    case SKID_STEERING:
+    case SKID_STEERING: {
       float speed_radians_left = (speed_front_left + speed_back_left) / 2;
       float speed_radians_right = (speed_front_right + speed_back_right) / 2;
-      float seed_meters_left = wheels::convert_radians_per_sec_to_meters_per_sec(speed_radians_left);
-      float speed_meters_right = wheels::convert_radians_per_sec_to_meters_per_sec(speed_radians_right);
+      float speed_meters_left =
+          util::convert_radians_per_sec_to_meters_per_sec(speed_radians_left);
+      float speed_meters_right =
+          util::convert_radians_per_sec_to_meters_per_sec(speed_radians_right);
       velocities.vx = (speed_meters_left + speed_meters_right) / 2;
       velocities.vy = 0;
-      velocities.vth = (speed_meters_right - speed_meters_left) / wheels::WHEEL_SEP_WIDTH;
+      velocities.vth =
+          (speed_meters_right - speed_meters_left) / util::WHEEL_SEP_WIDTH;
       break;
+    }
     default:
       velocities.vx = 0;
       velocities.vy = 0;
       velocities.vth = 0;
-      break;
   }
 
-  return velocities
+  return velocities;
 }
 
 // rotate to global frame with 2d rotation matrix
-PositionChange OdomCalculator::calc_position_change(Velocities velocities, ) {
+PositionChange OdomCalculator::calc_position_change(Velocities velocities) {
   PositionChange pos_change{};
   ros::Time current_time = ros::Time::now();
   pos_change.dt = (current_time - last_call_time_).toSec();
-  pos_change.delta_x = (velocities.vx * cos(position_.th) - velocities.vy * sin(position_.th)) * pos_change.dt;
-  pos_change.delta_y = (velocities.vx * sin(position_.th) + velocities.vy * cos(position_.th)) * pos_change.dt;
-  pos_change.delta_th = velocities.vth * dt;
+  pos_change.delta_x =
+      (velocities.vx * cos(position_.th) - velocities.vy * sin(position_.th)) *
+      pos_change.dt;
+  pos_change.delta_y =
+      (velocities.vx * sin(position_.th) + velocities.vy * cos(position_.th)) *
+      pos_change.dt;
+  pos_change.delta_th = velocities.vth * pos_change.dt;
 
   last_call_time_ = current_time;
   return pos_change;

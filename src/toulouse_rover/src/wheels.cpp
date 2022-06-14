@@ -21,8 +21,9 @@ void backLeftInterupt() { genericInterupt(3); }
 WheelController::WheelController(ros::NodeHandle& nh,
                                  std::string wheel_namespace, bool use_pid,
                                  odom_calc::OdomType odom_type)
-    : odom_type_(odom_type)
-    : wheel_namespace_(wheel_namespace), use_pid_(use_pid) {
+    : wheel_namespace_(wheel_namespace),
+      use_pid_(use_pid),
+      odom_type_(odom_type) {
   setupPubsSubs(nh, wheel_namespace);
   priorEncoderCounts_ = 0;
   control_effort_ = 0.;
@@ -160,125 +161,117 @@ double WheelController::getWheelSpeed() {
 }
 
 FrontLeftWheel::FrontLeftWheel(ros::NodeHandle& nh, std::string wheel_namespace,
-                               bool use_pid)
-    : WheelController(nh, wheel_namespace, use_pid) {
+                               bool use_pid, odom_calc::OdomType odom_type)
+    : WheelController(nh, wheel_namespace, use_pid, odom_type) {
   encoderIndex_ = 0;
 }
 
 float FrontLeftWheel::calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg) {
   float wheel_front_left = 0.0;
-  switch
-    odom_type_ {
-      case odom_calc::OMNI_WHEELS:
-        wheel_front_left =
-            (1 / WHEEL_RADIUS) *
-            (cmd_vel_msg.linear.x - cmd_vel_msg.linear.y -
-             (WHEEL_SEP_WIDTH + WHEEL_SEP_LENGTH) * cmd_vel_msg.angular.z);
-        break;
-      case odom_calc::SKID_STEERING:
-        wheel_front_left = (cmd_vel_msg.linear.x – cmd_vel_msg.angular.z *
-                            WHEEL_SEP_WIDTH / 2.0) /
-                           WHEEL_RADIUS;
-        wheel_front_left = convert_meters_per_sec_to_radians_per_sec(wheel_front_left);
-        break;
-      default:
-        break;
-    }
+  switch (odom_type_) {
+    case odom_calc::OMNI_WHEELS:
+      wheel_front_left =
+          (1 / util::WHEEL_RADIUS) *
+          (cmd_vel_msg.linear.x - cmd_vel_msg.linear.y -
+           (util::WHEEL_SEP_WIDTH + util::WHEEL_SEP_LENGTH) * cmd_vel_msg.angular.z);
+      break;
+    case odom_calc::SKID_STEERING:
+      wheel_front_left = (cmd_vel_msg.linear.x -
+                          cmd_vel_msg.angular.z * util::WHEEL_SEP_WIDTH / 2.0) /
+                         util::WHEEL_RADIUS;
+      wheel_front_left =
+          util::convert_meters_per_sec_to_radians_per_sec(wheel_front_left);
+      break;
+    default:
+      break;
+  }
 
   return wheel_front_left;
 }
 
 FrontRightWheel::FrontRightWheel(ros::NodeHandle& nh,
-                                 std::string wheel_namespace, bool use_pid)
-    : WheelController(nh, wheel_namespace, use_pid) {
+                                 std::string wheel_namespace, bool use_pid,
+                                 odom_calc::OdomType odom_type)
+    : WheelController(nh, wheel_namespace, use_pid, odom_type) {
   encoderIndex_ = 1;
 }
 
 float FrontRightWheel::calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg) {
   float wheel_front_right = 0.0;
-  switch
-    odom_type_ {
-      case odom_calc::OMNI_WHEELS:
-        wheel_front_right =
-            (1 / WHEEL_RADIUS) *
-            (cmd_vel_msg.linear.x + cmd_vel_msg.linear.y +
-             (WHEEL_SEP_WIDTH + WHEEL_SEP_LENGTH) * cmd_vel_msg.angular.z);
-        break;
-      case odom_calc::SKID_STEERING:
-        wheel_front_right = (cmd_vel_msg.linear.x +
-                             cmd_vel_msg.angular.z * WHEEL_SEP_WIDTH / 2.0) /
-                            WHEEL_RADIUS;
-        wheel_front_right = convert_meters_per_sec_to_radians_per_sec(wheel_front_right);
-        break;
-      default:
-        break;
-    }
+  switch (odom_type_) {
+    case odom_calc::OMNI_WHEELS:
+      wheel_front_right =
+          (1 / util::WHEEL_RADIUS) *
+          (cmd_vel_msg.linear.x + cmd_vel_msg.linear.y +
+           (util::WHEEL_SEP_WIDTH + util::WHEEL_SEP_LENGTH) * cmd_vel_msg.angular.z);
+      break;
+    case odom_calc::SKID_STEERING:
+      wheel_front_right = (cmd_vel_msg.linear.x +
+                           cmd_vel_msg.angular.z * util::WHEEL_SEP_WIDTH / 2.0) /
+                          util::WHEEL_RADIUS;
+      wheel_front_right =
+          util::convert_meters_per_sec_to_radians_per_sec(wheel_front_right);
+      break;
+    default:
+      break;
+  }
   return wheel_front_right;
 }
 
 BackRightWheel::BackRightWheel(ros::NodeHandle& nh, std::string wheel_namespace,
-                               bool use_pid)
-    : WheelController(nh, wheel_namespace, use_pid) {
+                               bool use_pid, odom_calc::OdomType odom_type)
+    : WheelController(nh, wheel_namespace, use_pid, odom_type) {
   encoderIndex_ = 2;
 }
 
 float BackRightWheel::calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg) {
   float wheel_back_right = 0.0;
-  switch
-    odom_type_ {
-      case odom_calc::OMNI_WHEELS:
-        wheel_back_right =
-            (1 / WHEEL_RADIUS) *
-            (cmd_vel_msg.linear.x - cmd_vel_msg.linear.y +
-             (WHEEL_SEP_WIDTH + WHEEL_SEP_LENGTH) * cmd_vel_msg.angular.z);
-        break;
-      case odom_calc::SKID_STEERING:
-        wheel_back_right = (cmd_vel_msg.linear.x +
-                            cmd_vel_msg.angular.z * WHEEL_SEP_WIDTH / 2.0) /
-                           WHEEL_RADIUS;
-        wheel_back_right = convert_meters_per_sec_to_radians_per_sec(wheel_back_right);
-        break;
-      default:
-        break;
-    }
+  switch (odom_type_) {
+    case odom_calc::OMNI_WHEELS:
+      wheel_back_right =
+          (1 / util::WHEEL_RADIUS) *
+          (cmd_vel_msg.linear.x - cmd_vel_msg.linear.y +
+           (util::WHEEL_SEP_WIDTH + util::WHEEL_SEP_LENGTH) * cmd_vel_msg.angular.z);
+      break;
+    case odom_calc::SKID_STEERING:
+      wheel_back_right = (cmd_vel_msg.linear.x +
+                          cmd_vel_msg.angular.z * util::WHEEL_SEP_WIDTH / 2.0) /
+                         util::WHEEL_RADIUS;
+      wheel_back_right =
+          util::convert_meters_per_sec_to_radians_per_sec(wheel_back_right);
+      break;
+    default:
+      break;
+  }
   return wheel_back_right;
 }
 
 BackLeftWheel::BackLeftWheel(ros::NodeHandle& nh, std::string wheel_namespace,
-                             bool use_pid)
-    : WheelController(nh, wheel_namespace, use_pid) {
+                             bool use_pid, odom_calc::OdomType odom_type)
+    : WheelController(nh, wheel_namespace, use_pid, odom_type) {
   encoderIndex_ = 3;
 }
 
 float BackLeftWheel::calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg) {
   float wheel_back_left = 0.0;
-  switch
-    odom_type_ {
-      case odom_calc::OMNI_WHEELS:
-        wheel_back_left =
-            (1 / WHEEL_RADIUS) *
-            (cmd_vel_msg.linear.x + cmd_vel_msg.linear.y -
-             (WHEEL_SEP_WIDTH + WHEEL_SEP_LENGTH) * cmd_vel_msg.angular.z);
-        break;
-      case odom_calc::SKID_STEERING:
-        wheel_back_left = (cmd_vel_msg.linear.x -
-                           cmd_vel_msg.angular.z * WHEEL_SEP_WIDTH / 2.0) /
-                          WHEEL_RADIUS;
-        wheel_back_left = convert_meters_per_sec_to_radians_per_sec(wheel_back_left);
-        break;
-      default:
-        break;
-    }
+  switch (odom_type_) {
+    case odom_calc::OMNI_WHEELS:
+      wheel_back_left =
+          (1 / util::WHEEL_RADIUS) *
+          (cmd_vel_msg.linear.x + cmd_vel_msg.linear.y -
+           (util::WHEEL_SEP_WIDTH + util::WHEEL_SEP_LENGTH) * cmd_vel_msg.angular.z);
+      break;
+    case odom_calc::SKID_STEERING:
+      wheel_back_left = (cmd_vel_msg.linear.x -
+                         cmd_vel_msg.angular.z * util::WHEEL_SEP_WIDTH / 2.0) /
+                        util::WHEEL_RADIUS;
+      wheel_back_left =
+          util::convert_meters_per_sec_to_radians_per_sec(wheel_back_left);
+      break;
+    default:
+      break;
+  }
   return wheel_back_left;
 }
 
-float convert_radians_per_sec_to_meters_per_sec(float radians_per_sec)
-{
-  return radians_per_sec * WHEEL_CIRCUMFERENCE / (2 * M_PI);
-}
-
-float convert_meters_per_sec_to_radians_per_sec(float meters_per_sec)
-{
-  return meters_per_sec * 2 * M_PI / WHEEL_CIRCUMFERENCE;
-}
 }  // end namespace wheels

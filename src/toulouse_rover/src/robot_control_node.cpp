@@ -93,10 +93,14 @@ int main(int argc, char** argv) {
 
   ros::Rate loop_rate(LOOP_RATE);  // Control rate in Hz
 
-  wheels::FrontLeftWheel front_left_wheel(nh, "front_left_wheel", false, odom_calc::SKID_STEERING);
-  wheels::FrontRightWheel front_right_wheel(nh, "front_right_wheel", false, odom_calc::SKID_STEERING);
-  wheels::BackLeftWheel back_left_wheel(nh, "back_left_wheel", false, odom_calc::SKID_STEERING);
-  wheels::BackRightWheel back_right_wheel(nh, "back_right_wheel", false, odom_calc::SKID_STEERING);
+  wheels::FrontLeftWheel front_left_wheel(nh, "front_left_wheel", false,
+                                          odom_calc::SKID_STEERING);
+  wheels::FrontRightWheel front_right_wheel(nh, "front_right_wheel", false,
+                                            odom_calc::SKID_STEERING);
+  wheels::BackLeftWheel back_left_wheel(nh, "back_left_wheel", false,
+                                        odom_calc::SKID_STEERING);
+  wheels::BackRightWheel back_right_wheel(nh, "back_right_wheel", false,
+                                          odom_calc::SKID_STEERING);
 
 #ifdef RPI
   wiringPiISR(0, INT_EDGE_FALLING, &frontLeftInterupt);
@@ -169,24 +173,25 @@ int main(int argc, char** argv) {
     servos_absolute_pub.publish(servo_array);
     ros::spinOnce();
 
-    
     // compute odometry in a typical way given the velocities of the robot
     double speed_front_left = front_left_wheel.getWheelSpeed();
     double speed_front_right = front_right_wheel.getWheelSpeed();
     double speed_back_left = back_left_wheel.getWheelSpeed();
     double speed_back_right = back_right_wheel.getWheelSpeed();
 
-    odom_calc::Velocities velocities = odom_calc.calc_velocities(
-        speedFrontLeft, speed_front_right, speed_back_left, speed_back_right)
+    odom_calc::Velocities velocities = odom_calculator.calc_velocities(
+        speed_front_left, speed_front_right, speed_back_left, speed_back_right);
 
-    odom_calc::PositionChange pos_change = odom_calc.calc_position_change(velocities);
+    odom_calc::PositionChange pos_change =
+        odom_calculator.calc_position_change(velocities);
 
-    odom_calc::Position position = odom_calc.calc_position(pos_change);
+    odom_calc::Position position = odom_calculator.calc_position(pos_change);
 
-    odom_calc::OdomRosMessages odom_messages = odom_calc.get_ros_odom_messages(position, velocities);
+    odom_calc::OdomRosMessages odom_messages =
+        odom_calculator.get_ros_odom_messages(position, velocities);
 
     // send the transform
-    br.sendTransform(odom_messages.odom_trans);
+    br.sendTransform(odom_messages.odom_transform);
 
     // publish the message
     odom_pub.publish(odom_messages.odom);

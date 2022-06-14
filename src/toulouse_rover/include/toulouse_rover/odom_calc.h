@@ -1,15 +1,16 @@
+#ifndef odom_calc_h
+#define odom_calc_h
+
 #include <geometry_msgs/TransformStamped.h>
+#include <nav_msgs/Odometry.h>
 #include <ros/ros.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-#include <wheels.h>
 
+#include "util.h"
 namespace odom_calc {
 
-enum OdomType {
-  OMNI_WHEELS,
-  SKID_STEERING
-}
+enum OdomType { OMNI_WHEELS, SKID_STEERING };
 
 struct Velocities {
   double vx;
@@ -36,23 +37,23 @@ struct OdomRosMessages {
 };
 
 class OdomCalculator {
+  public:
+    OdomCalculator(OdomType odom_type);
+    Velocities calc_velocities(double speed_front_left, double speed_front_right,
+                              double speed_back_left, double speed_back_right);
+    PositionChange calc_position_change(Velocities velocities);
+
+    Position calc_position(PositionChange position_change);
+
+    OdomRosMessages get_ros_odom_messages(Position position,
+                                          Velocities velocities);
+
  private:
   OdomType odom_type_;
   Position position_;
   ros::Time last_call_time_;
 };
 
-OdomCalculator::OdomCalculator(OdomType odom_type);
-
-Velocities OdomCalculator::calc_velocities(double speed_front_left,
-                                           double speed_front_right,
-                                           double speed_back_left,
-                                           double speed_back_right);
-
-PositionChange OdomCalculator::calc_position_change(Velocities velocities);
-
-Position OdomCalculator::calc_position(PositionChange position_change);
-
-OdomRosMessages OdomCalculator::get_ros_odom_messages(Position position, Velocities velocities);
-
 }  // namespace odom_calc
+
+#endif

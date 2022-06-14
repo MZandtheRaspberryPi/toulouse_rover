@@ -1,3 +1,6 @@
+#ifndef wheels_h
+#define wheels_h
+
 #ifdef RPI
 #include <wiringPi.h>
 #endif
@@ -10,6 +13,7 @@
 #include <queue>
 
 #include "odom_calc.h"
+#include "util.h"
 
 namespace wheels {
 constexpr float MAX_PWM = 4000;
@@ -21,19 +25,12 @@ constexpr float SLOPE_PID =
 static volatile double globalEncCounter[4];
 static volatile double globalSpeedCounter[4];
 
-static constexpr float const& WHEEL_SEP_LENGTH =
-    .130;  // how far wheels are apart length meters
-static constexpr float const& WHEEL_SEP_WIDTH =
-    .092;  // how far wheels are apart width meters
-static constexpr float const& WHEEL_RADIUS = .024;  // radius of wheels meters
-static constexpr float const& WHEEL_CIRCUMFERENCE = WHEEL_RADIUS * 2 * M_PI;
-
 // MAX I saw, with wheels not on ground, was about 60 encoder ticks per second
 // this would translate to 3 rotations, given 20 ticks per rotation, which would
 // translate to 2 * PI * RADIUS * 3 ~= .452304 meters in one second
 // TODO: Calculate MIN Speed by setting wheels to min PWM and seeing how fast
 // they go in meters per sec
-float const MAX_ROBOT_SPEED = 2 * M_PI * WHEEL_RADIUS * 3;
+float const MAX_ROBOT_SPEED = 2 * M_PI * util::WHEEL_RADIUS * 3;
 float const MIN_ROBOT_SPEED = 0;
 float const SLOPE_ROBOT_SPEED =
     (MAX_PWM - MIN_PWM) / (MAX_ROBOT_SPEED - MIN_ROBOT_SPEED);
@@ -145,7 +142,6 @@ class BackLeftWheel : public WheelController {
   float calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg);
 };
 
-float convert_radians_per_sec_to_meters_per_sec(float radians_per_sec);
-
-float convert_meters_per_sec_to_radians_per_sec(float meters_per_sec);
 }  // end namespace wheels
+
+#endif
