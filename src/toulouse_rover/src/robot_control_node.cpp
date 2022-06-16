@@ -103,10 +103,10 @@ int main(int argc, char** argv) {
                                           odom_calc::SKID_STEERING);
 
 #ifdef RPI
-  wiringPiISR(0, INT_EDGE_FALLING, &frontLeftInterupt);
-  wiringPiISR(25, INT_EDGE_FALLING, &frontRightInterupt);
-  wiringPiISR(2, INT_EDGE_FALLING, &backLeftInterupt);
-  wiringPiISR(3, INT_EDGE_FALLING, &backRightInterupt);
+  wiringPiISR(0, INT_EDGE_FALLING, &wheels::frontLeftInterupt);
+  wiringPiISR(25, INT_EDGE_FALLING, &wheels::frontRightInterupt);
+  wiringPiISR(2, INT_EDGE_FALLING, &wheels::backLeftInterupt);
+  wiringPiISR(3, INT_EDGE_FALLING, &wheels::backRightInterupt);
 #endif
 
   ros::Publisher odom_pub = nh.advertise<nav_msgs::Odometry>("odom", 50);
