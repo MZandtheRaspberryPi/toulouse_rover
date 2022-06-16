@@ -137,6 +137,9 @@ https://www.hmc.edu/lair/ARW/ARW-Lecture01-Odometry.pdf
 To solve for odom, take arc length left wheels went, arc length right wheels went, and the arc length robot drove is equal to the average of them. Can solve for that analytically too.
 https://answers.ros.org/question/231942/computing-odometry-from-two-velocities/ also as well as https://robohub.org/drive-kinematics-skid-steer-and-mecanum-ros-twist-included/
 
+https://robotics.stackexchange.com/questions/18048/inverse-kinematics-for-differential-robot-knowing-linear-and-angular-velocities
+helpful for units
+
 ```
 sudo apt-get install ros-noetic-teleop-twist-keyboard
 rosrun teleop_twist_keyboard teleop_twist_keyboard.py _key_timeout:=0.6 _speed:=0.1 _turn:=0.2

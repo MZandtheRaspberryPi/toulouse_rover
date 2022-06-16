@@ -174,8 +174,7 @@ float FrontLeftWheel::calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg) {
       break;
     case odom_calc::SKID_STEERING:
       wheel_front_left = (cmd_vel_msg.linear.x -
-                          cmd_vel_msg.angular.z * util::WHEEL_SEP_WIDTH / 2.0) /
-                         util::WHEEL_RADIUS;
+                          cmd_vel_msg.angular.z * util::WHEEL_SEP_WIDTH / 2.0);
       wheel_front_left =
           util::convert_meters_per_sec_to_radians_per_sec(wheel_front_left);
       break;
@@ -204,8 +203,7 @@ float FrontRightWheel::calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg) {
       break;
     case odom_calc::SKID_STEERING:
       wheel_front_right = (cmd_vel_msg.linear.x +
-                           cmd_vel_msg.angular.z * util::WHEEL_SEP_WIDTH / 2.0) /
-                          util::WHEEL_RADIUS;
+                           cmd_vel_msg.angular.z * util::WHEEL_SEP_WIDTH / 2.0);
       wheel_front_right =
           util::convert_meters_per_sec_to_radians_per_sec(wheel_front_right);
       break;
@@ -232,8 +230,7 @@ float BackRightWheel::calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg) {
       break;
     case odom_calc::SKID_STEERING:
       wheel_back_right = (cmd_vel_msg.linear.x +
-                          cmd_vel_msg.angular.z * util::WHEEL_SEP_WIDTH / 2.0) /
-                         util::WHEEL_RADIUS;
+                          cmd_vel_msg.angular.z * util::WHEEL_SEP_WIDTH / 2.0);
       wheel_back_right =
           util::convert_meters_per_sec_to_radians_per_sec(wheel_back_right);
       break;
@@ -260,8 +257,7 @@ float BackLeftWheel::calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg) {
       break;
     case odom_calc::SKID_STEERING:
       wheel_back_left = (cmd_vel_msg.linear.x -
-                         cmd_vel_msg.angular.z * util::WHEEL_SEP_WIDTH / 2.0) /
-                        util::WHEEL_RADIUS;
+                         cmd_vel_msg.angular.z * util::WHEEL_SEP_WIDTH / 2.0);
       wheel_back_left =
           util::convert_meters_per_sec_to_radians_per_sec(wheel_back_left);
       break;
