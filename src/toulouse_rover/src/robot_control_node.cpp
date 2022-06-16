@@ -13,7 +13,6 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2_ros/transform_broadcaster.h>
-
 #include <cmath>
 
 #include "i2cpwm_board/Servo.h"
@@ -65,7 +64,6 @@ double x = 0.0;
 double y = 0.0;
 double th = 0.0;
 
-odom_calc::OdomCalculator odom_calculator{odom_calc::OMNI_WHEELS};
 
 int main(int argc, char** argv) {
 #ifdef RPI
@@ -85,6 +83,8 @@ int main(int argc, char** argv) {
   // Override XMLRPC shutdown
   ros::XMLRPCManager::instance()->unbind("shutdown");
   ros::XMLRPCManager::instance()->bind("shutdown", shutdownCallback);
+
+  odom_calc::OdomCalculator odom_calculator{odom_calc::OMNI_WHEELS};
 
   ros::Subscriber velocity_sub_ = nh.subscribe("cmd_vel", 1, velocityCallback);
   // servos_absolute publisher
@@ -124,20 +124,22 @@ int main(int argc, char** argv) {
     temp_servo.value = 0;
     servo_array.servos.push_back(temp_servo);
   }
-
   servos_absolute_pub.publish(servo_array);
+  int front_left_wheel_pwm;
+  int front_right_wheel_pwm;
+  int back_left_wheel_pwm;
+  int back_right_wheel_pwm;
   while (!g_request_shutdown) {
     // the work...
     ROS_INFO("x: %f, y: %f, angl_y: %f", latest_vel_msg.linear.x,
-             latest_vel_msg.linear.y, latest_vel_msg.angular.z);
-    int front_left_wheel_pwm = front_left_wheel.ctrlWheelCmdVel(latest_vel_msg);
-    int front_right_wheel_pwm =
-        front_right_wheel.ctrlWheelCmdVel(latest_vel_msg);
-    int back_left_wheel_pwm = back_left_wheel.ctrlWheelCmdVel(latest_vel_msg);
-    int back_right_wheel_pwm = back_right_wheel.ctrlWheelCmdVel(latest_vel_msg);
+           latest_vel_msg.linear.y, latest_vel_msg.angular.z);
+    front_left_wheel_pwm = front_left_wheel.ctrlWheelCmdVel(latest_vel_msg);
+    front_right_wheel_pwm =
+      front_right_wheel.ctrlWheelCmdVel(latest_vel_msg);
+    back_left_wheel_pwm = back_left_wheel.ctrlWheelCmdVel(latest_vel_msg);
+    back_right_wheel_pwm = back_right_wheel.ctrlWheelCmdVel(latest_vel_msg);
     ROS_INFO("FL: %d, FR: %d, BL: %d, BR: %d", front_left_wheel_pwm,
              front_right_wheel_pwm, back_left_wheel_pwm, back_right_wheel_pwm);
-
     if (front_left_wheel_pwm < 0) {
       servo_array.servos[14].value = 0;
       servo_array.servos[15].value = std::abs(front_left_wheel_pwm);
@@ -195,8 +197,8 @@ int main(int argc, char** argv) {
 
     // publish the message
     odom_pub.publish(odom_messages.odom);
-
     loop_rate.sleep();
+    ROS_INFO("main thread looping");
   }
   for (int i = 1; i <= 16; i++) {
     servo_array.servos[i].value = 0;

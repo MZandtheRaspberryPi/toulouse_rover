@@ -63,14 +63,12 @@ void WheelController::pubSpeedError() {
   // give us radians per second
   state.data = changeEncoderCounts / elapsed_time_s.toSec();
   state_pub_.publish(state);
-  ros::spinOnce();
 }
 
 void WheelController::pubEncCounts() {
   std_msgs::Float64 counts;
   counts.data = globalEncCounter[encoderIndex_];
   state_pub_.publish(counts);
-  ros::spinOnce();
 }
 
 int WheelController::ctrlWheelPID(float speed) {
@@ -85,7 +83,6 @@ int WheelController::ctrlWheelPID(float speed) {
   std_msgs::Float64 setpoint;
   setpoint.data = speed;
   set_pub_.publish(setpoint);
-  ros::spinOnce();
   ros::Duration(0.01)
       .sleep();  // giving PID time to get this setpoint before publishing state
 

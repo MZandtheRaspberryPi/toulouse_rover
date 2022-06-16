@@ -8,9 +8,9 @@
   
   <node pkg="toulouse_rover" name="robot_control_node" type="robot_control_node"  output="screen"> </node>
 
-  <!-- -->
+  <!-- 
   <include file="$(find ydlidar_ros)/launch/X4.launch" />
-  
+  -->
   <!-- loading urdf model of robot -->
   <param name="robot_description" textfile="$(find toulouse_rover)/urdf/toulouse.urdf.xacro"/>
   
@@ -20,9 +20,9 @@
 
   <!-- Run the map server args="$(find my_map_package)/my_map.pgm my_map_resolution" 
   <node name="map_server" pkg="map_server" type="map_server" /> -->
-
+  <!--
   <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" args="scan:=scan"/>
-
+  -->
   <!-- Run AMCL
   <remap from="/static_map" to="/dynamic_map"/>
   <include file="$(find amcl)/examples/amcl_omni.launch" >
