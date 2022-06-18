@@ -10,7 +10,7 @@
 #include "util.h"
 namespace odom_calc {
 
-enum OdomType { OMNI_WHEELS, SKID_STEERING };
+enum OdomType { OMNI_WHEELS, SKID_STEERING, DIFFERENTIAL_DRIVE };
 
 struct Velocities {
   double vx;
@@ -37,16 +37,16 @@ struct OdomRosMessages {
 };
 
 class OdomCalculator {
-  public:
-    OdomCalculator(OdomType odom_type);
-    Velocities calc_velocities(double speed_front_left, double speed_front_right,
-                              double speed_back_left, double speed_back_right);
-    PositionChange calc_position_change(Velocities velocities);
+ public:
+  OdomCalculator(OdomType odom_type);
+  Velocities calc_velocities(double speed_front_left, double speed_front_right,
+                             double speed_back_left, double speed_back_right);
+  PositionChange calc_position_change(Velocities velocities);
 
-    Position calc_position(PositionChange position_change);
+  Position calc_position(PositionChange position_change);
 
-    OdomRosMessages get_ros_odom_messages(Position position,
-                                          Velocities velocities);
+  OdomRosMessages get_ros_odom_messages(Position position,
+                                        Velocities velocities);
 
  private:
   OdomType odom_type_;

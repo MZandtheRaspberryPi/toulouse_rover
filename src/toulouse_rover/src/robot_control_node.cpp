@@ -94,13 +94,13 @@ int main(int argc, char** argv) {
   ros::Rate loop_rate(LOOP_RATE);  // Control rate in Hz
 
   wheels::FrontLeftWheel front_left_wheel(nh, "front_left_wheel", false,
-                                          odom_calc::SKID_STEERING);
+                                          odom_calc::DIFFERENTIAL_DRIVE);
   wheels::FrontRightWheel front_right_wheel(nh, "front_right_wheel", false,
-                                            odom_calc::SKID_STEERING);
+                                            odom_calc::DIFFERENTIAL_DRIVE);
   wheels::BackLeftWheel back_left_wheel(nh, "back_left_wheel", false,
-                                        odom_calc::SKID_STEERING);
+                                        odom_calc::DIFFERENTIAL_DRIVE);
   wheels::BackRightWheel back_right_wheel(nh, "back_right_wheel", false,
-                                          odom_calc::SKID_STEERING);
+                                          odom_calc::DIFFERENTIAL_DRIVE);
 
 #ifdef RPI
   wiringPiISR(0, INT_EDGE_FALLING, &wheels::frontLeftInterupt);

@@ -44,6 +44,17 @@ Velocities OdomCalculator::calc_velocities(double speed_front_left,
           (speed_meters_right - speed_meters_left) / util::WHEEL_SEP_WIDTH;
       break;
     }
+    case DIFFERENTIAL_DRIVE: {
+      float speed_meters_left =
+          util::convert_radians_per_sec_to_meters_per_sec(speed_back_left);
+      float speed_meters_right =
+          util::convert_radians_per_sec_to_meters_per_sec(speed_back_right);
+      velocities.vx = (speed_meters_left + speed_meters_right) / 2;
+      velocities.vy = 0;
+      velocities.vth =
+          (speed_meters_right - speed_meters_left) / util::WHEEL_SEP_WIDTH;
+      break;
+    }
     default:
       velocities.vx = 0;
       velocities.vy = 0;

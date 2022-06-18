@@ -167,12 +167,18 @@ float FrontLeftWheel::calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg) {
   float wheel_front_left = 0.0;
   switch (odom_type_) {
     case odom_calc::OMNI_WHEELS:
-      wheel_front_left =
-          (1 / util::WHEEL_RADIUS) *
-          (cmd_vel_msg.linear.x - cmd_vel_msg.linear.y -
-           (util::WHEEL_SEP_WIDTH + util::WHEEL_SEP_LENGTH) * cmd_vel_msg.angular.z);
+      wheel_front_left = (1 / util::WHEEL_RADIUS) *
+                         (cmd_vel_msg.linear.x - cmd_vel_msg.linear.y -
+                          (util::WHEEL_SEP_WIDTH + util::WHEEL_SEP_LENGTH) *
+                              cmd_vel_msg.angular.z);
       break;
     case odom_calc::SKID_STEERING:
+      wheel_front_left = (cmd_vel_msg.linear.x -
+                          cmd_vel_msg.angular.z * util::WHEEL_SEP_WIDTH / 2.0);
+      wheel_front_left =
+          util::convert_meters_per_sec_to_radians_per_sec(wheel_front_left);
+      break;
+    case odom_calc::DIFFERENTIAL_DRIVE:
       wheel_front_left = (cmd_vel_msg.linear.x -
                           cmd_vel_msg.angular.z * util::WHEEL_SEP_WIDTH / 2.0);
       wheel_front_left =
@@ -196,12 +202,18 @@ float FrontRightWheel::calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg) {
   float wheel_front_right = 0.0;
   switch (odom_type_) {
     case odom_calc::OMNI_WHEELS:
-      wheel_front_right =
-          (1 / util::WHEEL_RADIUS) *
-          (cmd_vel_msg.linear.x + cmd_vel_msg.linear.y +
-           (util::WHEEL_SEP_WIDTH + util::WHEEL_SEP_LENGTH) * cmd_vel_msg.angular.z);
+      wheel_front_right = (1 / util::WHEEL_RADIUS) *
+                          (cmd_vel_msg.linear.x + cmd_vel_msg.linear.y +
+                           (util::WHEEL_SEP_WIDTH + util::WHEEL_SEP_LENGTH) *
+                               cmd_vel_msg.angular.z);
       break;
     case odom_calc::SKID_STEERING:
+      wheel_front_right = (cmd_vel_msg.linear.x +
+                           cmd_vel_msg.angular.z * util::WHEEL_SEP_WIDTH / 2.0);
+      wheel_front_right =
+          util::convert_meters_per_sec_to_radians_per_sec(wheel_front_right);
+      break;
+    case odom_calc::DIFFERENTIAL_DRIVE:
       wheel_front_right = (cmd_vel_msg.linear.x +
                            cmd_vel_msg.angular.z * util::WHEEL_SEP_WIDTH / 2.0);
       wheel_front_right =
@@ -223,12 +235,18 @@ float BackRightWheel::calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg) {
   float wheel_back_right = 0.0;
   switch (odom_type_) {
     case odom_calc::OMNI_WHEELS:
-      wheel_back_right =
-          (1 / util::WHEEL_RADIUS) *
-          (cmd_vel_msg.linear.x - cmd_vel_msg.linear.y +
-           (util::WHEEL_SEP_WIDTH + util::WHEEL_SEP_LENGTH) * cmd_vel_msg.angular.z);
+      wheel_back_right = (1 / util::WHEEL_RADIUS) *
+                         (cmd_vel_msg.linear.x - cmd_vel_msg.linear.y +
+                          (util::WHEEL_SEP_WIDTH + util::WHEEL_SEP_LENGTH) *
+                              cmd_vel_msg.angular.z);
       break;
     case odom_calc::SKID_STEERING:
+      wheel_back_right = (cmd_vel_msg.linear.x +
+                          cmd_vel_msg.angular.z * util::WHEEL_SEP_WIDTH / 2.0);
+      wheel_back_right =
+          util::convert_meters_per_sec_to_radians_per_sec(wheel_back_right);
+      break;
+    case odom_calc::DIFFERENTIAL_DRIVE:
       wheel_back_right = (cmd_vel_msg.linear.x +
                           cmd_vel_msg.angular.z * util::WHEEL_SEP_WIDTH / 2.0);
       wheel_back_right =
@@ -250,12 +268,18 @@ float BackLeftWheel::calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg) {
   float wheel_back_left = 0.0;
   switch (odom_type_) {
     case odom_calc::OMNI_WHEELS:
-      wheel_back_left =
-          (1 / util::WHEEL_RADIUS) *
-          (cmd_vel_msg.linear.x + cmd_vel_msg.linear.y -
-           (util::WHEEL_SEP_WIDTH + util::WHEEL_SEP_LENGTH) * cmd_vel_msg.angular.z);
+      wheel_back_left = (1 / util::WHEEL_RADIUS) *
+                        (cmd_vel_msg.linear.x + cmd_vel_msg.linear.y -
+                         (util::WHEEL_SEP_WIDTH + util::WHEEL_SEP_LENGTH) *
+                             cmd_vel_msg.angular.z);
       break;
     case odom_calc::SKID_STEERING:
+      wheel_back_left = (cmd_vel_msg.linear.x -
+                         cmd_vel_msg.angular.z * util::WHEEL_SEP_WIDTH / 2.0);
+      wheel_back_left =
+          util::convert_meters_per_sec_to_radians_per_sec(wheel_back_left);
+      break;
+    case odom_calc::DIFFERENTIAL_DRIVE:
       wheel_back_left = (cmd_vel_msg.linear.x -
                          cmd_vel_msg.angular.z * util::WHEEL_SEP_WIDTH / 2.0);
       wheel_back_left =
