@@ -179,10 +179,7 @@ float FrontLeftWheel::calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg) {
           util::convert_meters_per_sec_to_radians_per_sec(wheel_front_left);
       break;
     case odom_calc::DIFFERENTIAL_DRIVE:
-      wheel_front_left = (cmd_vel_msg.linear.x -
-                          cmd_vel_msg.angular.z * util::WHEEL_SEP_WIDTH / 2.0);
-      wheel_front_left =
-          util::convert_meters_per_sec_to_radians_per_sec(wheel_front_left);
+      wheel_front_left = 0.0;
       break;
     default:
       break;
@@ -214,10 +211,7 @@ float FrontRightWheel::calcWheelSpeed(const geometry_msgs::Twist& cmd_vel_msg) {
           util::convert_meters_per_sec_to_radians_per_sec(wheel_front_right);
       break;
     case odom_calc::DIFFERENTIAL_DRIVE:
-      wheel_front_right = (cmd_vel_msg.linear.x +
-                           cmd_vel_msg.angular.z * util::WHEEL_SEP_WIDTH / 2.0);
-      wheel_front_right =
-          util::convert_meters_per_sec_to_radians_per_sec(wheel_front_right);
+      wheel_front_right = 0.0;
       break;
     default:
       break;
