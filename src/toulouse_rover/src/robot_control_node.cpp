@@ -31,7 +31,7 @@
 #include "odom_calc.h"
 #include "wheels.h"
 
-const int LOOP_RATE = 3.5;
+const int LOOP_RATE = 20;
 
 i2cpwm_board::ServoArray servo_array{};
 geometry_msgs::Twist latest_vel_msg;
@@ -84,7 +84,7 @@ int main(int argc, char** argv) {
   ros::XMLRPCManager::instance()->unbind("shutdown");
   ros::XMLRPCManager::instance()->bind("shutdown", shutdownCallback);
 
-  odom_calc::OdomCalculator odom_calculator{odom_calc::OMNI_WHEELS};
+  odom_calc::OdomCalculator odom_calculator{odom_calc::DIFFERENTIAL_DRIVE};
 
   ros::Subscriber velocity_sub_ = nh.subscribe("cmd_vel", 1, velocityCallback);
   // servos_absolute publisher
@@ -104,8 +104,8 @@ int main(int argc, char** argv) {
 
 #ifdef RPI
   wiringPiISR(0, INT_EDGE_FALLING, &wheels::frontLeftInterupt);
-  wiringPiISR(25, INT_EDGE_FALLING, &wheels::frontRightInterupt);
-  wiringPiISR(2, INT_EDGE_FALLING, &wheels::backLeftInterupt);
+  wiringPiISR(2, INT_EDGE_FALLING, &wheels::frontRightInterupt);
+  wiringPiISR(25, INT_EDGE_FALLING, &wheels::backLeftInterupt);
   wiringPiISR(3, INT_EDGE_FALLING, &wheels::backRightInterupt);
 #endif
 
@@ -198,7 +198,6 @@ int main(int argc, char** argv) {
     // publish the message
     odom_pub.publish(odom_messages.odom);
     loop_rate.sleep();
-    ROS_INFO("main thread looping");
   }
   for (int i = 1; i <= 16; i++) {
     servo_array.servos[i].value = 0;
