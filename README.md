@@ -211,7 +211,15 @@ install lidar packages. had issues with sdk for most recent driver version (http
 https://github.com/YDLIDAR/ydlidar_ros
 
 
+## Making a map
+http://wiki.ros.org/slam_gmapping/Tutorials/MappingFromLoggedData
+
+for gmapping:  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" args="scan:=scan"/>
+
+
+
 issue with power of ydlidar. Takes about an amp on spin up and my pi 4 with its power system cant provide from usb. results in other stuff in the usb ports losing power. should have seperate system for this ydlidar.
+
 
 # Formating and Linting
 We use google style for the clang-format, and default clang-tidy settings.
