@@ -6,7 +6,8 @@ void genericInterupt(int index) {
     globalEncCounter[index]++;
   } else if (globalSpeedCounter[index] == 0.0) {
     return;
-  } else {
+  }
+  else {
     globalEncCounter[index]--;
   }
 }
@@ -50,13 +51,12 @@ void WheelController::controlEffortCallback(
 void WheelController::pubSpeedError() {
   std_msgs::Float64 state;
   double currentEncoderCounts = globalEncCounter[encoderIndex_];
-  ROS_INFO("%f", currentEncoderCounts);
   double changeEncoderCounts = currentEncoderCounts - priorEncoderCounts_;
   priorEncoderCounts_ = currentEncoderCounts;
   ros::Time now = ros::Time::now();
   ros::Duration elapsed_time_s = now - encoderStartTime_;
   encoderStartTime_ = now;
-  ROS_INFO("%s: change in encoder count: %f", wheel_namespace_.c_str(),
+  ROS_INFO_THROTTLE(1, "%s: change in encoder count: %f", wheel_namespace_.c_str(),
            changeEncoderCounts);
   // state.data = changeEncoderCounts * 2 * M_PI / encTicksPerRotation_ /
   // elapsed_time_s.toSec(); // 2 pi radians is 20 encoder counts, so this will
@@ -148,7 +148,7 @@ double WheelController::getWheelSpeed() {
   ros::Time now = ros::Time::now();
   ros::Duration elapsed_time_s = now - encoderStartTime_;
   encoderStartTime_ = now;
-  ROS_INFO("%s: change in encoder count: %f", wheel_namespace_.c_str(),
+  ROS_INFO_THROTTLE(1, "%s: change in encoder count: %f", wheel_namespace_.c_str(),
            changeEncoderCounts);
   double speedRadiansPerSec =
       changeEncoderCounts * 2 * M_PI / encTicksPerRotation_ /

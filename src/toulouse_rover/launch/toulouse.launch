@@ -22,7 +22,7 @@
 
 
   <!-- Run the map server -->  
-  <node name="map_server" pkg="map_server" type="map_server" args="$(find toulouse_rover)/maps/map_mz_room.pgm .05" if="$(arg autonomous_mode)" /> 
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find toulouse_rover)/maps/map_mz_room.yaml" if="$(arg autonomous_mode)" /> 
   <!-- useful for building a map off of lidar data
   <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" args="scan:=scan"/>
  -->
