@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   teleop_twist_keyboard
   tf2_ros
   tf2_geometry_msgs
+  message_generation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -52,11 +53,11 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+ add_message_files(
+   FILES
+   WheelAdjEncoderCounts.msg
+   WheelSpeeds.msg
+ )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -73,10 +74,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
+ generate_messages(
+   DEPENDENCIES
+   std_msgs
+ )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -109,8 +110,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include/${PROJECT_NAME}
-  LIBRARIES toulouse_rover
-  CATKIN_DEPENDS i2cpwm_board roscpp std_msgs pid
+  LIBRARIES ${PROJECT_NAME}
+  CATKIN_DEPENDS i2cpwm_board roscpp std_msgs pid message_runtime
 #  DEPENDS wiringPi
 )
 
@@ -121,15 +122,16 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-  include/${PROJECT_NAME}
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
-add_library(${PROJECT_NAME}
+add_library(${PROJECT_NAME}_lib
    src/odom_calc.cpp
    src/util.cpp
-   src/wheels.cpp
+   src/wheel_speed_calculator.cpp
+   src/wheel_speed_controller.cpp
 )
 
 ## Add cmake target dependencies of the library
@@ -150,35 +152,37 @@ else()
     message([DEBUG] Not building on a Raspberry Pi)
 endif()
 
-add_executable(test_motors_ros src/test_motors_ros.cpp)
+add_executable(test_motors_ros src/hardware_testing_scripts/test_motors_ros.cpp)
 if (${KERNELRELEASE} MATCHES "raspi$")
-    target_link_libraries(test_motors_ros ${catkin_LIBRARIES} -lwiringPi)
+    target_link_libraries(test_motors_ros ${catkin_LIBRARIES} ${PROJECT_NAME} -lwiringPi)
     set_target_properties(test_motors_ros PROPERTIES COMPILE_FLAGS "-DRPI")
 else()
-    target_link_libraries(test_motors_ros ${catkin_LIBRARIES})
+    target_link_libraries(test_motors_ros ${catkin_LIBRARIES} ${PROJECT_NAME})
 endif()
 
-add_executable(test_ir_ros src/test_ir_ros.cpp)
+add_executable(test_ir_ros src/hardware_testing_scripts/test_ir_ros.cpp)
 if (${KERNELRELEASE} MATCHES "raspi$")
-    target_link_libraries(test_ir_ros ${catkin_LIBRARIES} -lwiringPi)
+    target_link_libraries(test_ir_ros ${catkin_LIBRARIES} ${PROJECT_NAME} -lwiringPi)
     set_target_properties(test_ir_ros PROPERTIES COMPILE_FLAGS "-DRPI")
 else()
-    target_link_libraries(test_ir_ros ${catkin_LIBRARIES})
+    target_link_libraries(test_ir_ros ${catkin_LIBRARIES} ${PROJECT_NAME})
 endif()
 
-add_executable(robot_control_node src/robot_control_node.cpp)
+add_executable(wheel_speed_calculator_node src/wheel_speed_calculator_node.cpp)
+target_link_libraries(wheel_speed_calculator_node ${catkin_LIBRARIES} ${PROJECT_NAME}_lib ${PROJECT_NAME})
+
+add_executable(wheel_speed_controller_node src/wheel_speed_controller_node.cpp)
 if (${KERNELRELEASE} MATCHES "raspi$")
-    target_link_libraries(robot_control_node ${PROJECT_NAME} ${catkin_LIBRARIES} -lwiringPi)
-    set_target_properties(robot_control_node PROPERTIES COMPILE_FLAGS "-DRPI")
+    target_link_libraries(wheel_speed_controller_node ${catkin_LIBRARIES} ${PROJECT_NAME}_lib -lwiringPi)
+    set_target_properties(wheel_speed_controller_node PROPERTIES COMPILE_FLAGS "-DRPI")
 else()
-    target_link_libraries(robot_control_node ${PROJECT_NAME} ${catkin_LIBRARIES})
+    target_link_libraries(wheel_speed_controller_node ${catkin_LIBRARIES} ${PROJECT_NAME}_lib)
 endif()
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 add_dependencies(test_motors_ros ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(test_ir_ros ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(robot_control_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 #############
 ## Install ##
@@ -196,11 +200,12 @@ add_dependencies(robot_control_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin
 
 ## Mark libraries for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_libraries.html
-install(TARGETS ${PROJECT_NAME}
+install(TARGETS ${PROJECT_NAME}_lib
    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
    RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
 )
+
 
 ## Mark cpp header files for installation
 install(DIRECTORY include/${PROJECT_NAME}/
@@ -210,12 +215,12 @@ install(DIRECTORY include/${PROJECT_NAME}/
 )
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
-install(DIRECTORY launch
+install(DIRECTORY launch urdf rviz param msg maps
    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
-install(TARGETS robot_control_node
+install(TARGETS wheel_speed_controller_node wheel_speed_calculator_node
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

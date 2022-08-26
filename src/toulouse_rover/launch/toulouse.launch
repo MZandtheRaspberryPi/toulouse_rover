@@ -2,6 +2,16 @@
 
    <arg name="use_lidar" default="true" />
    <arg name="autonomous_mode" default="true" />
+   <arg name="wheel_namespace" default="wheels" />
+   <arg name="wheel_config_type" default="differential_drive" />
+
+   <arg name="speed_controller_loop_rate" default="10.0" />
+
+   
+
+  <param name="wheel_namespace" type="str" value="$(arg wheel_namespace)" />
+  <param name="wheel_config_type" type="str" value="$(arg wheel_config_type)" />
+  <param name="speed_controller_loop_rate" type="float" value="$(arg speed_controller_loop_rate)" />
 
   <node pkg="i2cpwm_board" name="i2cpwm_board" type="i2cpwm_board">
   </node>
@@ -9,7 +19,9 @@
   <node pkg="rosserial_python" name="serial_node" type="serial_node.py" output="screen" args="_port:=/dev/ttyUSB0 _baud:=57600">
   </node>
   
-  <node pkg="toulouse_rover" name="robot_control_node" type="robot_control_node"  output="screen"> </node>
+  <node pkg="toulouse_rover" name="wheel_speed_calculator_node" type="wheel_speed_calculator_node"  output="screen"> </node>
+
+  <node pkg="toulouse_rover" name="wheel_speed_controller_node" type="wheel_speed_controller_node"  output="screen"> </node>
 
   <!-- -->
   <include file="$(find ydlidar_ros)/launch/X4.launch" if="$(arg use_lidar)"/>

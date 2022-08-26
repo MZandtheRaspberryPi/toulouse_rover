@@ -6,7 +6,6 @@
 #include <geometry_msgs/TransformStamped.h>
 #include <geometry_msgs/Twist.h>
 #include <nav_msgs/Odometry.h>
-#include <signal.h>
 #include <std_msgs/Float64.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,14 +14,7 @@
 #include <tf2_ros/transform_broadcaster.h>
 #include <cmath>
 
-#include "i2cpwm_board/Servo.h"
-#include "i2cpwm_board/ServoArray.h"
 
-#define SLP_PIN 22  // change pin number here
-
-#include <ros/xmlrpc_manager.h>
-// started at 900 can go to 4000
-#define SPEED 900
 
 #include <math.h>
 

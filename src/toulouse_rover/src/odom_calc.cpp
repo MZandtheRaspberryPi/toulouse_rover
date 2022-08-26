@@ -1,8 +1,9 @@
-#include <odom_calc.h>
+#include "toulouse_rover/odom_calc.h"
 
 namespace odom_calc {
 
-OdomCalculator::OdomCalculator(OdomType odom_type) : odom_type_(odom_type) {
+OdomCalculator::OdomCalculator(util::WheelConfigurationType odom_type)
+    : odom_type_(odom_type) {
   Position position_{0.0,   // x
                      0.0,   // y
                      0.0};  // th
@@ -19,7 +20,7 @@ Velocities OdomCalculator::calc_velocities(double speed_front_left,
                                            double speed_back_right) {
   Velocities velocities{};
   switch (odom_type_) {
-    case OMNI_WHEELS:
+    case util::WheelConfigurationType::OMNI_WHEELS:
       velocities.vx = (speed_front_left + speed_front_right + speed_back_left +
                        speed_back_right) *
                       (util::WHEEL_RADIUS / 4);
@@ -31,7 +32,7 @@ Velocities OdomCalculator::calc_velocities(double speed_front_left,
                        (util::WHEEL_RADIUS /
                         (4 * (util::WHEEL_SEP_WIDTH + util::WHEEL_SEP_LENGTH)));
       break;
-    case SKID_STEERING: {
+    case util::WheelConfigurationType::SKID_STEERING: {
       float speed_radians_left = (speed_front_left + speed_back_left) / 2;
       float speed_radians_right = (speed_front_right + speed_back_right) / 2;
       float speed_meters_left =
@@ -44,7 +45,7 @@ Velocities OdomCalculator::calc_velocities(double speed_front_left,
           (speed_meters_right - speed_meters_left) / util::WHEEL_SEP_WIDTH;
       break;
     }
-    case DIFFERENTIAL_DRIVE: {
+    case util::WheelConfigurationType::DIFFERENTIAL_DRIVE: {
       float speed_meters_left =
           util::convert_radians_per_sec_to_meters_per_sec(speed_back_left);
       float speed_meters_right =

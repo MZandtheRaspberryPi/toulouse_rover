@@ -7,10 +7,8 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
-#include "util.h"
+#include "toulouse_rover/util.h"
 namespace odom_calc {
-
-enum OdomType { OMNI_WHEELS, SKID_STEERING, DIFFERENTIAL_DRIVE };
 
 struct Velocities {
   double vx;
@@ -38,7 +36,7 @@ struct OdomRosMessages {
 
 class OdomCalculator {
  public:
-  OdomCalculator(OdomType odom_type);
+  OdomCalculator(util::WheelConfigurationType odom_type);
   Velocities calc_velocities(double speed_front_left, double speed_front_right,
                              double speed_back_left, double speed_back_right);
   PositionChange calc_position_change(Velocities velocities);
@@ -49,7 +47,7 @@ class OdomCalculator {
                                         Velocities velocities);
 
  private:
-  OdomType odom_type_;
+  util::WheelConfigurationType odom_type_;
   Position position_;
   ros::Time last_call_time_;
 };
