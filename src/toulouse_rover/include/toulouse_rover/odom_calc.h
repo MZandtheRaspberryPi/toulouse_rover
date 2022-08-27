@@ -8,45 +8,49 @@
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include "toulouse_rover/util.h"
-namespace odom_calc {
-
-struct Velocities {
+namespace odom_calc
+{
+struct Velocities
+{
   double vx;
   double vy;
   double vth;
 };
 
-struct PositionChange {
+struct PositionChange
+{
   double dt;
   double delta_x;
   double delta_y;
   double delta_th;
 };
 
-struct Position {
+struct Position
+{
   double x;
   double y;
   double th;
 };
 
-struct OdomRosMessages {
+struct OdomRosMessages
+{
   geometry_msgs::TransformStamped odom_transform;
   nav_msgs::Odometry odom;
 };
 
-class OdomCalculator {
- public:
+class OdomCalculator
+{
+public:
   OdomCalculator(util::WheelConfigurationType odom_type);
-  Velocities calc_velocities(double speed_front_left, double speed_front_right,
-                             double speed_back_left, double speed_back_right);
+  Velocities calc_velocities(double speed_front_left, double speed_front_right, double speed_back_left,
+                             double speed_back_right);
   PositionChange calc_position_change(Velocities velocities);
 
   Position calc_position(PositionChange position_change);
 
-  OdomRosMessages get_ros_odom_messages(Position position,
-                                        Velocities velocities);
+  OdomRosMessages get_ros_odom_messages(Position position, Velocities velocities);
 
- private:
+private:
   util::WheelConfigurationType odom_type_;
   Position position_;
   ros::Time last_call_time_;

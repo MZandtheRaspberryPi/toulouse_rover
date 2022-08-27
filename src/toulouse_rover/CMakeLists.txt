@@ -55,7 +55,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
  add_message_files(
    FILES
-   WheelAdjEncoderCounts.msg
+   WheelEncoderCounts.msg
    WheelSpeeds.msg
  )
 
@@ -137,7 +137,7 @@ add_library(${PROJECT_NAME}_lib
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(${PROJECT_NAME}_lib ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 # checkign if we are running on raspberry pi
@@ -154,22 +154,22 @@ endif()
 
 add_executable(test_motors_ros src/hardware_testing_scripts/test_motors_ros.cpp)
 if (${KERNELRELEASE} MATCHES "raspi$")
-    target_link_libraries(test_motors_ros ${catkin_LIBRARIES} ${PROJECT_NAME} -lwiringPi)
+    target_link_libraries(test_motors_ros ${catkin_LIBRARIES} -lwiringPi)
     set_target_properties(test_motors_ros PROPERTIES COMPILE_FLAGS "-DRPI")
 else()
-    target_link_libraries(test_motors_ros ${catkin_LIBRARIES} ${PROJECT_NAME})
+    target_link_libraries(test_motors_ros ${catkin_LIBRARIES})
 endif()
 
 add_executable(test_ir_ros src/hardware_testing_scripts/test_ir_ros.cpp)
 if (${KERNELRELEASE} MATCHES "raspi$")
-    target_link_libraries(test_ir_ros ${catkin_LIBRARIES} ${PROJECT_NAME} -lwiringPi)
+    target_link_libraries(test_ir_ros -lwiringPi)
     set_target_properties(test_ir_ros PROPERTIES COMPILE_FLAGS "-DRPI")
 else()
-    target_link_libraries(test_ir_ros ${catkin_LIBRARIES} ${PROJECT_NAME})
+    target_link_libraries(test_ir_ros)
 endif()
 
 add_executable(wheel_speed_calculator_node src/wheel_speed_calculator_node.cpp)
-target_link_libraries(wheel_speed_calculator_node ${catkin_LIBRARIES} ${PROJECT_NAME}_lib ${PROJECT_NAME})
+target_link_libraries(wheel_speed_calculator_node ${catkin_LIBRARIES} ${PROJECT_NAME}_lib)
 
 add_executable(wheel_speed_controller_node src/wheel_speed_controller_node.cpp)
 if (${KERNELRELEASE} MATCHES "raspi$")
@@ -183,6 +183,8 @@ endif()
 ## same as for the library above
 add_dependencies(test_motors_ros ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(test_ir_ros ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(wheel_speed_calculator_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(wheel_speed_controller_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 #############
 ## Install ##
