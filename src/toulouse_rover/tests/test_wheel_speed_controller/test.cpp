@@ -80,21 +80,24 @@ TEST_F(WheelSpeedControllerFixture, TestControllerForward)
 
   i2cpwm_board::ServoArray servo_speeds = getReceivedMsg();
 
+  // back wheels
   EXPECT_FLOAT_EQ(servo_speeds.servos[8].value, 0);
   EXPECT_GT(servo_speeds.servos[9].value, 0);
 
   EXPECT_FLOAT_EQ(servo_speeds.servos[11].value, 0);
   EXPECT_GT(servo_speeds.servos[10].value, 0);
+
+  // front wheels servo index 12, 13, 14, 15
+  for (int i = 12; i < 16; i++)
+  {
+    EXPECT_FLOAT_EQ(servo_speeds.servos[i].value, 0);
+  }
 }
 
 int main(int argc, char** argv)
 {
   ::testing::InitGoogleTest(&argc, argv);
   ros::init(argc, argv, "test_wheel_speed_controller_node");
-  if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Debug))
-  {
-    ros::console::notifyLoggerLevelsChanged();
-  }
   ros::NodeHandle nh;
 
   return RUN_ALL_TESTS();

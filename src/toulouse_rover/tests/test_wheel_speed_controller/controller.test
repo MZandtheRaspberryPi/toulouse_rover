@@ -1,5 +1,3 @@
 <launch>
-  <env name="ROSCONSOLE_CONFIG_FILE"
-        value="$(find toulouse_rover)/param/rosconsole.config"/>
   <test test-name="test_wheel_speed_controller_node" pkg="toulouse_rover" type="test_wheel_speed_controller_node" time-limit="3.0"/>
 </launch>
