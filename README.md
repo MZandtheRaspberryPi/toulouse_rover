@@ -152,11 +152,13 @@ screen -dmS batt rosrun rosserial_python serial_node.py _port:=/dev/ttyUSB0_baud
 screen -dmS i2c rosrun i2cpwm_board i2cpwm_board
 
 ## Kinematics for Mecanum Wheeled Robots
+
 <https://howtomechatronics.com/projects/arduino-mecanum-wheels-robot/>  
 
 <http://robotsforroboticists.com/drive-kinematics/>
 
 ## Kinematics for Dif Drive Robots
+
 <https://www.hmc.edu/lair/ARW/ARW-Lecture01-Odometry.pdf>  
 To solve for odom, take arc length left wheels went, arc length right wheels went, and the arc length robot drove is equal to the average of them. Can solve for that analytically too.
 <https://answers.ros.org/question/231942/computing-odometry-from-two-velocities/> also as well as <https://robohub.org/drive-kinematics-skid-steer-and-mecanum-ros-twist-included/>
@@ -232,6 +234,7 @@ install lidar packages. had issues with sdk for most recent driver version (<htt
 <https://github.com/YDLIDAR/ydlidar_ros>
 
 ## Making a map
+
 <http://wiki.ros.org/slam_gmapping/Tutorials/MappingFromLoggedData>
 
 for gmapping:  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" args="scan:=scan"/>
@@ -253,4 +256,10 @@ for clang tidy, need to know compile flags. so when building, generate .json
 catkin_make toulouse_rover -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
 clang-tidy -p ./build --format-style="file" src/toulouse_rover/src/wheels.cpp
+```
+
+# Testing
+
+```
+catkin_make run_tests
 ```

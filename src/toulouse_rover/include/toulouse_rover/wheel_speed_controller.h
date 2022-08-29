@@ -133,6 +133,7 @@ public:
   void enableMotors();
   void disableMotors();
   void spin();
+  void spinOnce();
 
 private:
   void setupCustomSignalHandlers();

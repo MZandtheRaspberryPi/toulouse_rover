@@ -187,11 +187,13 @@ int BaseWheelSpeedController::spinAndWaitForCtrlEffort()
   {
     control_effort_pwm = pwmFromWheelSpeed(setpoint_);
   }
+  ROS_DEBUG("%s wheel control effort is now: %d", wheel_namespace_.c_str(), control_effort_pwm);
   return control_effort_pwm;
 }
 
 void BaseWheelSpeedController::publishSetpoint(const float& speed_radians_per_sec)
 {
+  ROS_DEBUG("%s wheel setpoint is now: %f", wheel_namespace_.c_str(), speed_radians_per_sec);
   setpoint_ = speed_radians_per_sec;
   if (speed_radians_per_sec == 0.)
   {
@@ -296,7 +298,7 @@ void WheelSpeedController::setupPubsSubs(ros::NodeHandle& nh, const std::string 
   wheel_speed_sub_ =
       nh.subscribe("/" + wheel_namespace_ + "/wheel_cmd_speeds", 1, &WheelSpeedController::wheelSpeedCallback, this);
   // servos_absolute publisher
-  ros::Publisher servos_absolute_pub_ = nh.advertise<i2cpwm_board::ServoArray>("servos_absolute", 1);
+  servos_absolute_pub_ = nh.advertise<i2cpwm_board::ServoArray>("servos_absolute", 1);
 
   encoder_pub_ = nh.advertise<toulouse_rover::WheelEncoderCounts>("wheel_adj_enc_count", 1);
 
@@ -306,6 +308,7 @@ void WheelSpeedController::setupPubsSubs(ros::NodeHandle& nh, const std::string 
 void WheelSpeedController::wheelSpeedCallback(const toulouse_rover::WheelSpeeds::ConstPtr& wheel_speeds)
 {
   const std::lock_guard<std::mutex> lock(speedUpdateMutex);
+  ROS_DEBUG("got wheel speeds");
   wheel_speeds_ = *wheel_speeds;
 
   globalSpeedCounter[front_left_speed_ctrl_.encoderIndex_] = wheel_speeds_.front_left_radians_per_sec;
@@ -482,20 +485,24 @@ void WheelSpeedController::zeroOutMotors()
   servos_absolute_pub_.publish(servo_array_);
 }
 
+void WheelSpeedController::spinOnce()
+{
+  const std::lock_guard<std::mutex> lock(speedUpdateMutex);
+  publishWheelSetpoints(wheel_speeds_);
+  publishAdjEncoderData();
+  publishWheelStates();
+
+  controlEffort control_effort = get_control_efforts();
+  updateAndPublishServoArray(control_effort);
+  ros::spinOnce();
+  loop_rate_.sleep();
+}
+
 void WheelSpeedController::spin()
 {
   while (!wheel_speed_controller::g_request_shutdown)
   {
-    const std::lock_guard<std::mutex> lock(speedUpdateMutex);
-    publishWheelSetpoints(wheel_speeds_);
-    publishAdjEncoderData();
-    publishWheelStates();
-
-    controlEffort control_effort = get_control_efforts();
-    updateAndPublishServoArray(control_effort);
-
-    ros::spinOnce();
-    loop_rate_.sleep();
+    spinOnce();
   }
 
   zeroOutMotors();
