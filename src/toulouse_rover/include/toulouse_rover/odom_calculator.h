@@ -16,24 +16,24 @@ namespace odom_calculator
 {
 struct Velocities
 {
-  double vx;
-  double vy;
-  double vth;
+  double vx = 0;
+  double vy = 0;
+  double vth = 0;
 };
 
 struct PositionChange
 {
-  double dt;
-  double delta_x;
-  double delta_y;
-  double delta_th;
+  double dt = 0;
+  double delta_x = 0;
+  double delta_y = 0;
+  double delta_th = 0;
 };
 
 struct Position
 {
-  double x;
-  double y;
-  double th;
+  double x = 0;
+  double y = 0;
+  double th = 0;
 };
 
 struct OdomRosMessages

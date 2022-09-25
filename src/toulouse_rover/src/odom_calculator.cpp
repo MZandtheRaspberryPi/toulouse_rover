@@ -4,9 +4,7 @@ namespace odom_calculator
 {
 OdomCalculator::OdomCalculator(ros::NodeHandle& nh, util::WheelConfigurationType odom_type) : odom_type_(odom_type)
 {
-  Position position_{ 0.0,    // x
-                      0.0,    // y
-                      0.0 };  // th
+  Position position_{};
 
   last_call_time_ = ros::Time::now();
   odom_pub_ = nh.advertise<nav_msgs::Odometry>("odom", 50);

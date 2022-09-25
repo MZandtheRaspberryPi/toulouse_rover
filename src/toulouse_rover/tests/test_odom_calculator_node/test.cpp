@@ -1,6 +1,7 @@
 #include <geometry_msgs/Twist.h>
 #include <gtest/gtest.h>
 #include <math.h>
+#include <mutex>
 #include <ros/ros.h>
 #include <tf2/LinearMath/Quaternion.h>
 
@@ -25,6 +26,7 @@ protected:
   nav_msgs::Odometry odom_msg;
   ros::Subscriber odom_sub;
   ros::Publisher wheel_speed_pub;
+  std::mutex get_msg_mutex_;
   bool got_msg = false;
 
   // Setup
@@ -42,14 +44,30 @@ protected:
 
   void odomCallback(const nav_msgs::Odometry::ConstPtr& odom)
   {
+    const std::lock_guard<std::mutex> lock(get_msg_mutex_);
     got_msg = true;
     odom_msg = *odom;
   }
 
   nav_msgs::Odometry getMsg()
   {
+    const std::lock_guard<std::mutex> lock(get_msg_mutex_);
     got_msg = false;
     return odom_msg;
+  }
+
+  void wait_for_msg()
+  {
+    while (ros::ok())
+    {
+      ros::spinOnce();
+      ros::Duration(0.01).sleep();
+      const std::lock_guard<std::mutex> lock(get_msg_mutex_);
+      if (got_msg)
+      {
+        break;
+      }
+    }
   }
 };
 
@@ -62,21 +80,13 @@ TEST_F(OdomCalculatorFixture, TestCalculatorForward)
 
   setWheelSpeeds(0, 0, 0, 0);
 
-  while (!got_msg)
-  {
-    ros::spinOnce();
-    ros::Duration(0.01).sleep();
-  }
+  wait_for_msg();
 
   nav_msgs::Odometry initialMessage = getMsg();
   ros::Duration(0.25).sleep();
 
   setWheelSpeeds(0, 0, 3.141 / 4, 3.141 / 4);
-  while (!got_msg)
-  {
-    ros::spinOnce();
-    ros::Duration(0.01).sleep();
-  }
+  wait_for_msg();
 
   nav_msgs::Odometry subsequent_msg = getMsg();
 
@@ -94,21 +104,13 @@ TEST_F(OdomCalculatorFixture, TestCalculatorTurnLeft)
 
   setWheelSpeeds(0, 0, 0, 0);
 
-  while (!got_msg)
-  {
-    ros::spinOnce();
-    ros::Duration(0.01).sleep();
-  }
+  wait_for_msg();
 
   nav_msgs::Odometry initialMessage = getMsg();
   ros::Duration(0.25).sleep();
 
   setWheelSpeeds(0, 0, 3.141 / 8, 3.141 / 4);
-  while (!got_msg)
-  {
-    ros::spinOnce();
-    ros::Duration(0.01).sleep();
-  }
+  wait_for_msg();
 
   nav_msgs::Odometry subsequent_msg = getMsg();
   float approximate_distance_left_wheel = util::convert_radians_per_sec_to_meters_per_sec(3.141 / 8) * 0.25;

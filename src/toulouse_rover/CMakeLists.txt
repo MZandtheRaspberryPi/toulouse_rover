@@ -247,6 +247,10 @@ if(CATKIN_ENABLE_TESTING)
   target_link_libraries(test_wheel_speed_controller_node ${catkin_LIBRARIES} ${PROJECT_NAME}_lib)
   add_dependencies(test_wheel_speed_controller_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_lib)
 
+  #add_rostest_gtest(test_wheel_speed_controller_pid_node tests/test_wheel_speed_controller_pid/controller.test tests/test_wheel_speed_controller_pid/test.cpp)
+  #target_link_libraries(test_wheel_speed_controller_pid_node ${catkin_LIBRARIES} ${PROJECT_NAME}_lib)
+  #add_dependencies(test_wheel_speed_controller_pid_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_lib)
+
   add_rostest_gtest(test_odom_calculator_node tests/test_odom_calculator_node/calculator.test tests/test_odom_calculator_node/test.cpp)
   target_link_libraries(test_odom_calculator_node ${catkin_LIBRARIES} ${PROJECT_NAME}_lib)
   add_dependencies(test_odom_calculator_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_lib)

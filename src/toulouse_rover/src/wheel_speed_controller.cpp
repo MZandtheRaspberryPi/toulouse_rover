@@ -2,6 +2,9 @@
 
 namespace wheel_speed_controller
 {
+static volatile double globalEncCounter[4];
+static volatile double globalSpeedCounter[4];
+
 // Replacement SIGINT handler
 void mySigIntHandler(int sig)
 {
@@ -68,9 +71,32 @@ BaseWheelSpeedController::BaseWheelSpeedController(ros::NodeHandle& nh, const st
                                                    util::WheelConfigurationType wheel_config_type)
   : wheel_namespace_(wheel_namespace), use_pid_(use_pid), wheel_config_type_(wheel_config_type)
 {
-  setupPubsSubs(nh, wheel_namespace);
+  setupPubsSubs(nh, wheel_namespace_);
   priorEncoderCounts_ = 0;
   control_effort_ = 0.;
+  encoderStartTime_ = ros::Time::now();
+
+  if (use_pid_)
+  {
+    std::vector<std::string> nodes;
+    bool found_pid_node = false;
+    std::string node_to_find = wheel_namespace_ + wheel_namespace_.substr(0, wheel_namespace_.size() - 3);
+    while (ros::ok() && !found_pid_node)
+    {
+      ros::master::getNodes(nodes);
+      for (const auto& node : nodes)
+      {
+        if (node == node_to_find)
+        {
+          found_pid_node = true;
+        }
+      }
+      ROS_DEBUG("waiting for %s", node_to_find.c_str());
+      ros::Duration(0.1).sleep();
+    }
+  }
+
+  is_initialized_ = true;
 }
 
 FrontLeftWheelSpeedController::FrontLeftWheelSpeedController(ros::NodeHandle& nh, std::string wheel_namespace,
@@ -126,19 +152,41 @@ void BackLeftWheelSpeedController::publishWheelState()
 
 void BaseWheelSpeedController::setupPubsSubs(ros::NodeHandle& nh, const std::string wheel_namespace)
 {
-  state_pub_ = nh.advertise<std_msgs::Float64>("/" + wheel_namespace + "/state", 1);
+  state_pub_ = nh.advertise<std_msgs::Float64>(wheel_namespace + "/state", 100);
 
-  set_pub_ = nh.advertise<std_msgs::Float64>("/" + wheel_namespace + "/setpoint", 1);
-
+  set_pub_ = nh.advertise<std_msgs::Float64>(wheel_namespace + "/setpoint", 100);
   if (use_pid_)
   {
-    ctrl_sub_ = nh.subscribe("/" + wheel_namespace + "/control_effort", 1,
-                             &BaseWheelSpeedController::controlEffortCallback, this);
+    ctrl_sub_ =
+        nh.subscribe(wheel_namespace + "/control_effort", 1, &BaseWheelSpeedController::controlEffortCallback, this);
+    pid_enable_pub_ = nh.advertise<std_msgs::Bool>(wheel_namespace + "/pid_enable", 100);
+    std_msgs::Bool enable_msg;
+    enable_msg.data = true;
+    pid_enable_pub_.publish(enable_msg);
+    ros::spinOnce();
+  }
+}
+
+BaseWheelSpeedController::~BaseWheelSpeedController()
+{
+  if (use_pid_)
+  {
+    /*
+    std_msgs::Float64 state;
+    state.data = 0.0;
+    state_pub_.publish(state);
+    ros::spinOnce();
+*/
+    std_msgs::Bool enable_msg;
+    enable_msg.data = false;
+    pid_enable_pub_.publish(enable_msg);
+    ros::spinOnce();
   }
 }
 
 void BaseWheelSpeedController::controlEffortCallback(const std_msgs::Float64& control_effort_input)
 {
+  ROS_DEBUG("got ctrl effort %s %f", wheel_namespace_.c_str(), control_effort_input.data);
   const std::lock_guard<std::mutex> lock(control_effort_mutex_);
   control_effort_ = control_effort_input.data;
   got_control_data_ = true;
@@ -151,6 +199,11 @@ bool BaseWheelSpeedController::getControlEffort(float& control_effort)
   {
     control_effort = control_effort_;
     got_control_data_ = false;
+    // TODO: Figure out why PID node sometimes publishes zero, even when it shouldnt.
+    if (control_effort == 0.)
+    {
+      return false;
+    }
     return true;
   }
   else
@@ -167,13 +220,22 @@ int BaseWheelSpeedController::spinAndWaitForCtrlEffort()
   {
     if (setpoint_ == 0.)
     {
+      ROS_DEBUG("%s set to 0 setpoint, exiting.", wheel_namespace_.c_str());
       return control_effort;
     }
 
     bool got_ctrl_effort = false;
 
-    while (!got_ctrl_effort)
+    ros::Duration state_pub_increment = ros::Duration(0.25);
+    ros::Time last_pub_time = ros::Time::now();
+    while (ros::ok() && !got_ctrl_effort)
     {
+      // TODO: Figure out why it is not always a 1:1 relationship, state msg to control effort with PID Node.
+      if ((ros::Time::now() - last_pub_time) > state_pub_increment)
+      {
+        publishWheelState();
+        last_pub_time = ros::Time::now();
+      }
       got_ctrl_effort = getControlEffort(control_effort);
       ros::spinOnce();
       ros::Duration(time_to_wait_for_control_msg_).sleep();
@@ -203,6 +265,7 @@ void BaseWheelSpeedController::publishSetpoint(const float& speed_radians_per_se
   std_msgs::Float64 setpoint;
   setpoint.data = speed_radians_per_sec;
   set_pub_.publish(setpoint);
+  ros::spinOnce();
 }
 
 void BaseWheelSpeedController::publishWheelState()
@@ -220,7 +283,9 @@ void BaseWheelSpeedController::publishWheelState()
   // give us radians per second
   state.data = changeEncoderCounts / elapsed_time_s.toSec();
   current_wheel_speed_ = state.data;
+  ROS_DEBUG("%s wheel state is now: %f", wheel_namespace_.c_str(), current_wheel_speed_);
   state_pub_.publish(state);
+  ros::spinOnce();
 }
 
 float BaseWheelSpeedController::getWheelSpeed()
@@ -234,6 +299,7 @@ int BaseWheelSpeedController::pwmFromWheelSpeed(float wheel_speed)
   {
     return 0;
   }
+  bool is_initialized_ = false;
 
   float scaled_wheel_pwm = util::MIN_PWM + util::SLOPE_WHEEL_SPEED * (std::abs(wheel_speed) - util::MIN_WHEEL_SPEED);
 
@@ -253,14 +319,7 @@ int BaseWheelSpeedController::pwmFromWheelSpeed(float wheel_speed)
 
 WheelSpeedController::WheelSpeedController(ros::NodeHandle& nh, std::string wheel_namespace, bool use_pid,
                                            util::WheelConfigurationType wheel_config_type, float loop_rate)
-  : wheel_namespace_(wheel_namespace)
-  , use_pid_(use_pid)
-  , wheel_config_type_(wheel_config_type)
-  , loop_rate_(loop_rate)
-  , front_left_speed_ctrl_(nh, wheel_namespace_ + "/front_left_wheel", use_pid, wheel_config_type)
-  , front_right_speed_ctrl_(nh, wheel_namespace_ + "/front_right_wheel", use_pid, wheel_config_type)
-  , back_right_speed_ctrl_(nh, wheel_namespace_ + "/back_right_wheel", use_pid, wheel_config_type)
-  , back_left_speed_ctrl_(nh, wheel_namespace_ + "/back_left_wheel", use_pid, wheel_config_type)
+  : wheel_namespace_(wheel_namespace), use_pid_(use_pid), wheel_config_type_(wheel_config_type), loop_rate_(loop_rate)
 {
   setupCustomSignalHandlers();
   setupGlobalCounters();
@@ -268,6 +327,33 @@ WheelSpeedController::WheelSpeedController(ros::NodeHandle& nh, std::string whee
   setupServoArray();
   setupPubsSubs(nh, wheel_namespace_);
   enableMotors();
+  if (wheel_config_type_ == util::WheelConfigurationType::OMNI_WHEELS ||
+      wheel_config_type_ == util::WheelConfigurationType::SKID_STEERING)
+  {
+    front_right_speed_ctrl_ = new FrontRightWheelSpeedController(
+        nh, wheel_namespace_ + "/front_right_wheel" + (use_pid ? "_pid_ns" : ""), use_pid, wheel_config_type);
+
+    front_left_speed_ctrl_ = new FrontLeftWheelSpeedController(
+        nh, wheel_namespace_ + "/front_left_wheel" + (use_pid ? "_pid_ns" : ""), use_pid, wheel_config_type);
+  }
+
+  back_right_speed_ctrl_ = new BackRightWheelSpeedController(
+      nh, wheel_namespace_ + "/back_right_wheel" + (use_pid ? "_pid_ns" : ""), use_pid, wheel_config_type);
+  back_left_speed_ctrl_ = new BackLeftWheelSpeedController(
+      nh, wheel_namespace_ + "/back_left_wheel" + (use_pid ? "_pid_ns" : ""), use_pid, wheel_config_type);
+}
+
+WheelSpeedController::~WheelSpeedController()
+{
+  if (wheel_config_type_ == util::WheelConfigurationType::OMNI_WHEELS ||
+      wheel_config_type_ == util::WheelConfigurationType::SKID_STEERING)
+  {
+    delete front_right_speed_ctrl_;
+    delete front_left_speed_ctrl_;
+  }
+
+  delete back_right_speed_ctrl_;
+  delete back_left_speed_ctrl_;
 }
 
 void WheelSpeedController::setupCustomSignalHandlers()
@@ -298,11 +384,11 @@ void WheelSpeedController::setupPubsSubs(ros::NodeHandle& nh, const std::string 
   wheel_speed_sub_ =
       nh.subscribe("/" + wheel_namespace_ + "/wheel_cmd_speeds", 1, &WheelSpeedController::wheelSpeedCallback, this);
   // servos_absolute publisher
-  servos_absolute_pub_ = nh.advertise<i2cpwm_board::ServoArray>("servos_absolute", 1);
+  servos_absolute_pub_ = nh.advertise<i2cpwm_board::ServoArray>("servos_absolute", 100);
 
-  encoder_pub_ = nh.advertise<toulouse_rover::WheelEncoderCounts>("wheel_adj_enc_count", 1);
+  encoder_pub_ = nh.advertise<toulouse_rover::WheelEncoderCounts>("wheel_adj_enc_count", 100);
 
-  wheel_speed_actual_pub_ = nh.advertise<toulouse_rover::WheelSpeeds>("wheel_speeds", 1);
+  wheel_speed_actual_pub_ = nh.advertise<toulouse_rover::WheelSpeeds>("wheel_speeds", 100);
 }
 
 void WheelSpeedController::wheelSpeedCallback(const toulouse_rover::WheelSpeeds::ConstPtr& wheel_speeds)
@@ -311,10 +397,15 @@ void WheelSpeedController::wheelSpeedCallback(const toulouse_rover::WheelSpeeds:
   ROS_DEBUG("got wheel speeds");
   wheel_speeds_ = *wheel_speeds;
 
-  globalSpeedCounter[front_left_speed_ctrl_.encoderIndex_] = wheel_speeds_.front_left_radians_per_sec;
-  globalSpeedCounter[front_right_speed_ctrl_.encoderIndex_] = wheel_speeds_.front_right_radians_per_sec;
-  globalSpeedCounter[back_right_speed_ctrl_.encoderIndex_] = wheel_speeds_.back_right_radians_per_sec;
-  globalSpeedCounter[back_left_speed_ctrl_.encoderIndex_] = wheel_speeds_.back_left_radians_per_sec;
+  if (wheel_config_type_ == util::WheelConfigurationType::OMNI_WHEELS ||
+      wheel_config_type_ == util::WheelConfigurationType::SKID_STEERING)
+  {
+    globalSpeedCounter[front_left_speed_ctrl_->encoderIndex_] = wheel_speeds_.front_left_radians_per_sec;
+    globalSpeedCounter[front_right_speed_ctrl_->encoderIndex_] = wheel_speeds_.front_right_radians_per_sec;
+  }
+
+  globalSpeedCounter[back_right_speed_ctrl_->encoderIndex_] = wheel_speeds_.back_right_radians_per_sec;
+  globalSpeedCounter[back_left_speed_ctrl_->encoderIndex_] = wheel_speeds_.back_left_radians_per_sec;
 }
 
 void WheelSpeedController::setupGlobalCounters()
@@ -324,7 +415,7 @@ void WheelSpeedController::setupGlobalCounters()
   const std::lock_guard<std::mutex> fr_lock(frontRightEncoderMutex);
   const std::lock_guard<std::mutex> br_lock(backRightEncoderMutex);
   const std::lock_guard<std::mutex> bl_lock(backLeftEncoderMutex);
-  for (int i = 0; i < sizeof(globalSpeedCounter) / globalSpeedCounter[0]; i++)
+  for (int i = 0; i < sizeof(globalSpeedCounter) / sizeof(globalSpeedCounter[0]); i++)
   {
     globalSpeedCounter[i] = 0.0;
     globalEncCounter[i] = 0.0;
@@ -362,11 +453,11 @@ void WheelSpeedController::publishWheelSetpoints(const toulouse_rover::WheelSpee
   if (wheel_config_type_ == util::WheelConfigurationType::OMNI_WHEELS ||
       wheel_config_type_ == util::WheelConfigurationType::SKID_STEERING)
   {
-    front_left_speed_ctrl_.publishSetpoint(wheel_spds_to_ctrl.front_left_radians_per_sec);
-    front_right_speed_ctrl_.publishSetpoint(wheel_spds_to_ctrl.front_right_radians_per_sec);
+    front_left_speed_ctrl_->publishSetpoint(wheel_spds_to_ctrl.front_left_radians_per_sec);
+    front_right_speed_ctrl_->publishSetpoint(wheel_spds_to_ctrl.front_right_radians_per_sec);
   }
-  back_right_speed_ctrl_.publishSetpoint(wheel_spds_to_ctrl.back_right_radians_per_sec);
-  back_left_speed_ctrl_.publishSetpoint(wheel_spds_to_ctrl.back_left_radians_per_sec);
+  back_right_speed_ctrl_->publishSetpoint(wheel_spds_to_ctrl.back_right_radians_per_sec);
+  back_left_speed_ctrl_->publishSetpoint(wheel_spds_to_ctrl.back_left_radians_per_sec);
 }
 
 void WheelSpeedController::publishWheelStates()
@@ -382,16 +473,16 @@ void WheelSpeedController::publishWheelStates()
   if (wheel_config_type_ == util::WheelConfigurationType::OMNI_WHEELS ||
       wheel_config_type_ == util::WheelConfigurationType::SKID_STEERING)
   {
-    front_left_speed_ctrl_.publishWheelState();
-    current_speeds.front_left_radians_per_sec = front_left_speed_ctrl_.getWheelSpeed();
+    front_left_speed_ctrl_->publishWheelState();
+    current_speeds.front_left_radians_per_sec = front_left_speed_ctrl_->getWheelSpeed();
 
-    front_right_speed_ctrl_.publishWheelState();
-    current_speeds.front_right_radians_per_sec = front_right_speed_ctrl_.getWheelSpeed();
+    front_right_speed_ctrl_->publishWheelState();
+    current_speeds.front_right_radians_per_sec = front_right_speed_ctrl_->getWheelSpeed();
   }
-  back_right_speed_ctrl_.publishWheelState();
-  current_speeds.back_left_radians_per_sec = back_right_speed_ctrl_.getWheelSpeed();
-  back_left_speed_ctrl_.publishWheelState();
-  current_speeds.back_right_radians_per_sec = back_left_speed_ctrl_.getWheelSpeed();
+  back_right_speed_ctrl_->publishWheelState();
+  current_speeds.back_left_radians_per_sec = back_right_speed_ctrl_->getWheelSpeed();
+  back_left_speed_ctrl_->publishWheelState();
+  current_speeds.back_right_radians_per_sec = back_left_speed_ctrl_->getWheelSpeed();
 
   wheel_speed_actual_pub_.publish(current_speeds);
 }
@@ -399,17 +490,15 @@ void WheelSpeedController::publishWheelStates()
 controlEffort WheelSpeedController::get_control_efforts()
 {
   controlEffort control_efforts{};
-  float front_left_control_effort, front_right_control_effort, back_left_control_effort,
-      back_right_control_effort = 0.0;
   if (wheel_config_type_ == util::WheelConfigurationType::OMNI_WHEELS ||
       wheel_config_type_ == util::WheelConfigurationType::SKID_STEERING)
   {
-    control_efforts.front_left_control_effort = front_left_speed_ctrl_.spinAndWaitForCtrlEffort();
-    control_efforts.front_right_control_effort = front_right_speed_ctrl_.spinAndWaitForCtrlEffort();
+    control_efforts.front_left_control_effort = front_left_speed_ctrl_->spinAndWaitForCtrlEffort();
+    control_efforts.front_right_control_effort = front_right_speed_ctrl_->spinAndWaitForCtrlEffort();
   }
 
-  control_efforts.back_right_control_effort = back_right_speed_ctrl_.spinAndWaitForCtrlEffort();
-  control_efforts.back_left_control_effort = back_left_speed_ctrl_.spinAndWaitForCtrlEffort();
+  control_efforts.back_right_control_effort = back_right_speed_ctrl_->spinAndWaitForCtrlEffort();
+  control_efforts.back_left_control_effort = back_left_speed_ctrl_->spinAndWaitForCtrlEffort();
   return control_efforts;
 }
 
@@ -469,10 +558,22 @@ void WheelSpeedController::publishAdjEncoderData()
   const std::lock_guard<std::mutex> br_lock(backRightEncoderMutex);
   const std::lock_guard<std::mutex> bl_lock(backLeftEncoderMutex);
   toulouse_rover::WheelEncoderCounts wheel_adj_encoder_counts;
-  wheel_adj_encoder_counts.front_left_adjusted_encoder_count = globalEncCounter[front_left_speed_ctrl_.encoderIndex_];
-  wheel_adj_encoder_counts.front_right_adjusted_encoder_count = globalEncCounter[front_right_speed_ctrl_.encoderIndex_];
-  wheel_adj_encoder_counts.back_right_adjusted_encoder_count = globalEncCounter[back_right_speed_ctrl_.encoderIndex_];
-  wheel_adj_encoder_counts.back_left_adjusted_encoder_count = globalEncCounter[back_left_speed_ctrl_.encoderIndex_];
+  if (wheel_config_type_ == util::WheelConfigurationType::OMNI_WHEELS ||
+      wheel_config_type_ == util::WheelConfigurationType::SKID_STEERING)
+  {
+    wheel_adj_encoder_counts.front_left_adjusted_encoder_count =
+        globalEncCounter[front_left_speed_ctrl_->encoderIndex_];
+    wheel_adj_encoder_counts.front_right_adjusted_encoder_count =
+        globalEncCounter[front_right_speed_ctrl_->encoderIndex_];
+  }
+  else
+  {
+    wheel_adj_encoder_counts.front_left_adjusted_encoder_count = 0.0;
+    wheel_adj_encoder_counts.front_right_adjusted_encoder_count = 0.0;
+  }
+
+  wheel_adj_encoder_counts.back_right_adjusted_encoder_count = globalEncCounter[back_right_speed_ctrl_->encoderIndex_];
+  wheel_adj_encoder_counts.back_left_adjusted_encoder_count = globalEncCounter[back_left_speed_ctrl_->encoderIndex_];
   encoder_pub_.publish(wheel_adj_encoder_counts);
 }
 
@@ -489,12 +590,13 @@ void WheelSpeedController::spinOnce()
 {
   const std::lock_guard<std::mutex> lock(speedUpdateMutex);
   publishWheelSetpoints(wheel_speeds_);
+  ros::spinOnce();
   publishAdjEncoderData();
   publishWheelStates();
+  ros::spinOnce();
 
   controlEffort control_effort = get_control_efforts();
   updateAndPublishServoArray(control_effort);
-  ros::spinOnce();
   loop_rate_.sleep();
 }
 

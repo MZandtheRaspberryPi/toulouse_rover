@@ -52,30 +52,37 @@ protected:
   }
 };
 
-TEST_F(WheelSpeedControllerFixture, TestControllerForward)
+TEST_F(WheelSpeedControllerFixture, TestControllerPIDForward)
 {
   ros::NodeHandle nh;
   std::string wheel_namespace_str("");
+  ROS_WARN("PID Forward Test");
   util::WheelConfigurationType wheel_config_type = util::WheelConfigurationType::DIFFERENTIAL_DRIVE;
   float loop_rate = 50;
-  bool use_pid = false;
+  bool use_pid = true;
 
-  ros::Duration(0.5).sleep();
-
+  ROS_WARN("initting object");
   wheel_speed_controller::WheelSpeedController wheel_controller(nh, wheel_namespace_str, use_pid, wheel_config_type,
                                                                 loop_rate);
+  // ros::Duration(0.5).sleep();
 
+  ROS_WARN("setting wheel speeds");
   setWheelSpeeds(0, 0, 3.141 / 4, 3.141 / 4);
+  ROS_WARN("done setting wheel speeds");
   // give the subscribers in WheelSpeedController time to get message
   for (int i = 0; i < 5; i++)
   {
+    ROS_WARN("waiting");
     ros::spinOnce();
     ros::Duration(0.01).sleep();
   }
 
+  ROS_WARN("spinnign wheel speed controller");
   wheel_controller.spinOnce();
-  while (ros::ok() && !got_msg)
+  ROS_WARN("done spinning wheel speed controller");
+  while (!got_msg && ros::ok())
   {
+    ROS_WARN("waiting for msg");
     ros::spinOnce();
     ros::Duration(0.01).sleep();
   }
@@ -96,10 +103,59 @@ TEST_F(WheelSpeedControllerFixture, TestControllerForward)
   }
 }
 
+/*
+
+TEST_F(WheelSpeedControllerFixture, TestControllerPIDLeft)
+{
+  ros::NodeHandle nh;
+  std::string wheel_namespace_str("");
+  ROS_WARN("PID Left Test");
+  util::WheelConfigurationType wheel_config_type = util::WheelConfigurationType::DIFFERENTIAL_DRIVE;
+  float loop_rate = 50;
+  bool use_pid = true;
+
+  wheel_speed_controller::WheelSpeedController wheel_controller(nh, wheel_namespace_str, use_pid, wheel_config_type,
+                                                                loop_rate);
+  ros::Duration(0.1).sleep();
+
+  setWheelSpeeds(0, 0, 3.141 / 8, 3.141 / 4);
+  // give the subscribers in WheelSpeedController time to get message
+  for (int i = 0; i < 5; i++)
+  {
+    ros::spinOnce();
+    ros::Duration(0.01).sleep();
+  }
+
+  wheel_controller.spinOnce();
+  while (!got_msg && ros::ok())
+  {
+    ros::spinOnce();
+    ros::Duration(0.01).sleep();
+  }
+
+  i2cpwm_board::ServoArray servo_speeds = getReceivedMsg();
+
+  // back wheels
+  EXPECT_FLOAT_EQ(servo_speeds.servos[8].value, 0);
+  EXPECT_GT(servo_speeds.servos[9].value, 0);
+
+  EXPECT_FLOAT_EQ(servo_speeds.servos[11].value, 0);
+  EXPECT_GT(servo_speeds.servos[10].value, 0);
+
+  EXPECT_GT(servo_speeds.servos[10].value, servo_speeds.servos[9].value);
+
+  // front wheels servo index 12, 13, 14, 15
+  for (int i = 12; i < 16; i++)
+  {
+    EXPECT_FLOAT_EQ(servo_speeds.servos[i].value, 0);
+  }
+}
+*/
+
 int main(int argc, char** argv)
 {
   ::testing::InitGoogleTest(&argc, argv);
-  ros::init(argc, argv, "test_wheel_speed_controller_node");
+  ros::init(argc, argv, "test_wheel_speed_controller_pid_node");
   ros::NodeHandle nh;
 
   return RUN_ALL_TESTS();
