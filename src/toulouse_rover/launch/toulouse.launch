@@ -27,6 +27,8 @@
 
   <node pkg="toulouse_rover" name="wheel_speed_controller_node" type="wheel_speed_controller_node"  output="screen"> </node>
 
+  <node pkg="toulouse_rover" name="odom_calculator_node" type="odom_calculator_node"  output="screen"> </node>
+
   <!-- -->
   <include file="$(find ydlidar_ros)/launch/X4.launch" if="$(arg use_lidar)"/>
 

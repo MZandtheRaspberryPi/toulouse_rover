@@ -167,10 +167,10 @@ endif()
 
 add_executable(test_ir_ros src/hardware_testing_scripts/test_ir_ros.cpp)
 if (${KERNELRELEASE} MATCHES "raspi$")
-    target_link_libraries(test_ir_ros -lwiringPi)
+    target_link_libraries(test_ir_ros -lwiringPi ${catkin_LIBRARIES})
     set_target_properties(test_ir_ros PROPERTIES COMPILE_FLAGS "-DRPI")
 else()
-    target_link_libraries(test_ir_ros)
+    target_link_libraries(test_ir_ros ${catkin_LIBRARIES})
 endif()
 
 add_executable(wheel_speed_calculator_node src/wheel_speed_calculator_node.cpp)
