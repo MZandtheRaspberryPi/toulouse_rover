@@ -17,8 +17,7 @@
   <env name="ROSCONSOLE_CONFIG_FILE"
         value="$(find toulouse_rover)/param/rosconsole.config"/>
 
-  <node pkg="i2cpwm_board" name="i2cpwm_board" type="i2cpwm_board">
-  </node>
+  <node pkg="toulouse_rover" name="serial_motor_driver" type="serial_motor_driver.py">  </node>
 
   <node pkg="rosserial_python" name="serial_node" type="serial_node.py" if="$(arg launch_battery_monitor)" output="screen" args="_port:=/dev/ttyUSB0 _baud:=57600">
   </node>

@@ -9,11 +9,11 @@ SERIAL_PORT = None
 
 def pwm_speed_callback(wheel_pwm_speeds_msg):
 
-    motor_enable_pwm = bytes(wheel_pwm_speeds_msg.motor_enable, "ascii")
-    back_left_pwm_1 = bytes(wheel_pwm_speeds_msg.back_left_pwm_1, "ascii")
-    back_left_pwm_2 = bytes(wheel_pwm_speeds_msg.back_left_pwm_2, "ascii")
-    back_right_left_pwm_1 = bytes(wheel_pwm_speeds_msg.back_right_left_pwm_1, "ascii")
-    back_right_left_pwm_2 = bytes(wheel_pwm_speeds_msg.back_right_left_pwm_2, "ascii")
+    motor_enable_pwm = (wheel_pwm_speeds_msg.motor_enable).to_bytes(1, byteorder='big')
+    back_left_pwm_1 = (wheel_pwm_speeds_msg.back_left_pwm_1).to_bytes(1, byteorder='big')
+    back_left_pwm_2 = (wheel_pwm_speeds_msg.back_left_pwm_2).to_bytes(1, byteorder='big')
+    back_right_left_pwm_1 = (wheel_pwm_speeds_msg.back_right_left_pwm_1).to_bytes(1, byteorder='big')
+    back_right_left_pwm_2 = (wheel_pwm_speeds_msg.back_right_left_pwm_2).to_bytes(1, byteorder='big')
 
     rospy.loginfo("sending {} for back_left_1".format(back_left_pwm_1))
     rospy.loginfo("sending {} for back_left_2".format(back_left_pwm_2))
@@ -30,7 +30,7 @@ def main():
 
     rospy.Subscriber("/wheels/wheels_pwm_cmd", WheelPwmSpeeds, pwm_speed_callback)
 
-    SERIAL_PORT = serial.Serial('/dev/serial0', 115200, timeout=0.050)
+    SERIAL_PORT = serial.Serial('/dev/ttyUSB1', 115200, timeout=0.050)
     rospy.spin()
 
 
