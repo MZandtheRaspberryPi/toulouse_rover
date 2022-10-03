@@ -18,11 +18,13 @@ def pwm_speed_callback(wheel_pwm_speeds_msg):
     rospy.loginfo("sending {} for back_left_1".format(back_left_pwm_1))
     rospy.loginfo("sending {} for back_left_2".format(back_left_pwm_2))
 
+    SERIAL_PORT.write("<".encode("ascii"))
     SERIAL_PORT.write(motor_enable_pwm)
     SERIAL_PORT.write(back_left_pwm_1)
     SERIAL_PORT.write(back_left_pwm_2)
     SERIAL_PORT.write(back_right_left_pwm_1)
     SERIAL_PORT.write(back_right_left_pwm_2)
+    SERIAL_PORT.write(">".encode("ascii"))
 
 def main():
     global SERIAL_PORT
