@@ -8,6 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 list(APPEND catkin_dependencies
   i2cpwm_board
   roscpp
+  rospy
   std_msgs
   tf2
   tf2_ros
@@ -60,6 +61,7 @@ find_package(catkin REQUIRED COMPONENTS
    FILES
    WheelEncoderCounts.msg
    WheelSpeeds.msg
+   WheelPwmSpeeds.msg
  )
 
 ## Generate services in the 'srv' folder
@@ -204,10 +206,10 @@ add_dependencies(test_ir_ros ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORT
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-# catkin_install_python(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+catkin_install_python(PROGRAMS
+   scripts/serial_motor_driver.py
+   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark libraries for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_libraries.html

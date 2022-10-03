@@ -24,6 +24,7 @@
 
 #include "toulouse_rover/WheelEncoderCounts.h"
 #include "toulouse_rover/WheelSpeeds.h"
+#include "toulouse_rover/WheelPwmSpeeds.h"
 #include "util.h"
 
 namespace wheel_speed_controller
@@ -150,6 +151,7 @@ private:
   void zeroOutMotors();
   void publishWheelStates();
   void publishAdjEncoderData();
+  void publishWheelPwm(const controlEffort& control_effort);
 
   controlEffort get_control_efforts();
   void updateAndPublishServoArray(const controlEffort& control_effort);
@@ -160,7 +162,8 @@ private:
   i2cpwm_board::ServoArray servo_array_{};
 
   ros::Subscriber wheel_speed_sub_;
-  ros::Publisher servos_absolute_pub_;
+  // ros::Publisher servos_absolute_pub_;
+  ros::Publisher wheel_pwm_pub_;
   ros::Publisher encoder_pub_;
   ros::Publisher wheel_speed_actual_pub_;
   toulouse_rover::WheelSpeeds wheel_speeds_;

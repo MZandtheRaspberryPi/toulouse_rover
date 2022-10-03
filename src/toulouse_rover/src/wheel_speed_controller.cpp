@@ -323,10 +323,10 @@ WheelSpeedController::WheelSpeedController(ros::NodeHandle& nh, std::string whee
 {
   setupCustomSignalHandlers();
   setupGlobalCounters();
-  setupGPIO();
-  setupServoArray();
+  // setupGPIO();
+  // setupServoArray();
   setupPubsSubs(nh, wheel_namespace_);
-  enableMotors();
+  // enableMotors();
   if (wheel_config_type_ == util::WheelConfigurationType::OMNI_WHEELS ||
       wheel_config_type_ == util::WheelConfigurationType::SKID_STEERING)
   {
@@ -384,12 +384,13 @@ void WheelSpeedController::setupPubsSubs(ros::NodeHandle& nh, const std::string 
   wheel_speed_sub_ =
       nh.subscribe("/" + wheel_namespace_ + "/wheel_cmd_speeds", 1, &WheelSpeedController::wheelSpeedCallback, this);
   // servos_absolute publisher
-  servos_absolute_pub_ = nh.advertise<i2cpwm_board::ServoArray>("servos_absolute", 100);
+  // servos_absolute_pub_ = nh.advertise<i2cpwm_board::ServoArray>("servos_absolute", 100);
 
   encoder_pub_ = nh.advertise<toulouse_rover::WheelEncoderCounts>("/" + wheel_namespace_ + "/wheel_adj_enc_count", 100);
 
   wheel_speed_actual_pub_ =
       nh.advertise<toulouse_rover::WheelSpeeds>("/" + wheel_namespace_ + "/wheel_speeds_actual", 100);
+  wheel_pwm_pub_ = nh.advertise<toulouse_rover::WheelPwmSpeeds>("/" + wheel_namespace_ + "/wheels_pwm_cmd", 100);
 }
 
 void WheelSpeedController::wheelSpeedCallback(const toulouse_rover::WheelSpeeds::ConstPtr& wheel_speeds)
@@ -504,6 +505,56 @@ controlEffort WheelSpeedController::get_control_efforts()
   return control_efforts;
 }
 
+void WheelSpeedController::publishWheelPwm(const controlEffort& control_effort)
+{
+  toulouse_rover::WheelPwmSpeeds pwm_speeds_msg;
+  pwm_speeds_msg.motor_enable = true;
+  if (control_effort.front_left_control_effort < 0)
+  {
+    pwm_speeds_msg.front_left_pwm_1 = 0;
+    pwm_speeds_msg.front_left_pwm_2 = std::abs(control_effort.front_left_control_effort);
+  }
+  else
+  {
+    pwm_speeds_msg.front_left_pwm_1 = std::abs(control_effort.front_left_control_effort);
+    pwm_speeds_msg.front_left_pwm_2 = 0;
+  }
+
+  if (control_effort.front_right_control_effort < 0)
+  {
+    pwm_speeds_msg.front_right_pwm_1 = 0;
+    pwm_speeds_msg.front_right_pwm_2 = std::abs(control_effort.front_right_control_effort);
+  }
+  else
+  {
+    pwm_speeds_msg.front_right_pwm_1 = std::abs(control_effort.front_right_control_effort);
+    pwm_speeds_msg.front_right_pwm_2 = 0;
+  }
+
+  if (control_effort.back_left_control_effort < 0)
+  {
+    pwm_speeds_msg.back_left_pwm_1 = 0;
+    pwm_speeds_msg.back_left_pwm_2 = std::abs(control_effort.back_left_control_effort);
+  }
+  else
+  {
+    pwm_speeds_msg.back_left_pwm_1 = std::abs(control_effort.back_left_control_effort);
+    pwm_speeds_msg.back_left_pwm_2 = 0;
+  }
+
+  if (control_effort.back_right_control_effort < 0)
+  {
+    pwm_speeds_msg.back_right_left_pwm_1 = 0;
+    pwm_speeds_msg.back_right_left_pwm_2 = std::abs(control_effort.back_right_control_effort);
+  }
+  else
+  {
+    pwm_speeds_msg.back_right_left_pwm_1 = std::abs(control_effort.back_right_control_effort);
+    pwm_speeds_msg.back_right_left_pwm_2 = 0;
+  }
+  wheel_pwm_pub_.publish(pwm_speeds_msg);
+}
+
 void WheelSpeedController::updateAndPublishServoArray(const controlEffort& control_effort)
 {
   if (control_effort.front_left_control_effort < 0)
@@ -551,7 +602,7 @@ void WheelSpeedController::updateAndPublishServoArray(const controlEffort& contr
   }
 
   ROS_DEBUG("back right controller: %f", servo_array_.servos[10].value);
-  servos_absolute_pub_.publish(servo_array_);
+  // servos_absolute_pub_.publish(servo_array_);
 }
 
 void WheelSpeedController::publishAdjEncoderData()
@@ -586,19 +637,21 @@ void WheelSpeedController::zeroOutMotors()
   {
     servo_array_.servos[i].value = 0;
   }
-  servos_absolute_pub_.publish(servo_array_);
+  // servos_absolute_pub_.publish(servo_array_);
 }
 
 void WheelSpeedController::spinOnce()
 {
   {
-  const std::lock_guard<std::mutex> lock(speedUpdateMutex);
-  publishWheelSetpoints(wheel_speeds_);
-  publishAdjEncoderData();
-  publishWheelStates();
+    const std::lock_guard<std::mutex> lock(speedUpdateMutex);
+    publishWheelSetpoints(wheel_speeds_);
+    publishAdjEncoderData();
+    publishWheelStates();
   }
   controlEffort control_effort = get_control_efforts();
-  updateAndPublishServoArray(control_effort);
+  // updateAndPublishServoArray(control_effort);
+  publishWheelPwm(control_effort);
+
   loop_rate_.sleep();
 }
 
@@ -611,8 +664,8 @@ void WheelSpeedController::spin()
     spinOnce();
   }
 
-  zeroOutMotors();
-  disableMotors();
+  // zeroOutMotors();
+  // disableMotors();
 }
 
 }  // end namespace wheel_speed_controller

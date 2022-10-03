@@ -28,7 +28,7 @@ extern const float MIN_PID_CONTROL;
 extern const float SLOPE_PID;
 
 // MAX I saw, with wheels not on ground, was about 60 encoder ticks per second,
-// so 3 rotations, so 3 PI. we will get this by going about .22 meters per
+// so 3 rotations, so 6 PI. we will get this by going about .22 meters per
 // second in x direction, so this is our max speed
 // TODO: Calculate MIN Speed by setting wheels to min PWM and seeing how fast
 // they go in radians
