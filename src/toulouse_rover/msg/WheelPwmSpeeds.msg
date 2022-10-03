@@ -6,5 +6,5 @@ uint8 front_right_pwm_1
 uint8 front_right_pwm_2
 uint8 back_left_pwm_1
 uint8 back_left_pwm_2
-uint8 back_right_left_pwm_1
-uint8 back_right_left_pwm_2
+uint8 back_right_pwm_1
+uint8 back_right_pwm_2
