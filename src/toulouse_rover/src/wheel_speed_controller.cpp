@@ -386,10 +386,10 @@ void WheelSpeedController::setupPubsSubs(ros::NodeHandle& nh, const std::string 
   // servos_absolute publisher
   servos_absolute_pub_ = nh.advertise<i2cpwm_board::ServoArray>("servos_absolute", 100);
 
-  encoder_pub_ = nh.advertise<toulouse_rover::WheelEncoderCounts>("/" + wheel_namespace_ + "wheel_adj_enc_count", 100);
+  encoder_pub_ = nh.advertise<toulouse_rover::WheelEncoderCounts>("/" + wheel_namespace_ + "/wheel_adj_enc_count", 100);
 
   wheel_speed_actual_pub_ =
-      nh.advertise<toulouse_rover::WheelSpeeds>("/" + wheel_namespace_ + "wheel_speeds_actual", 100);
+      nh.advertise<toulouse_rover::WheelSpeeds>("/" + wheel_namespace_ + "/wheel_speeds_actual", 100);
 }
 
 void WheelSpeedController::wheelSpeedCallback(const toulouse_rover::WheelSpeeds::ConstPtr& wheel_speeds)
@@ -591,11 +591,12 @@ void WheelSpeedController::zeroOutMotors()
 
 void WheelSpeedController::spinOnce()
 {
+  {
   const std::lock_guard<std::mutex> lock(speedUpdateMutex);
   publishWheelSetpoints(wheel_speeds_);
   publishAdjEncoderData();
   publishWheelStates();
-
+  }
   controlEffort control_effort = get_control_efforts();
   updateAndPublishServoArray(control_effort);
   loop_rate_.sleep();
