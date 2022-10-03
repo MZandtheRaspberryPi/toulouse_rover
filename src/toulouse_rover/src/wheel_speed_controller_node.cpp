@@ -32,7 +32,7 @@ int main(int argc, char** argv)
         "set.");
   }
 
-  bool use_pid;
+  bool use_pid = false;
   if (!nh.getParam("speed_controller_use_pid", use_pid))
   {
     ROS_WARN(
@@ -42,5 +42,6 @@ int main(int argc, char** argv)
 
   wheel_speed_controller::WheelSpeedController wheel_controller(nh, wheel_namespace_str, use_pid, wheel_config_type,
                                                                 loop_rate);
+  ROS_INFO("wheel_speed_controller_node spinning");
   wheel_controller.spin();
 }

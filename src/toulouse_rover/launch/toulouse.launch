@@ -2,17 +2,17 @@
 
    <arg name="use_lidar" default="true" />
    <arg name="autonomous_mode" default="true" />
+   <arg name="launch_battery_monitor" default="false" />
    <arg name="wheel_namespace" default="wheels" />
    <arg name="wheel_config_type" default="differential_drive" />
-
    <arg name="speed_controller_loop_rate" default="10.0" />
 
    
 
   <param name="wheel_namespace" type="str" value="$(arg wheel_namespace)" />
   <param name="wheel_config_type" type="str" value="$(arg wheel_config_type)" />
-  <param name="speed_controller_loop_rate" type="float" value="$(arg speed_controller_loop_rate)" />
-
+  <param name="speed_controller_loop_rate" type="double" value="$(arg speed_controller_loop_rate)" />
+  <param name="speed_controller_use_pid" type="bool" value="false" />
 
   <env name="ROSCONSOLE_CONFIG_FILE"
         value="$(find toulouse_rover)/param/rosconsole.config"/>
@@ -20,7 +20,7 @@
   <node pkg="i2cpwm_board" name="i2cpwm_board" type="i2cpwm_board">
   </node>
 
-  <node pkg="rosserial_python" name="serial_node" type="serial_node.py" output="screen" args="_port:=/dev/ttyUSB0 _baud:=57600">
+  <node pkg="rosserial_python" name="serial_node" type="serial_node.py" if="$(arg launch_battery_monitor)" output="screen" args="_port:=/dev/ttyUSB0 _baud:=57600">
   </node>
   
   <node pkg="toulouse_rover" name="wheel_speed_calculator_node" type="wheel_speed_calculator_node"  output="screen"> </node>

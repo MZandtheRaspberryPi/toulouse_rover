@@ -163,7 +163,7 @@ void BaseWheelSpeedController::setupPubsSubs(ros::NodeHandle& nh, const std::str
     std_msgs::Bool enable_msg;
     enable_msg.data = true;
     pid_enable_pub_.publish(enable_msg);
-    ros::spinOnce();
+   //  ros::spinOnce();
   }
 }
 
@@ -180,7 +180,7 @@ BaseWheelSpeedController::~BaseWheelSpeedController()
     std_msgs::Bool enable_msg;
     enable_msg.data = false;
     pid_enable_pub_.publish(enable_msg);
-    ros::spinOnce();
+    // ros::spinOnce();
   }
 }
 
@@ -237,7 +237,7 @@ int BaseWheelSpeedController::spinAndWaitForCtrlEffort()
         last_pub_time = ros::Time::now();
       }
       got_ctrl_effort = getControlEffort(control_effort);
-      ros::spinOnce();
+      // ros::spinOnce();
       ros::Duration(time_to_wait_for_control_msg_).sleep();
     }
 
@@ -265,7 +265,7 @@ void BaseWheelSpeedController::publishSetpoint(const float& speed_radians_per_se
   std_msgs::Float64 setpoint;
   setpoint.data = speed_radians_per_sec;
   set_pub_.publish(setpoint);
-  ros::spinOnce();
+  // ros::spinOnce();
 }
 
 void BaseWheelSpeedController::publishWheelState()
@@ -285,7 +285,7 @@ void BaseWheelSpeedController::publishWheelState()
   current_wheel_speed_ = state.data;
   ROS_DEBUG("%s wheel state is now: %f", wheel_namespace_.c_str(), current_wheel_speed_);
   state_pub_.publish(state);
-  ros::spinOnce();
+  // ros::spinOnce();
 }
 
 float BaseWheelSpeedController::getWheelSpeed()
@@ -386,15 +386,17 @@ void WheelSpeedController::setupPubsSubs(ros::NodeHandle& nh, const std::string 
   // servos_absolute publisher
   servos_absolute_pub_ = nh.advertise<i2cpwm_board::ServoArray>("servos_absolute", 100);
 
-  encoder_pub_ = nh.advertise<toulouse_rover::WheelEncoderCounts>("wheel_adj_enc_count", 100);
+  encoder_pub_ = nh.advertise<toulouse_rover::WheelEncoderCounts>("/" + wheel_namespace_ + "wheel_adj_enc_count", 100);
 
-  wheel_speed_actual_pub_ = nh.advertise<toulouse_rover::WheelSpeeds>("wheel_speeds", 100);
+  wheel_speed_actual_pub_ = nh.advertise<toulouse_rover::WheelSpeeds>("/" + wheel_namespace_ + "wheel_speeds", 100);
+
 }
 
 void WheelSpeedController::wheelSpeedCallback(const toulouse_rover::WheelSpeeds::ConstPtr& wheel_speeds)
 {
+  ROS_WARN("getting wheel speeds");
   const std::lock_guard<std::mutex> lock(speedUpdateMutex);
-  ROS_DEBUG("got wheel speeds");
+  ROS_WARN("got wheel speeds");
   wheel_speeds_ = *wheel_speeds;
 
   if (wheel_config_type_ == util::WheelConfigurationType::OMNI_WHEELS ||
@@ -548,6 +550,7 @@ void WheelSpeedController::updateAndPublishServoArray(const controlEffort& contr
     servo_array_.servos[10].value = std::abs(control_effort.back_right_control_effort);
   }
 
+  ROS_DEBUG("back right controller: %f", servo_array_.servos[10].value);
   servos_absolute_pub_.publish(servo_array_);
 }
 
@@ -590,10 +593,8 @@ void WheelSpeedController::spinOnce()
 {
   const std::lock_guard<std::mutex> lock(speedUpdateMutex);
   publishWheelSetpoints(wheel_speeds_);
-  ros::spinOnce();
   publishAdjEncoderData();
   publishWheelStates();
-  ros::spinOnce();
 
   controlEffort control_effort = get_control_efforts();
   updateAndPublishServoArray(control_effort);
@@ -602,6 +603,8 @@ void WheelSpeedController::spinOnce()
 
 void WheelSpeedController::spin()
 {
+  ros::AsyncSpinner spinner(2);
+  spinner.start();
   while (!wheel_speed_controller::g_request_shutdown)
   {
     spinOnce();
