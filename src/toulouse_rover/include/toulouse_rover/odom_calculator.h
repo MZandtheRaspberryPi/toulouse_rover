@@ -1,6 +1,8 @@
 #ifndef odom_calc_h
 #define odom_calc_h
 
+#include <string>
+
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <nav_msgs/Odometry.h>
@@ -45,7 +47,7 @@ struct OdomRosMessages
 class OdomCalculator
 {
 public:
-  OdomCalculator(ros::NodeHandle& nh, util::WheelConfigurationType odom_type);
+  OdomCalculator(ros::NodeHandle& nh, util::WheelConfigurationType odom_type, std::string wheel_namespace);
   Velocities calc_velocities(double speed_front_left, double speed_front_right, double speed_back_left,
                              double speed_back_right);
   PositionChange calc_position_change(Velocities velocities);
@@ -62,6 +64,7 @@ private:
   ros::Time last_call_time_;
   ros::Publisher odom_pub_;
   ros::Subscriber wheel_speed_subscriber_;
+  std::string wheel_namespace_;
 };
 
 }  // namespace odom_calculator

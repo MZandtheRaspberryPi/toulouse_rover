@@ -163,7 +163,7 @@ void BaseWheelSpeedController::setupPubsSubs(ros::NodeHandle& nh, const std::str
     std_msgs::Bool enable_msg;
     enable_msg.data = true;
     pid_enable_pub_.publish(enable_msg);
-   //  ros::spinOnce();
+    //  ros::spinOnce();
   }
 }
 
@@ -388,8 +388,8 @@ void WheelSpeedController::setupPubsSubs(ros::NodeHandle& nh, const std::string 
 
   encoder_pub_ = nh.advertise<toulouse_rover::WheelEncoderCounts>("/" + wheel_namespace_ + "wheel_adj_enc_count", 100);
 
-  wheel_speed_actual_pub_ = nh.advertise<toulouse_rover::WheelSpeeds>("/" + wheel_namespace_ + "wheel_speeds", 100);
-
+  wheel_speed_actual_pub_ =
+      nh.advertise<toulouse_rover::WheelSpeeds>("/" + wheel_namespace_ + "wheel_speeds_actual", 100);
 }
 
 void WheelSpeedController::wheelSpeedCallback(const toulouse_rover::WheelSpeeds::ConstPtr& wheel_speeds)

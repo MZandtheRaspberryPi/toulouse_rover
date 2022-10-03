@@ -21,6 +21,11 @@ int main(int argc, char** argv)
     exit(1);
   }
 
-  odom_calculator::OdomCalculator odom_calc(nh, wheel_config_type);
+  if (!nh.getParam("/wheel_namespace", wheel_namespace_str))
+  {
+    ROS_WARN("odom_calculator_node: param /wheel_namespace is not set.");
+  }
+
+  odom_calculator::OdomCalculator odom_calc(nh, wheel_config_type, wheel_namespace_str);
   ros::spin();
 }

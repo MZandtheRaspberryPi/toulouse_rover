@@ -2,13 +2,16 @@
 
 namespace odom_calculator
 {
-OdomCalculator::OdomCalculator(ros::NodeHandle& nh, util::WheelConfigurationType odom_type) : odom_type_(odom_type)
+OdomCalculator::OdomCalculator(ros::NodeHandle& nh, util::WheelConfigurationType odom_type,
+                               std::string wheel_namespace_str)
+  : odom_type_(odom_type), wheel_namespace_(wheel_namespace_str)
 {
   Position position_{};
 
   last_call_time_ = ros::Time::now();
   odom_pub_ = nh.advertise<nav_msgs::Odometry>("odom", 50);
-  wheel_speed_subscriber_ = nh.subscribe("wheel_speeds", 1, &OdomCalculator::wheelSpeedCallback, this);
+  wheel_speed_subscriber_ =
+      nh.subscribe("/" + wheel_namespace_ + "/wheel_speeds_actual", 1, &OdomCalculator::wheelSpeedCallback, this);
 }
 
 void OdomCalculator::wheelSpeedCallback(const toulouse_rover::WheelSpeeds::ConstPtr& speeds_msg)
