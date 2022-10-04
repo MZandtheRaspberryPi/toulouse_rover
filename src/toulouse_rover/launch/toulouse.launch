@@ -1,6 +1,5 @@
 <launch>
 
-   <arg name="use_lidar" default="true" />
    <arg name="autonomous_mode" default="true" />
    <arg name="launch_battery_monitor" default="false" />
    <arg name="wheel_namespace" default="wheels" />
@@ -29,7 +28,7 @@
   <node pkg="toulouse_rover" name="odom_calculator_node" type="odom_calculator_node"  output="screen"> </node>
 
   <!-- -->
-  <include file="$(find ydlidar_ros)/launch/X4.launch" if="$(arg use_lidar)"/>
+  <include file="$(find ydlidar_ros)/launch/X4.launch" if="$(arg autonomous_mode)"/>
 
   <!-- loading urdf model of robot -->
   <param name="robot_description" textfile="$(find toulouse_rover)/urdf/toulouse.urdf.xacro"/>

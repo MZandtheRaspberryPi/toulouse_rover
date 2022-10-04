@@ -18,16 +18,16 @@ def pwm_speed_callback(wheel_pwm_speeds_msg):
     back_left_pwm_2 = (wheel_pwm_speeds_msg.back_left_pwm_2).to_bytes(1, byteorder=ENDIANNESS)
     back_right_pwm_1 = (wheel_pwm_speeds_msg.back_right_pwm_1).to_bytes(1, byteorder=ENDIANNESS)
     back_right_pwm_2 = (wheel_pwm_speeds_msg.back_right_pwm_2).to_bytes(1, byteorder=ENDIANNESS)
-    rospy.logdebug_throttle(1, "sending {} for back_right_pwm_1".format(back_right_pwm_1))
-    rospy.logdebug_throttle(1, "sending {} for back_right_pwm_2".format(back_right_pwm_2))
+    rospy.loginfo("sending {} for back_right_pwm_1".format(back_right_pwm_1))
+    rospy.loginfo("sending {} for back_right_pwm_2".format(back_right_pwm_2))
 
-    print(SERIAL_PORT.write(START_BYTE))
-    print(SERIAL_PORT.write(motor_enable_pwm))
-    print(SERIAL_PORT.write(back_left_pwm_1))
-    print(SERIAL_PORT.write(back_left_pwm_2))
-    print(SERIAL_PORT.write(back_right_pwm_1))
-    print(SERIAL_PORT.write(back_right_pwm_2))
-    print(SERIAL_PORT.write(END_BYTE))
+    SERIAL_PORT.write(START_BYTE)
+    SERIAL_PORT.write(motor_enable_pwm)
+    SERIAL_PORT.write(back_left_pwm_1)
+    SERIAL_PORT.write(back_left_pwm_2)
+    SERIAL_PORT.write(back_right_pwm_1)
+    SERIAL_PORT.write(back_right_pwm_2)
+    SERIAL_PORT.write(END_BYTE)
     SERIAL_PORT.flush()
 
 
@@ -47,7 +47,7 @@ def parse_serial_msg():
         log_str = "received: "
         for byte in bytes_from_port:
             log_str += "{},".format(byte)
-        rospy.logdebug_throttle(1, log_str[:-1])
+        rospy.loginfo(log_str[:-1])
 
 
 def main():
