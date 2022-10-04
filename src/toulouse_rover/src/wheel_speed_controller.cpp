@@ -545,12 +545,12 @@ void WheelSpeedController::publishWheelPwm(const controlEffort& control_effort)
   if (control_effort.back_right_control_effort < 0)
   {
     pwm_speeds_msg.back_right_pwm_1 = 0;
-    pwm_speeds_msg.back__right_pwm_2 = std::abs(control_effort.back_right_control_effort);
+    pwm_speeds_msg.back_right_pwm_2 = std::abs(control_effort.back_right_control_effort);
   }
   else
   {
     pwm_speeds_msg.back_right_pwm_1 = std::abs(control_effort.back_right_control_effort);
-    pwm_speeds_msg.back__right_pwm_2 = 0;
+    pwm_speeds_msg.back_right_pwm_2 = 0;
   }
   wheel_pwm_pub_.publish(pwm_speeds_msg);
 }
