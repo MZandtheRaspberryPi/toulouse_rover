@@ -5,7 +5,7 @@ import rospy
 from toulouse_rover.msg import WheelPwmSpeeds
 
 SERIAL_PORT = None
-ENDIANNESS = "big"
+ENDIANNESS = "little"
 START_BYTE = 0x3.to_bytes(1, ENDIANNESS)
 END_BYTE = 0x4.to_bytes(1, ENDIANNESS)
 
@@ -18,8 +18,8 @@ def pwm_speed_callback(wheel_pwm_speeds_msg):
     back_left_pwm_2 = (wheel_pwm_speeds_msg.back_left_pwm_2).to_bytes(1, byteorder=ENDIANNESS)
     back_right_pwm_1 = (wheel_pwm_speeds_msg.back_right_pwm_1).to_bytes(1, byteorder=ENDIANNESS)
     back_right_pwm_2 = (wheel_pwm_speeds_msg.back_right_pwm_2).to_bytes(1, byteorder=ENDIANNESS)
-    rospy.loginfo("sending {} for back_right_pwm_1".format(back_right_pwm_1))
-    rospy.loginfo("sending {} for back_right_pwm_2".format(back_right_pwm_2))
+    rospy.logdebug("sending {} for back_right_pwm_1".format(back_right_pwm_1))
+    rospy.logdebug("sending {} for back_right_pwm_2".format(back_right_pwm_2))
 
     SERIAL_PORT.write(START_BYTE)
     SERIAL_PORT.write(motor_enable_pwm)
@@ -54,7 +54,7 @@ def main():
     global SERIAL_PORT, START_BYTE, END_BYTE, ENDIANNESS
     rospy.init_node('serial_motor_driver')
 
-    SERIAL_PORT = serial.Serial('/dev/ttyUSB0', 115200, timeout=0.050)
+    SERIAL_PORT = serial.Serial('/dev/ttyUSB1', 9600, timeout=0.050)
     rospy.Subscriber("/wheels/wheels_pwm_cmd", WheelPwmSpeeds, pwm_speed_callback)
 
     rate = rospy.Rate(40)

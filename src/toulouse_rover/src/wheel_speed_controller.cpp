@@ -395,9 +395,9 @@ void WheelSpeedController::setupPubsSubs(ros::NodeHandle& nh, const std::string 
 
 void WheelSpeedController::wheelSpeedCallback(const toulouse_rover::WheelSpeeds::ConstPtr& wheel_speeds)
 {
-  ROS_WARN("getting wheel speeds");
+  ROS_DEBUG("getting wheel speeds");
   const std::lock_guard<std::mutex> lock(speedUpdateMutex);
-  ROS_WARN("got wheel speeds");
+  ROS_DEBUG("got wheel speeds");
   wheel_speeds_ = *wheel_speeds;
 
   if (wheel_config_type_ == util::WheelConfigurationType::OMNI_WHEELS ||
