@@ -39,7 +39,7 @@ def adjust_received_bytes_for_esc_sequence(bytes_received: list) -> list:
             transformed_bytes_received.append(ESC_BYTE)
         else:
             transformed_bytes_received.append(bytes_received[i])
-    
+
     for byte_obj in transformed_bytes_received:
         ints_from_serial.append(int.from_bytes(byte_obj, ENDIANNESS))
 
@@ -96,9 +96,9 @@ def main():
     rospy.init_node('serial_motor_driver')
 
     SERIAL_PORT = serial.Serial('/dev/ttyUSB1', 57600, timeout=0.050)
-    rospy.Subscriber("/wheels/wheels_pwm_cmd", WheelPwmSpeeds, pwm_speed_callback)
+    rospy.Subscriber("/wheels/wheels_pwm_cmd", WheelPwmSpeeds, pwm_speed_callback, queue_size=1)
 
-    ENCODER_PUB = rospy.Publisher("/wheels/wheel_raw_enc_count", WheelEncoderCounts)
+    ENCODER_PUB = rospy.Publisher("/wheels/wheel_raw_enc_count", WheelEncoderCounts, queue_size=1)
 
     rate = rospy.Rate(40)
     while not rospy.is_shutdown():
