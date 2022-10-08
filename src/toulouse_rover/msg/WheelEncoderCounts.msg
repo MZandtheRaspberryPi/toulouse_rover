@@ -1,6 +1,6 @@
 Header header
 string wheel_configuration_type
-int32 front_left_adjusted_encoder_count
-int32 front_right_adjusted_encoder_count
-int32 back_left_adjusted_encoder_count
-int32 back_right_adjusted_encoder_count
+int32 front_left_encoder_count
+int32 front_right_encoder_count
+int32 back_left_encoder_count
+int32 back_right_encoder_count

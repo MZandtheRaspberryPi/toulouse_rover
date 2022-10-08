@@ -6,7 +6,6 @@ add_compile_options(-std=c++11)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 list(APPEND catkin_dependencies
-  i2cpwm_board
   roscpp
   rospy
   std_msgs
@@ -181,12 +180,7 @@ target_link_libraries(wheel_speed_calculator_node ${catkin_LIBRARIES} ${PROJECT_
 
 add_executable(wheel_speed_controller_node src/wheel_speed_controller_node.cpp)
 add_dependencies(wheel_speed_controller_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${${PROJECT_NAME}_lib_EXPORTED_TARGETS}  ${catkin_EXPORTED_TARGETS})
-if (${KERNELRELEASE} MATCHES "raspi$")
-    target_link_libraries(wheel_speed_controller_node ${catkin_LIBRARIES} ${PROJECT_NAME}_lib -lwiringPi)
-    set_target_properties(wheel_speed_controller_node PROPERTIES COMPILE_FLAGS "-DRPI")
-else()
-    target_link_libraries(wheel_speed_controller_node ${catkin_LIBRARIES} ${PROJECT_NAME}_lib)
-endif()
+target_link_libraries(wheel_speed_controller_node ${catkin_LIBRARIES} ${PROJECT_NAME}_lib)
 
 add_executable(odom_calculator_node src/odom_calculator_node.cpp)
 add_dependencies(odom_calculator_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})

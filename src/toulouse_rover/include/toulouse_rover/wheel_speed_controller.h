@@ -29,6 +29,9 @@
 
 namespace wheel_speed_controller
 {
+std::mutex speedUpdateMutex;
+toulouse_rover::WheelPwmSpeeds getZeroPwmSpeedsMsg();
+
 // Signal-safe flag for whether shutdown is requested
 sig_atomic_t volatile g_request_shutdown = 0;
 
@@ -37,18 +40,6 @@ void mySigIntHandler(int sig);
 
 // Replacement "shutdown" XMLRPC callback
 void shutdownCallback(XmlRpc::XmlRpcValue& params, XmlRpc::XmlRpcValue& result);
-
-std::mutex speedUpdateMutex;
-std::mutex frontLeftEncoderMutex;
-std::mutex frontRightEncoderMutex;
-std::mutex backLeftEncoderMutex;
-std::mutex backRightEncoderMutex;
-
-void genericInterupt(int index);
-void frontLeftInterupt();
-void frontRightInterupt();
-void backRightInterupt();
-void backLeftInterupt();
 
 struct controlEffort
 {
@@ -140,11 +131,10 @@ public:
   void spinOnce();
 
 private:
+  void rawEncoderCallback(const toulouse_rover::WheelEncoderCounts::ConstPtr& speeds_msg);
   void setupCustomSignalHandlers();
   void setupPubsSubs(ros::NodeHandle& nh, const std::string wheel_namespace);
   void setupGlobalCounters();
-  void setupServoArray();
-  void setupGPIO();
   void setupWheels(const util::WheelConfigurationType& wheel_config_type);
   void wheelSpeedCallback(const toulouse_rover::WheelSpeeds::ConstPtr& wheel_speeds);
   void publishWheelSetpoints(const toulouse_rover::WheelSpeeds& wheel_spds_to_ctrl);
@@ -152,17 +142,14 @@ private:
   void publishWheelStates();
   void publishAdjEncoderData();
   void publishWheelPwm(const controlEffort& control_effort);
-
   controlEffort get_control_efforts();
-  void updateAndPublishServoArray(const controlEffort& control_effort);
+
   ros::Rate loop_rate_;
 
   std::string wheel_namespace_;
 
-  i2cpwm_board::ServoArray servo_array_{};
-
   ros::Subscriber wheel_speed_sub_;
-  // ros::Publisher servos_absolute_pub_;
+  ros::Subscriber raw_encoder_sub_;
   ros::Publisher wheel_pwm_pub_;
   ros::Publisher encoder_pub_;
   ros::Publisher wheel_speed_actual_pub_;
@@ -174,6 +161,8 @@ private:
   FrontRightWheelSpeedController* front_right_speed_ctrl_;
   BackRightWheelSpeedController* back_right_speed_ctrl_;
   BackLeftWheelSpeedController* back_left_speed_ctrl_;
+
+  std::mutex encoder_mutex_;
 };
 
 }  // namespace wheel_speed_controller

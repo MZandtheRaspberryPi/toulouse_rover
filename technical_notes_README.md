@@ -40,6 +40,13 @@ I'm still figuring out how to use it without sudo, for the individual user. When
 To access GPIO pins as a normal user, follow this stack overflow: <https://askubuntu.com/questions/1230947/gpio-for-raspberry-pi-gpio-group>
 Install an RPi library and add ubuntu to dailout group then reboot.
 
+Eventually I moved away from wiringpi and ran all of the real time stuff on an arduino nano. I did have some weird bugs with udev rules I had setup for a lidar, to make a symlink to the serial port with a name. I had to remove this. Else I got these weird errors where my arduino would reset and not be found anymore:
+
+```
+dmesg
+ftdi_sio ttyUSB1: usb_serial_generic_read_bulk_callback - urb stopped: -32
+```
+
 In terms of controlling DC motors compile and run:
 
 ```
