@@ -48,7 +48,17 @@ byte addByteToArrAddingEscSequences(const byte& in_byte, byte* byte_arr, byte& b
 
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(57600);
+  while(!Serial.available()){
+          delay(1);
+  }
+
+  unsigned long start_time = millis();
+  double wait_time = 3000;
+  while (millis() - start_time < wait_time)
+  {
+    delay(1);
+  }
   
   pinMode(SLP_PIN, OUTPUT);
   pinMode(PWM_1, OUTPUT);
@@ -66,7 +76,6 @@ void setup() {
 }
 
 void loop() {
-
 /*
   if (digitalRead(leftInteruptPin) == LOW && leftPriorState == HIGH)
   {
@@ -78,8 +87,7 @@ void loop() {
     rightInteruptCount++;
   }
   rightPriorState = digitalRead(rightInteruptPin);
-*/
-
+  */
   recvBytesWithEndMarker();
   processReceivedData();
   sendBytesWithEndMarker();
@@ -94,7 +102,7 @@ void loop() {
 void recvBytesWithEndMarker() {
     static byte ndx = 0;
     byte rb;
-   
+
     while (Serial.available() > 0 && newDataRcv == false) {
         rb = Serial.read();
         if (rb != END_BYTE)
