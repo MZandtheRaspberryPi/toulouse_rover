@@ -6,7 +6,7 @@ const float WHEEL_SEP_LENGTH = .130;  // how far wheels are apart length meters
 const float WHEEL_SEP_WIDTH = .092;   // how far wheels are apart width meters
 const float WHEEL_RADIUS = .0315;     // radius of wheels meters
 const float WHEEL_CIRCUMFERENCE = WHEEL_RADIUS * 2 * M_PI;
-const int ENCODER_TICKS_PER_SECOND = 20;
+const int ENCODER_TICKS_PER_ROTATION = 20;
 
 const float MAX_PWM = 255;
 const float MIN_PWM = 110;

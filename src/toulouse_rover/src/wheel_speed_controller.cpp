@@ -274,13 +274,18 @@ int BaseWheelSpeedController::pwmFromWheelSpeed(float wheel_speed)
   }
   bool is_initialized_ = false;
 
-  float scaled_wheel_pwm = util::MIN_PWM + util::SLOPE_WHEEL_SPEED * (std::abs(wheel_speed) - util::MIN_WHEEL_SPEED);
-
-  if (scaled_wheel_pwm > util::MAX_PWM)
+  if (wheel_speed < util::MIN_WHEEL_SPEED)
   {
-    ROS_WARN("Wheel commanded to %f pwm, capping to the max of %f", scaled_wheel_pwm, util::MAX_PWM);
-    scaled_wheel_pwm = util::MAX_PWM;
+    ROS_WARN("Wheel commanded to %f radians per sec, flooring to the min of %f", wheel_speed, util::MIN_WHEEL_SPEED);
+    wheel_speed = util::MIN_WHEEL_SPEED;
   }
+  else if (wheel_speed > util::MAX_WHEEL_SPEED)
+  {
+    ROS_WARN("Wheel commanded to %f radians per sec, capping to the max of %f", wheel_speed, util::MAX_WHEEL_SPEED);
+    wheel_speed = util::MAX_WHEEL_SPEED;
+  }
+
+  float scaled_wheel_pwm = util::MIN_PWM + util::SLOPE_WHEEL_SPEED * (std::abs(wheel_speed) - util::MIN_WHEEL_SPEED);
 
   if (wheel_speed < 0)
   {
@@ -312,6 +317,13 @@ WheelSpeedController::WheelSpeedController(ros::NodeHandle& nh, std::string whee
       nh, wheel_namespace_ + "/back_right_wheel" + (use_pid ? "_pid_ns" : ""), use_pid, wheel_config_type);
   back_left_speed_ctrl_ = new BackLeftWheelSpeedController(
       nh, wheel_namespace_ + "/back_left_wheel" + (use_pid ? "_pid_ns" : ""), use_pid, wheel_config_type);
+
+  toulouse_rover::WheelEncoderCounts initial_enc_counts;
+  initial_enc_counts.back_left_encoder_count = 0;
+  initial_enc_counts.back_right_encoder_count = 0;
+  initial_enc_counts.front_left_encoder_count = 0;
+  initial_enc_counts.front_right_encoder_count = 0;
+  prior_enc_counts_ = initial_enc_counts;
 }
 
 WheelSpeedController::~WheelSpeedController()
@@ -502,28 +514,42 @@ void WheelSpeedController::rawEncoderCallback(const toulouse_rover::WheelEncoder
   const std::lock_guard<std::mutex> enc_lock(encoderUpdateMutex);
   const std::lock_guard<std::mutex> speed_lock(speedUpdateMutex);
 
+  double prior_raw_count;
+  double raw_count;
   double adjusted_counts;
+  float max_encoder_ticks_per_cycle =
+      loop_rate_.expectedCycleTime().toSec() * util::MAX_WHEEL_SPEED * util::ENCODER_TICKS_PER_ROTATION / (2 * M_PI);
+
   if (wheel_config_type_ == util::WheelConfigurationType::OMNI_WHEELS ||
       wheel_config_type_ == util::WheelConfigurationType::SKID_STEERING)
   {
-    adjusted_counts = wheel_speeds_.front_left_radians_per_sec >= 0 ? encoder_msg->front_left_encoder_count :
-                                                                      encoder_msg->front_left_encoder_count * -1;
-
+    prior_raw_count = prior_enc_counts_.front_left_encoder_count;
+    raw_count = encoder_msg->front_left_encoder_count;
+    raw_count = raw_count > max_encoder_ticks_per_cycle ? prior_raw_count : raw_count;
+    adjusted_counts = wheel_speeds_.front_left_radians_per_sec >= 0 ? raw_count : raw_count * -1;
     globalEncCounter[front_left_speed_ctrl_->encoderIndex_] =
         globalEncCounter[front_left_speed_ctrl_->encoderIndex_] + adjusted_counts;
 
-    adjusted_counts = wheel_speeds_.front_right_radians_per_sec >= 0 ? encoder_msg->front_right_encoder_count :
-                                                                       encoder_msg->front_right_encoder_count * -1;
+    prior_raw_count = prior_enc_counts_.front_right_encoder_count;
+    raw_count = encoder_msg->front_right_encoder_count;
+    raw_count = raw_count > max_encoder_ticks_per_cycle ? prior_raw_count : raw_count;
+    adjusted_counts = wheel_speeds_.front_right_radians_per_sec >= 0 ? raw_count : raw_count * -1;
     globalEncCounter[front_right_speed_ctrl_->encoderIndex_] += adjusted_counts;
   }
 
-  adjusted_counts = wheel_speeds_.back_left_radians_per_sec >= 0 ? encoder_msg->back_left_encoder_count :
-                                                                   encoder_msg->back_left_encoder_count * -1;
+  prior_raw_count = prior_enc_counts_.back_left_encoder_count;
+  raw_count = encoder_msg->back_left_encoder_count;
+  raw_count = raw_count > max_encoder_ticks_per_cycle ? prior_raw_count : raw_count;
+  adjusted_counts = wheel_speeds_.back_left_radians_per_sec >= 0 ? raw_count : raw_count * -1;
   globalEncCounter[back_left_speed_ctrl_->encoderIndex_] += adjusted_counts;
 
-  adjusted_counts = wheel_speeds_.back_right_radians_per_sec >= 0 ? encoder_msg->back_right_encoder_count :
-                                                                    encoder_msg->back_right_encoder_count * -1;
+  prior_raw_count = prior_enc_counts_.back_right_encoder_count;
+  raw_count = encoder_msg->back_right_encoder_count;
+  raw_count = raw_count > max_encoder_ticks_per_cycle ? prior_raw_count : raw_count;
+  adjusted_counts = wheel_speeds_.back_right_radians_per_sec >= 0 ? raw_count : raw_count * -1;
   globalEncCounter[back_right_speed_ctrl_->encoderIndex_] += adjusted_counts;
+
+  prior_enc_counts_ = *encoder_msg;
 }
 
 void WheelSpeedController::publishAdjEncoderData()

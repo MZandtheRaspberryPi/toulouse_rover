@@ -163,6 +163,8 @@ private:
   FrontRightWheelSpeedController* front_right_speed_ctrl_;
   BackRightWheelSpeedController* back_right_speed_ctrl_;
   BackLeftWheelSpeedController* back_left_speed_ctrl_;
+
+  toulouse_rover::WheelEncoderCounts prior_enc_counts_;
 };
 
 }  // namespace wheel_speed_controller

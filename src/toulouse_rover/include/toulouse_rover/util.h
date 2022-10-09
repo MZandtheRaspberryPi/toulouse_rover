@@ -19,7 +19,7 @@ extern const float WHEEL_SEP_LENGTH;  // how far wheels are apart length meters
 extern const float WHEEL_SEP_WIDTH;   // how far wheels are apart width meters
 extern const float WHEEL_RADIUS;      // radius of wheels meters
 extern const float WHEEL_CIRCUMFERENCE;
-extern const int ENCODER_TICKS_PER_SECOND;
+extern const int ENCODER_TICKS_PER_ROTATION;
 
 extern const float MAX_PWM;
 extern const float MIN_PWM;
