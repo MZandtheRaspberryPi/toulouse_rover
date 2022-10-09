@@ -276,17 +276,18 @@ int BaseWheelSpeedController::pwmFromWheelSpeed(float wheel_speed)
 
   bool is_wheel_backwards_rotation = wheel_speed < 0;
   wheel_speed = std::abs(wheel_speed);
+  std::string backwards_char = is_wheel_backwards_rotation ? " -" : " ";
 
   if (wheel_speed < util::MIN_WHEEL_SPEED)
   {
-    ROS_WARN("Wheel commanded to%s%f radians per sec, flooring to the min of %f",
-             is_wheel_backwards_rotation ? " -" : " ", wheel_speed, util::MIN_WHEEL_SPEED);
+    ROS_WARN("Wheel commanded to%s%f radians per sec, flooring to the min of%s%f", backwards_char.c_str(), wheel_speed,
+             backwards_char.c_str(), util::MIN_WHEEL_SPEED);
     wheel_speed = util::MIN_WHEEL_SPEED;
   }
   else if (wheel_speed > util::MAX_WHEEL_SPEED)
   {
-    ROS_WARN("Wheel commanded to%s%f radians per sec, capping to the max of %f",
-             is_wheel_backwards_rotation ? " -" : " ", wheel_speed, util::MAX_WHEEL_SPEED);
+    ROS_WARN("Wheel commanded to%s%f radians per sec, capping to the max of%s%f", backwards_char.c_str(), wheel_speed,
+             backwards_char.c_str(), util::MAX_WHEEL_SPEED);
     wheel_speed = util::MAX_WHEEL_SPEED;
   }
 
