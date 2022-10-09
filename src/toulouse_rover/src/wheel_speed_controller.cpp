@@ -242,6 +242,7 @@ void BaseWheelSpeedController::publishSetpoint(const float& speed_radians_per_se
 
 void BaseWheelSpeedController::publishWheelState()
 {
+  const std::lock_guard<std::mutex> enc_lock(encoderUpdateMutex);
   std_msgs::Float64 state;
   double currentEncoderCounts = globalEncCounter[encoderIndex_];
   double changeEncoderCounts = currentEncoderCounts - priorEncoderCounts_;
@@ -496,31 +497,38 @@ void WheelSpeedController::publishWheelPwm(const controlEffort& control_effort)
   wheel_pwm_pub_.publish(pwm_speeds_msg);
 }
 
-void WheelSpeedController::rawEncoderCallback(const toulouse_rover::WheelEncoderCounts::ConstPtr& speeds_msg)
+void WheelSpeedController::rawEncoderCallback(const toulouse_rover::WheelEncoderCounts::ConstPtr& encoder_msg)
 {
-  const std::lock_guard<std::mutex> enc_lock(encoder_mutex_);
+  const std::lock_guard<std::mutex> enc_lock(encoderUpdateMutex);
   const std::lock_guard<std::mutex> speed_lock(speedUpdateMutex);
 
-  double adjusted_counts = wheel_speeds_.front_left_radians_per_sec >= 0 ? speeds_msg->front_left_encoder_count :
-                                                                           speeds_msg->front_left_encoder_count * -1;
-  globalEncCounter[front_left_speed_ctrl_->encoderIndex_] += adjusted_counts;
+  double adjusted_counts;
+  if (wheel_config_type_ == util::WheelConfigurationType::OMNI_WHEELS ||
+      wheel_config_type_ == util::WheelConfigurationType::SKID_STEERING)
+  {
+    adjusted_counts = wheel_speeds_.front_left_radians_per_sec >= 0 ? encoder_msg->front_left_encoder_count :
+                                                                      encoder_msg->front_left_encoder_count * -1;
 
-  adjusted_counts = wheel_speeds_.front_right_radians_per_sec >= 0 ? speeds_msg->front_right_encoder_count :
-                                                                     speeds_msg->front_right_encoder_count * -1;
-  globalEncCounter[front_right_speed_ctrl_->encoderIndex_] += adjusted_counts;
+    globalEncCounter[front_left_speed_ctrl_->encoderIndex_] =
+        globalEncCounter[front_left_speed_ctrl_->encoderIndex_] + adjusted_counts;
 
-  adjusted_counts = wheel_speeds_.back_left_radians_per_sec >= 0 ? speeds_msg->back_left_encoder_count :
-                                                                   speeds_msg->back_left_encoder_count * -1;
+    adjusted_counts = wheel_speeds_.front_right_radians_per_sec >= 0 ? encoder_msg->front_right_encoder_count :
+                                                                       encoder_msg->front_right_encoder_count * -1;
+    globalEncCounter[front_right_speed_ctrl_->encoderIndex_] += adjusted_counts;
+  }
+
+  adjusted_counts = wheel_speeds_.back_left_radians_per_sec >= 0 ? encoder_msg->back_left_encoder_count :
+                                                                   encoder_msg->back_left_encoder_count * -1;
   globalEncCounter[back_left_speed_ctrl_->encoderIndex_] += adjusted_counts;
 
-  adjusted_counts = wheel_speeds_.back_right_radians_per_sec >= 0 ? speeds_msg->back_right_encoder_count :
-                                                                    speeds_msg->back_right_encoder_count * -1;
+  adjusted_counts = wheel_speeds_.back_right_radians_per_sec >= 0 ? encoder_msg->back_right_encoder_count :
+                                                                    encoder_msg->back_right_encoder_count * -1;
   globalEncCounter[back_right_speed_ctrl_->encoderIndex_] += adjusted_counts;
 }
 
 void WheelSpeedController::publishAdjEncoderData()
 {
-  const std::lock_guard<std::mutex> enc_lock(encoder_mutex_);
+  const std::lock_guard<std::mutex> enc_lock(encoderUpdateMutex);
   toulouse_rover::WheelEncoderCounts wheel_adj_encoder_counts;
   if (wheel_config_type_ == util::WheelConfigurationType::OMNI_WHEELS ||
       wheel_config_type_ == util::WheelConfigurationType::SKID_STEERING)
@@ -551,13 +559,15 @@ void WheelSpeedController::zeroOutMotors()
 
 void WheelSpeedController::spinOnce()
 {
+  controlEffort control_effort;
   {
-    const std::lock_guard<std::mutex> lock(speedUpdateMutex);
+    const std::lock_guard<std::mutex> speed_lock(speedUpdateMutex);
     publishWheelSetpoints(wheel_speeds_);
     publishAdjEncoderData();
     publishWheelStates();
+
+    control_effort = get_control_efforts();
   }
-  controlEffort control_effort = get_control_efforts();
   publishWheelPwm(control_effort);
 
   loop_rate_.sleep();

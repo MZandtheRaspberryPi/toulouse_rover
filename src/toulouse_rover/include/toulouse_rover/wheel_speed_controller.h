@@ -30,6 +30,8 @@
 namespace wheel_speed_controller
 {
 std::mutex speedUpdateMutex;
+
+std::mutex encoderUpdateMutex;
 toulouse_rover::WheelPwmSpeeds getZeroPwmSpeedsMsg();
 
 // Signal-safe flag for whether shutdown is requested
@@ -161,8 +163,6 @@ private:
   FrontRightWheelSpeedController* front_right_speed_ctrl_;
   BackRightWheelSpeedController* back_right_speed_ctrl_;
   BackLeftWheelSpeedController* back_left_speed_ctrl_;
-
-  std::mutex encoder_mutex_;
 };
 
 }  // namespace wheel_speed_controller
