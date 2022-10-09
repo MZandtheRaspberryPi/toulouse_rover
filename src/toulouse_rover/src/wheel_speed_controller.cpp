@@ -254,7 +254,7 @@ void BaseWheelSpeedController::publishWheelState()
   // state.data = changeEncoderCounts * 2 * M_PI / encTicksPerRotation_ /
   // elapsed_time_s.toSec(); // 2 pi radians is 20 encoder counts, so this will
   // give us radians per second
-  state.data = changeEncoderCounts / elapsed_time_s.toSec();
+  state.data = changeEncoderCounts * 2 * M_PI / (elapsed_time_s.toSec() * util::ENCODER_TICKS_PER_ROTATION);
   current_wheel_speed_ = state.data;
   ROS_DEBUG("%s wheel state is now: %f", wheel_namespace_.c_str(), current_wheel_speed_);
   state_pub_.publish(state);
@@ -443,9 +443,9 @@ void WheelSpeedController::publishWheelStates()
     current_speeds.front_right_radians_per_sec = front_right_speed_ctrl_->getWheelSpeed();
   }
   back_right_speed_ctrl_->publishWheelState();
-  current_speeds.back_left_radians_per_sec = back_right_speed_ctrl_->getWheelSpeed();
+  current_speeds.back_right_radians_per_sec = back_right_speed_ctrl_->getWheelSpeed();
   back_left_speed_ctrl_->publishWheelState();
-  current_speeds.back_right_radians_per_sec = back_left_speed_ctrl_->getWheelSpeed();
+  current_speeds.back_left_radians_per_sec = back_left_speed_ctrl_->getWheelSpeed();
 
   wheel_speed_actual_pub_.publish(current_speeds);
 }
