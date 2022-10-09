@@ -443,9 +443,9 @@ void WheelSpeedController::publishWheelStates()
     current_speeds.front_right_radians_per_sec = front_right_speed_ctrl_->getWheelSpeed();
   }
   back_right_speed_ctrl_->publishWheelState();
-  current_speeds.back_left_radians_per_sec = back_right_speed_ctrl_->getWheelSpeed();
+  current_speeds.back_right_radians_per_sec = back_right_speed_ctrl_->getWheelSpeed();
   back_left_speed_ctrl_->publishWheelState();
-  current_speeds.back_right_radians_per_sec = back_left_speed_ctrl_->getWheelSpeed();
+  current_speeds.back_left_radians_per_sec = back_left_speed_ctrl_->getWheelSpeed();
 
   wheel_speed_actual_pub_.publish(current_speeds);
 }
