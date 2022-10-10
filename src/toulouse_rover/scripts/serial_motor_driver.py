@@ -86,8 +86,13 @@ def parse_serial_msg():
     encoder_msg.header.stamp = rospy.Time.now()
     encoder_msg.front_left_encoder_count = 0
     encoder_msg.front_right_encoder_count = 0
-    encoder_msg.back_left_encoder_count = ints_from_serial[-2]
-    encoder_msg.back_right_encoder_count = ints_from_serial[-1]
+    encoder_msg.motor_enable = ints_from_serial[0]
+    encoder_msg.back_left_pwm_1 = ints_from_serial[1]
+    encoder_msg.back_left_pwm_2 = ints_from_serial[2]
+    encoder_msg.back_right_pwm_1 = ints_from_serial[3]
+    encoder_msg.back_right_pwm_2 = ints_from_serial[4]
+    encoder_msg.back_left_encoder_count = ints_from_serial[5]
+    encoder_msg.back_right_encoder_count = ints_from_serial[6]
     ENCODER_PUB.publish(encoder_msg)
 
 

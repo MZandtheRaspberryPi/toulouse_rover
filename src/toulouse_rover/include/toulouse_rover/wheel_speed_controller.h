@@ -48,6 +48,10 @@ struct controlEffort
   float back_left_control_effort = 0;
 };
 
+double adjustEncoderData(const double& raw_count, const double& prior_raw_count,
+                         const float& max_encoder_ticks_per_cycle, const int& pwm_speed_1, const int& pwm_speed_2,
+                         const float& wheel_speed);
+
 class BaseWheelSpeedController
 {
 public:
