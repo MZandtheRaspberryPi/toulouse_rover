@@ -522,6 +522,8 @@ void WheelSpeedController::rawEncoderCallback(const toulouse_rover::WheelEncoder
   double prior_raw_count;
   double raw_count;
   double adjusted_counts;
+  // sometimes if wheels get stopped at just the right spot the ir encoders flip out and generate a lot of ticks
+  // hence bounding it to a reasonable number
   float max_encoder_ticks_per_cycle =
       loop_rate_.expectedCycleTime().toSec() * util::MAX_WHEEL_SPEED * util::ENCODER_TICKS_PER_ROTATION / (2 * M_PI);
 
@@ -531,12 +533,14 @@ void WheelSpeedController::rawEncoderCallback(const toulouse_rover::WheelEncoder
     prior_raw_count = prior_enc_counts_.front_left_encoder_count;
     raw_count = encoder_msg->front_left_encoder_count;
     raw_count = raw_count > max_encoder_ticks_per_cycle ? prior_raw_count : raw_count;
+    raw_count = raw_count > max_encoder_ticks_per_cycle ? 0 : raw_count;
     adjusted_counts = wheel_speeds_.front_left_radians_per_sec >= 0 ? raw_count : raw_count * -1;
     globalEncCounter[front_left_speed_ctrl_->encoderIndex_] =
         globalEncCounter[front_left_speed_ctrl_->encoderIndex_] + adjusted_counts;
 
     prior_raw_count = prior_enc_counts_.front_right_encoder_count;
     raw_count = encoder_msg->front_right_encoder_count;
+    raw_count = raw_count > max_encoder_ticks_per_cycle ? prior_raw_count : raw_count;
     raw_count = raw_count > max_encoder_ticks_per_cycle ? prior_raw_count : raw_count;
     adjusted_counts = wheel_speeds_.front_right_radians_per_sec >= 0 ? raw_count : raw_count * -1;
     globalEncCounter[front_right_speed_ctrl_->encoderIndex_] += adjusted_counts;
@@ -545,12 +549,14 @@ void WheelSpeedController::rawEncoderCallback(const toulouse_rover::WheelEncoder
   prior_raw_count = prior_enc_counts_.back_left_encoder_count;
   raw_count = encoder_msg->back_left_encoder_count;
   raw_count = raw_count > max_encoder_ticks_per_cycle ? prior_raw_count : raw_count;
+  raw_count = raw_count > max_encoder_ticks_per_cycle ? 0 : raw_count;
   adjusted_counts = wheel_speeds_.back_left_radians_per_sec >= 0 ? raw_count : raw_count * -1;
   globalEncCounter[back_left_speed_ctrl_->encoderIndex_] += adjusted_counts;
 
   prior_raw_count = prior_enc_counts_.back_right_encoder_count;
   raw_count = encoder_msg->back_right_encoder_count;
   raw_count = raw_count > max_encoder_ticks_per_cycle ? prior_raw_count : raw_count;
+  raw_count = raw_count > max_encoder_ticks_per_cycle ? 0 : raw_count;
   adjusted_counts = wheel_speeds_.back_right_radians_per_sec >= 0 ? raw_count : raw_count * -1;
   globalEncCounter[back_right_speed_ctrl_->encoderIndex_] += adjusted_counts;
 
