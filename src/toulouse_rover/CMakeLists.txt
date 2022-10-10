@@ -158,22 +158,6 @@ else()
     message([DEBUG] Not building on a Raspberry Pi)
 endif()
 
-add_executable(test_motors_ros src/hardware_testing_scripts/test_motors_ros.cpp)
-if (${KERNELRELEASE} MATCHES "raspi$")
-    target_link_libraries(test_motors_ros ${catkin_LIBRARIES} -lwiringPi)
-    set_target_properties(test_motors_ros PROPERTIES COMPILE_FLAGS "-DRPI")
-else()
-    target_link_libraries(test_motors_ros ${catkin_LIBRARIES})
-endif()
-
-add_executable(test_ir_ros src/hardware_testing_scripts/test_ir_ros.cpp)
-if (${KERNELRELEASE} MATCHES "raspi$")
-    target_link_libraries(test_ir_ros -lwiringPi ${catkin_LIBRARIES})
-    set_target_properties(test_ir_ros PROPERTIES COMPILE_FLAGS "-DRPI")
-else()
-    target_link_libraries(test_ir_ros ${catkin_LIBRARIES})
-endif()
-
 add_executable(wheel_speed_calculator_node src/wheel_speed_calculator_node.cpp)
 add_dependencies(wheel_speed_calculator_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(wheel_speed_calculator_node ${catkin_LIBRARIES} ${PROJECT_NAME}_lib)
@@ -185,11 +169,6 @@ target_link_libraries(wheel_speed_controller_node ${catkin_LIBRARIES} ${PROJECT_
 add_executable(odom_calculator_node src/odom_calculator_node.cpp)
 add_dependencies(odom_calculator_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(odom_calculator_node ${catkin_LIBRARIES} ${PROJECT_NAME}_lib)
-
-## Add cmake target dependencies of the executable
-## same as for the library above
-add_dependencies(test_motors_ros ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(test_ir_ros ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 #############
 ## Install ##

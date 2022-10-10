@@ -13,9 +13,6 @@
 
 #include <mutex>
 
-#include "i2cpwm_board/Servo.h"
-#include "i2cpwm_board/ServoArray.h"
-
 // TODO: MZ, put wheel objects into controlle class?
 
 #include <ros/xmlrpc_manager.h>
