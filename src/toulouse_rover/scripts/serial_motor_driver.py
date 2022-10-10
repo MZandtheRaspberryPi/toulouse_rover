@@ -81,7 +81,7 @@ def parse_serial_msg():
     log_str = "received: "
     for int_data in ints_from_serial:
         log_str += "{},".format(int_data)
-    rospy.loginfo(log_str[:-1])
+    rospy.logdebug(log_str[:-1])
     encoder_msg = WheelEncoderCounts()
     encoder_msg.header.stamp = rospy.Time.now()
     encoder_msg.front_left_encoder_count = 0

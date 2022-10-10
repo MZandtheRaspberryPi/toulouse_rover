@@ -27,7 +27,9 @@
   <node pkg="toulouse_rover" name="odom_calculator_node" type="odom_calculator_node"  output="screen"> </node>
 
   <!-- -->
-  <include file="$(find ydlidar_ros)/launch/X4.launch" if="$(arg autonomous_mode)"/>
+  <include file="$(find ydlidar_ros)/launch/X4.launch" if="$(arg autonomous_mode)">
+    <arg name="port_lidar" value="/dev/ttyUSB0" />
+  </include>
 
   <!-- loading urdf model of robot -->
   <param name="robot_description" textfile="$(find toulouse_rover)/urdf/toulouse.urdf.xacro"/>
@@ -38,9 +40,7 @@
 
   <!-- Run the map server -->  
   <node name="map_server" pkg="map_server" type="map_server" args="$(find toulouse_rover)/maps/map_mz_room.yaml" if="$(arg autonomous_mode)" /> 
-  <!-- useful for building a map off of lidar data
-  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" args="scan:=scan"/>
- -->
+
   <!-- Run AMCL  -->
   <include file="$(find amcl)/examples/amcl_diff.launch" if="$(arg autonomous_mode)"  >
   </include> 
