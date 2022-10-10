@@ -596,6 +596,7 @@ void WheelSpeedController::zeroOutMotors()
 
 void WheelSpeedController::spinOnce()
 {
+  ros::spinOnce();
   controlEffort control_effort;
   {
     const std::lock_guard<std::mutex> speed_lock(speedUpdateMutex);
