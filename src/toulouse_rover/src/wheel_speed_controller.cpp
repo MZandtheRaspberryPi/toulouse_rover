@@ -561,28 +561,32 @@ void WheelSpeedController::rawEncoderCallback(const toulouse_rover::WheelEncoder
   {
     prior_raw_count = prior_enc_counts_.front_left_encoder_count;
     raw_count = encoder_msg->front_left_encoder_count;
-    adjustEncoderData(raw_count, prior_raw_count, max_encoder_ticks_per_cycle, encoder_msg->back_left_pwm_1,
-                      encoder_msg->back_left_pwm_2, wheel_speeds_.front_left_radians_per_sec);
+    adjusted_counts =
+        adjustEncoderData(raw_count, prior_raw_count, max_encoder_ticks_per_cycle, encoder_msg->back_left_pwm_1,
+                          encoder_msg->back_left_pwm_2, wheel_speeds_.front_left_radians_per_sec);
     globalEncCounter[front_left_speed_ctrl_->encoderIndex_] =
         globalEncCounter[front_left_speed_ctrl_->encoderIndex_] + adjusted_counts;
 
     prior_raw_count = prior_enc_counts_.front_right_encoder_count;
     raw_count = encoder_msg->front_right_encoder_count;
-    adjustEncoderData(raw_count, prior_raw_count, max_encoder_ticks_per_cycle, encoder_msg->back_left_pwm_1,
-                      encoder_msg->back_left_pwm_2, wheel_speeds_.front_right_radians_per_sec);
+    adjusted_counts =
+        adjustEncoderData(raw_count, prior_raw_count, max_encoder_ticks_per_cycle, encoder_msg->back_left_pwm_1,
+                          encoder_msg->back_left_pwm_2, wheel_speeds_.front_right_radians_per_sec);
     globalEncCounter[front_right_speed_ctrl_->encoderIndex_] += adjusted_counts;
   }
 
   prior_raw_count = prior_enc_counts_.back_left_encoder_count;
   raw_count = encoder_msg->back_left_encoder_count;
-  adjustEncoderData(raw_count, prior_raw_count, max_encoder_ticks_per_cycle, encoder_msg->back_left_pwm_1,
-                    encoder_msg->back_left_pwm_2, wheel_speeds_.back_left_radians_per_sec);
+  adjusted_counts =
+      adjustEncoderData(raw_count, prior_raw_count, max_encoder_ticks_per_cycle, encoder_msg->back_left_pwm_1,
+                        encoder_msg->back_left_pwm_2, wheel_speeds_.back_left_radians_per_sec);
   globalEncCounter[back_left_speed_ctrl_->encoderIndex_] += adjusted_counts;
 
   prior_raw_count = prior_enc_counts_.back_right_encoder_count;
   raw_count = encoder_msg->back_right_encoder_count;
-  adjustEncoderData(raw_count, prior_raw_count, max_encoder_ticks_per_cycle, encoder_msg->back_right_pwm_1,
-                    encoder_msg->back_right_pwm_2, wheel_speeds_.back_right_radians_per_sec);
+  adjusted_counts =
+      adjustEncoderData(raw_count, prior_raw_count, max_encoder_ticks_per_cycle, encoder_msg->back_right_pwm_1,
+                        encoder_msg->back_right_pwm_2, wheel_speeds_.back_right_radians_per_sec);
   globalEncCounter[back_right_speed_ctrl_->encoderIndex_] += adjusted_counts;
 
   prior_enc_counts_ = *encoder_msg;
