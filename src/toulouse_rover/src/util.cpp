@@ -6,16 +6,16 @@ const float WHEEL_SEP_LENGTH = .130;  // how far wheels are apart length meters
 const float WHEEL_SEP_WIDTH = .092;   // how far wheels are apart width meters
 const float WHEEL_RADIUS = .0315;     // radius of wheels meters
 const float WHEEL_CIRCUMFERENCE = WHEEL_RADIUS * 2 * M_PI;
-const int ENCODER_TICKS_PER_SECOND = 20;
+const int ENCODER_TICKS_PER_ROTATION = 20;
 
 const float MAX_PWM = 255;
-const float MIN_PWM = 20;
+const float MIN_PWM = 110;
 const float MAX_PID_CONTROL = 1;
 const float MIN_PID_CONTROL = 0;
 const float SLOPE_PID = (MAX_PWM - MIN_PWM) / (MAX_PID_CONTROL - MIN_PID_CONTROL);
 
 const float MAX_WHEEL_SPEED = 6 * M_PI;
-const float MIN_WHEEL_SPEED = 0.;
+const float MIN_WHEEL_SPEED = 3 * M_PI;
 const float SLOPE_WHEEL_SPEED = (MAX_PWM - MIN_PWM) / (MAX_WHEEL_SPEED - MIN_WHEEL_SPEED);
 
 const std::vector<std::string> POSSIBLE_WHEEL_CONFIGURATION_STRS{ "omni_wheels", "skid_steering",

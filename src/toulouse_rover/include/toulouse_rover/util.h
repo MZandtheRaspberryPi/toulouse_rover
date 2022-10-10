@@ -19,7 +19,7 @@ extern const float WHEEL_SEP_LENGTH;  // how far wheels are apart length meters
 extern const float WHEEL_SEP_WIDTH;   // how far wheels are apart width meters
 extern const float WHEEL_RADIUS;      // radius of wheels meters
 extern const float WHEEL_CIRCUMFERENCE;
-extern const int ENCODER_TICKS_PER_SECOND;
+extern const int ENCODER_TICKS_PER_ROTATION;
 
 extern const float MAX_PWM;
 extern const float MIN_PWM;
@@ -28,10 +28,14 @@ extern const float MIN_PID_CONTROL;
 extern const float SLOPE_PID;
 
 // MAX I saw, with wheels not on ground, was about 60 encoder ticks per second,
-// so 3 rotations, so 6 PI. we will get this by going about .22 meters per
+// so 3 rotations, so 6 PI. Wheels have radius of .0315, circumfrence 0.198
+// so if 3 rotations a second, 0.198 * 3 meters per second, this is 0.594meters/sec
 // second in x direction, so this is our max speed
-// TODO: Calculate MIN Speed by setting wheels to min PWM and seeing how fast
-// they go in radians
+// motors off the ground didnt really start moving until 110 pwm, and when they were doing 11pwm
+// saw 3 or 4 encoder ticks per 0.1 seconds. This is 30 ticks per second, or 1.5 rotations,
+// so 3 PI radians. or 0.198 circumfrence * 1.5 = 0.297 meters per second
+// this min speed is wheels off the ground, on the ground gotta overcome friction and other stuff
+// and will likely be a higher min speed.
 extern const float MAX_WHEEL_SPEED;
 extern const float MIN_WHEEL_SPEED;
 extern const float SLOPE_WHEEL_SPEED;

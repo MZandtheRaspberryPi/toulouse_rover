@@ -4,8 +4,7 @@
    <arg name="launch_battery_monitor" default="false" />
    <arg name="wheel_namespace" default="wheels" />
    <arg name="wheel_config_type" default="differential_drive" />
-   <arg name="speed_controller_loop_rate" default="20.0" />
-
+   <arg name="speed_controller_loop_rate" default="5.0" />
    
 
   <param name="wheel_namespace" type="str" value="$(arg wheel_namespace)" />

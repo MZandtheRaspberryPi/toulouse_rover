@@ -40,10 +40,38 @@ I'm still figuring out how to use it without sudo, for the individual user. When
 To access GPIO pins as a normal user, follow this stack overflow: <https://askubuntu.com/questions/1230947/gpio-for-raspberry-pi-gpio-group>
 Install an RPi library and add ubuntu to dailout group then reboot.
 
-Eventually I moved away from wiringpi and ran all of the real time stuff on an arduino nano. I did have some weird bugs with udev rules I had setup for a lidar, to make a symlink to the serial port with a name. I had to remove this. Else I got these weird errors where my arduino would reset and not be found anymore:
+Eventually I moved away from wiringpi and ran all of the real time stuff on an arduino nano. I did have some weird bugs with udev rules I had setup for a lidar, to make a symlink to the serial port with a name. I had to remove this. Else I got these weird errors where my arduino would reset and not be found anymore. I eventually realized i start sending data without waiting for the bus to be up: <https://forums.raspberrypi.com/viewtopic.php?t=331475>  adding a `while(!Serial.available())` loop helped.
+
+plug it and replug it, and it doesnt come back...
 
 ```
 dmesg
+
+[   52.647330] usb 1-1.4: USB disconnect, device number 5
+[   52.649214] ftdi_sio ttyUSB1: FTDI USB Serial Device converter now disconnected from ttyUSB1
+[   52.649313] ftdi_sio 1-1.4:1.0: device disconnected
+[   55.685520] usb 1-1.3: new full-speed USB device number 6 using xhci_hcd
+[   55.766008] usb 1-1.3: Device not responding to setup address.
+[   55.973750] usb 1-1.3: Device not responding to setup address.
+[   56.181530] usb 1-1.3: device not accepting address 6, error -71
+[   56.265534] usb 1-1.3: new full-speed USB device number 7 using xhci_hcd
+[   56.345808] usb 1-1.3: device descriptor read/64, error -32
+[   56.537736] usb 1-1.3: device descriptor read/64, error -32
+[   56.650061] usb 1-1-port3: attempt power cycle
+[   57.253535] usb 1-1.3: new full-speed USB device number 8 using xhci_hcd
+[   57.253798] usb 1-1.3: Device not responding to setup address.
+[   57.461758] usb 1-1.3: Device not responding to setup address.
+[   57.669535] usb 1-1.3: device not accepting address 8, error -71
+[   57.753509] usb 1-1.3: new full-speed USB device number 9 using xhci_hcd
+[   57.753771] usb 1-1.3: Device not responding to setup address.
+[   57.961807] usb 1-1.3: Device not responding to setup address.
+[   58.169537] usb 1-1.3: device not accepting address 9, error -71
+[   58.176208] usb 1-1-port3: unable to enumerate USB device
+```
+
+and
+
+```
 ftdi_sio ttyUSB1: usb_serial_generic_read_bulk_callback - urb stopped: -32
 ```
 
