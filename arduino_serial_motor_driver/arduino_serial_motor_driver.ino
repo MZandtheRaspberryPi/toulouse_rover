@@ -54,7 +54,7 @@ void setup() {
   }
 
   unsigned long start_time = millis();
-  double wait_time = 3000;
+  double wait_time = 1000;
   while (millis() - start_time < wait_time)
   {
     delay(1);
