@@ -16,11 +16,10 @@ OdomCalculator::OdomCalculator(ros::NodeHandle& nh, util::WheelConfigurationType
 
 void OdomCalculator::wheelSpeedCallback(const toulouse_rover::WheelSpeeds::ConstPtr& speeds_msg)
 {
-  // compute odometry in a typical way given the velocities of the robot
-  double speed_front_left = util::convert_radians_per_sec_to_meters_per_sec(speeds_msg->front_left_radians_per_sec);
-  double speed_front_right = util::convert_radians_per_sec_to_meters_per_sec(speeds_msg->front_right_radians_per_sec);
-  double speed_back_left = util::convert_radians_per_sec_to_meters_per_sec(speeds_msg->back_left_radians_per_sec);
-  double speed_back_right = util::convert_radians_per_sec_to_meters_per_sec(speeds_msg->back_right_radians_per_sec);
+  double speed_front_left = speeds_msg->front_left_radians_per_sec;
+  double speed_front_right = speeds_msg->front_right_radians_per_sec;
+  double speed_back_left = speeds_msg->back_left_radians_per_sec;
+  double speed_back_right = speeds_msg->back_right_radians_per_sec;
 
   odom_calculator::Velocities velocities =
       calc_velocities(speed_front_left, speed_front_right, speed_back_left, speed_back_right);

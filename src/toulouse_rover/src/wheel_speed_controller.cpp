@@ -279,14 +279,14 @@ int BaseWheelSpeedController::pwmFromWheelSpeed(float wheel_speed)
 
   if (wheel_speed < util::MIN_WHEEL_SPEED)
   {
-    ROS_WARN("Wheel commanded to %f (absolute) radians per sec, flooring to the min of %f. Backwards flag is: %d.",
-             wheel_speed, util::MIN_WHEEL_SPEED, is_wheel_backwards_rotation);
+    ROS_WARN("%s commanded to %f (absolute) radians per sec, flooring to the min of %f. Backwards flag is: %d.",
+             wheel_namespace_.c_str(), wheel_speed, util::MIN_WHEEL_SPEED, is_wheel_backwards_rotation);
     wheel_speed = util::MIN_WHEEL_SPEED;
   }
   else if (wheel_speed > util::MAX_WHEEL_SPEED)
   {
-    ROS_WARN("Wheel commanded to %f (absolute) radians per sec, capping to the max of %f. Backwards flag is: %d.",
-             wheel_speed, util::MAX_WHEEL_SPEED, is_wheel_backwards_rotation);
+    ROS_WARN("%s commanded to %f (absolute) radians per sec, capping to the max of %f. Backwards flag is: %d.",
+             wheel_namespace_.c_str(), wheel_speed, util::MAX_WHEEL_SPEED, is_wheel_backwards_rotation);
     wheel_speed = util::MAX_WHEEL_SPEED;
   }
 
