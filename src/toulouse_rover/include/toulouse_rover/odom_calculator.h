@@ -47,7 +47,7 @@ struct OdomRosMessages
 class OdomCalculator
 {
 public:
-  OdomCalculator(ros::NodeHandle& nh, util::WheelConfigurationType odom_type, std::string wheel_namespace);
+  OdomCalculator(ros::NodeHandle& nh, util::WheelConfigurationType odom_type, std::string wheel_namespace, std::string odom_topic, std::string odom_frame_id);
   Velocities calc_velocities(double speed_front_left, double speed_front_right, double speed_back_left,
                              double speed_back_right);
   PositionChange calc_position_change(Velocities velocities);
@@ -65,6 +65,9 @@ private:
   ros::Publisher odom_pub_;
   ros::Subscriber wheel_speed_subscriber_;
   std::string wheel_namespace_;
+  std::string odom_topic_;
+  std::string odom_frame_id_;
+
 };
 
 }  // namespace odom_calculator
