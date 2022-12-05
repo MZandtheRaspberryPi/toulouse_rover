@@ -9,3 +9,9 @@ TrajectoryPlannerROS:
   acc_lim_y: 2.5
 
   holonomic_robot: false
+
+  # toulouse doesnt have good control
+  # over velocities, hence the huge
+  # yaw tolerance
+  yaw_goal_tolerance: 1
+  xy_goal_tolerance: 0.25

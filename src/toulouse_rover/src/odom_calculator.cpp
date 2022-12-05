@@ -3,13 +3,13 @@
 namespace odom_calculator
 {
 OdomCalculator::OdomCalculator(ros::NodeHandle& nh, util::WheelConfigurationType odom_type,
-                               std::string wheel_namespace_str)
-  : odom_type_(odom_type), wheel_namespace_(wheel_namespace_str)
+                               std::string wheel_namespace_str, std::string odom_topic, std::string odom_frame_id)
+  : odom_type_(odom_type), wheel_namespace_(wheel_namespace_str), odom_topic_(odom_topic), odom_frame_id_(odom_frame_id)
 {
   Position position_{};
 
   last_call_time_ = ros::Time::now();
-  odom_pub_ = nh.advertise<nav_msgs::Odometry>("odom", 50);
+  odom_pub_ = nh.advertise<nav_msgs::Odometry>(odom_topic_, 50);
   wheel_speed_subscriber_ =
       nh.subscribe("/" + wheel_namespace_ + "/wheel_speeds_actual", 1, &OdomCalculator::wheelSpeedCallback, this);
 }
@@ -115,8 +115,8 @@ OdomRosMessages OdomCalculator::get_ros_odom_messages(Position position, Velocit
   geometry_msgs::TransformStamped odom_trans;
 
   odom_trans.header.stamp = last_call_time_;
-  odom_trans.header.frame_id = "odom";
-  odom_trans.child_frame_id = "base_link";
+  odom_trans.header.frame_id = odom_frame_id_;
+  odom_trans.child_frame_id = "wheel_base_link";
 
   odom_trans.transform.translation.x = position.x_meters;
   odom_trans.transform.translation.y = position.y_meters;
@@ -130,7 +130,7 @@ OdomRosMessages OdomCalculator::get_ros_odom_messages(Position position, Velocit
   // next, we'll publish the odometry message over ROS
   nav_msgs::Odometry odom;
   odom.header.stamp = last_call_time_;
-  odom.header.frame_id = "odom";
+  odom.header.frame_id = odom_frame_id_;
 
   // set the position
   odom.pose.pose.position.x = position.x_meters;

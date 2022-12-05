@@ -15,7 +15,7 @@ const float MIN_PID_CONTROL = 0;
 const float SLOPE_PID = (MAX_PWM - MIN_PWM) / (MAX_PID_CONTROL - MIN_PID_CONTROL);
 
 const float MAX_WHEEL_SPEED = 6 * M_PI;
-const float MIN_WHEEL_SPEED = 3 * M_PI;
+const float MIN_WHEEL_SPEED = M_PI;
 const float SLOPE_WHEEL_SPEED = (MAX_PWM - MIN_PWM) / (MAX_WHEEL_SPEED - MIN_WHEEL_SPEED);
 
 const std::vector<std::string> POSSIBLE_WHEEL_CONFIGURATION_STRS{ "omni_wheels", "skid_steering",
