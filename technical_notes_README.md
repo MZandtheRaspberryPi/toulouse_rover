@@ -256,6 +256,13 @@ rosdep install --from-paths src --ignore-src -r -y
 
 ```
 
+
+## debugging run
+mv screenlog.0 screenlog_20221010955pm.txt
+screen -dmS bag rosbag record -a
+screen -d -m -S toul -L roslaunch toulouse_rover toulouse.launch autonomous_mode:=true
+
+
 Things to do differently
 Encoders to real time controller like arduino using interupts, serial to pi
 Motor Driver PWM from Arduino as well if possible

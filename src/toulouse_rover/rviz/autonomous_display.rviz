@@ -7,11 +7,7 @@ Panels:
         - /Global Options1
         - /Status1
         - /Map1/Status1
-        - /LaserScan1
-        - /Odometry1
         - /Odometry1/Shape1
-        - /Pose2
-        - /Pose3
       Splitter Ratio: 0.5
     Tree Height: 589
   - Class: rviz/Selection
@@ -137,7 +133,7 @@ Visualization Manager:
         Alpha: 1
         Axes Length: 1
         Axes Radius: 0.10000000149011612
-        Color: 115; 210; 22
+        Color: 52; 101; 164
         Head Length: 0.30000001192092896
         Head Radius: 0.10000000149011612
         Shaft Length: 1
@@ -166,7 +162,7 @@ Visualization Manager:
       Axes Length: 1
       Axes Radius: 0.10000000149011612
       Class: rviz/Pose
-      Color: 255; 25; 0
+      Color: 115; 210; 22
       Enabled: true
       Head Length: 0.30000001192092896
       Head Radius: 0.10000000149011612
@@ -215,7 +211,7 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 157.98773193359375
+      Scale: 73.88839721679688
       Target Frame: <Fixed Frame>
       X: -0.5644633769989014
       Y: -0.5425940155982971
