@@ -32,7 +32,7 @@ protected:
   // Setup
   OdomCalculatorFixture()
   {
-    wheel_speed_pub = nh.advertise<toulouse_rover::WheelSpeeds>("wheel_speeds", 1);
+    wheel_speed_pub = nh.advertise<toulouse_rover::WheelSpeeds>("wheel_speeds_actual", 1);
     odom_sub = nh.subscribe("odom", 1, &OdomCalculatorFixture::odomCallback, this);
   }
 
@@ -76,7 +76,7 @@ TEST_F(OdomCalculatorFixture, TestCalculatorForward)
   ros::NodeHandle nh;
   util::WheelConfigurationType wheel_config_type = util::WheelConfigurationType::DIFFERENTIAL_DRIVE;
 
-  odom_calculator::OdomCalculator odom_calc(nh, wheel_config_type);
+  odom_calculator::OdomCalculator odom_calc(nh, wheel_config_type, "", "/odom", "odom");
 
   setWheelSpeeds(0, 0, 0, 0);
 
@@ -100,7 +100,7 @@ TEST_F(OdomCalculatorFixture, TestCalculatorTurnLeft)
   ros::NodeHandle nh;
   util::WheelConfigurationType wheel_config_type = util::WheelConfigurationType::DIFFERENTIAL_DRIVE;
 
-  odom_calculator::OdomCalculator odom_calc(nh, wheel_config_type);
+  odom_calculator::OdomCalculator odom_calc(nh, wheel_config_type, "", "/odom", "odom");
 
   setWheelSpeeds(0, 0, 0, 0);
 

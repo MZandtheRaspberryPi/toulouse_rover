@@ -3,9 +3,9 @@
 #include <ros/ros.h>
 
 #include "toulouse_rover/util.h"
+#include "toulouse_rover/WheelPwmSpeeds.h"
 #include "toulouse_rover/WheelSpeeds.h"
 #include "toulouse_rover/wheel_speed_controller.h"
-#include "i2cpwm_board/ServoArray.h"
 
 // helper function to create a toulouse_rover::WheelSpeed
 auto createWheelSpeedMsg = [](double front_left, double front_right, double back_left, double back_right) {
@@ -21,16 +21,16 @@ class WheelSpeedControllerFixture : public ::testing::Test
 {
 protected:
   ros::NodeHandle nh;
-  i2cpwm_board::ServoArray servo_arr_msg;
+  toulouse_rover::WheelPwmSpeeds wheel_speed_msg;
   ros::Publisher wheel_speed_pub;
-  ros::Subscriber servo_array_sub;
+  ros::Subscriber pwm_sub;
   bool got_msg = false;
 
   // Setup
   WheelSpeedControllerFixture()
   {
-    wheel_speed_pub = nh.advertise<toulouse_rover::WheelSpeeds>("wheel_cmd_speeds", 1);
-    servo_array_sub = nh.subscribe("servos_absolute", 10, &WheelSpeedControllerFixture::servoArrCallback, this);
+    wheel_speed_pub = nh.advertise<toulouse_rover::WheelSpeeds>("/wheels/wheel_cmd_speeds", 1);
+    pwm_sub = nh.subscribe("/wheels/wheels_pwm_cmd", 10, &WheelSpeedControllerFixture::wheelPwmSpeedMsgCB, this);
   }
 
   void setWheelSpeeds(double front_left, double front_right, double back_left, double back_right)
@@ -39,25 +39,25 @@ protected:
     wheel_speed_pub.publish(wheel_speeds_msg);
   }
 
-  void servoArrCallback(const i2cpwm_board::ServoArray::ConstPtr& servo_arr)
+  void wheelPwmSpeedMsgCB(const toulouse_rover::WheelPwmSpeeds::ConstPtr& wheel_pwm_msg)
   {
     got_msg = true;
-    servo_arr_msg = *servo_arr;
+    wheel_speed_msg = *wheel_pwm_msg;
   }
 
-  i2cpwm_board::ServoArray getReceivedMsg()
+  toulouse_rover::WheelPwmSpeeds getReceivedMsg()
   {
     got_msg = false;
-    return servo_arr_msg;
+    return wheel_speed_msg;
   }
 };
 
 TEST_F(WheelSpeedControllerFixture, TestControllerForward)
 {
   ros::NodeHandle nh;
-  std::string wheel_namespace_str("");
+  std::string wheel_namespace_str("wheels");
   util::WheelConfigurationType wheel_config_type = util::WheelConfigurationType::DIFFERENTIAL_DRIVE;
-  float loop_rate = 50;
+  float loop_rate = 20;
   bool use_pid = false;
 
   ros::Duration(0.5).sleep();
@@ -73,6 +73,7 @@ TEST_F(WheelSpeedControllerFixture, TestControllerForward)
     ros::Duration(0.01).sleep();
   }
 
+  // first message is initial enable motors message with 0 speeds
   wheel_controller.spinOnce();
   while (ros::ok() && !got_msg)
   {
@@ -80,20 +81,22 @@ TEST_F(WheelSpeedControllerFixture, TestControllerForward)
     ros::Duration(0.01).sleep();
   }
 
-  i2cpwm_board::ServoArray servo_speeds = getReceivedMsg();
+  toulouse_rover::WheelPwmSpeeds pwm_speeds = getReceivedMsg();
+
+  while (ros::ok() && !got_msg)
+  {
+    ros::spinOnce();
+    ros::Duration(0.01).sleep();
+  }
+
+  pwm_speeds = getReceivedMsg();
 
   // back wheels
-  EXPECT_FLOAT_EQ(servo_speeds.servos[8].value, 0);
-  EXPECT_GT(servo_speeds.servos[9].value, 0);
+  EXPECT_FLOAT_EQ(pwm_speeds.back_right_pwm_2, 0);
+  EXPECT_GT(pwm_speeds.back_right_pwm_1, 0);
 
-  EXPECT_FLOAT_EQ(servo_speeds.servos[11].value, 0);
-  EXPECT_GT(servo_speeds.servos[10].value, 0);
-
-  // front wheels servo index 12, 13, 14, 15
-  for (int i = 12; i < 16; i++)
-  {
-    EXPECT_FLOAT_EQ(servo_speeds.servos[i].value, 0);
-  }
+  EXPECT_FLOAT_EQ(pwm_speeds.back_left_pwm_2, 0);
+  EXPECT_GT(pwm_speeds.back_left_pwm_1, 0);
 }
 
 int main(int argc, char** argv)

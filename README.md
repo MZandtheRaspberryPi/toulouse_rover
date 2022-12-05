@@ -14,6 +14,11 @@ This repo is structured as a catkin workspace, so you should just clone it with 
 ![node_graph](demo_assets/node_graph.PNG)  
 Not pictured above is the lidar or the serial communicator node with the arduino.
 
+You can run tests with:  
+```
+catkin_make run_tests toulouse_rover
+```
+
 I wrote software to do kinematics for the robot and calculate which speed wheels should turn out [WheelSpeedCalculator](src/toulouse_rover/include/toulouse_rover/wheel_speed_calculator.h) .  
 
 I also wrote software to control the wheel speeds given encoder input, or to control the wheel speeds using a linear model to scale input from max to minimum speed [WheelSpeedController](src/toulouse_rover/include/toulouse_rover/wheel_speed_controller.h)).
