@@ -1,0 +1,4 @@
+<launch>
+  <test test-name="test_wheel_speed_controller_node" pkg="toulouse_rover" type="test_wheel_speed_controller_node" time-limit="7.0"/>
+
+</launch>

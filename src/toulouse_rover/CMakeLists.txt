@@ -5,17 +5,21 @@ project(toulouse_rover)
 add_compile_options(-std=c++11)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+list(APPEND catkin_dependencies
+  roscpp
+  rospy
+  std_msgs
+  tf2
+  tf2_ros
+  tf2_geometry_msgs
+  message_generation
+)
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  i2cpwm_board
-  roscpp
-  std_msgs
-  rosserial_python
-  teleop_twist_keyboard
-  tf2_ros
-  tf2_geometry_msgs
+  ${catkin_dependencies}
 )
 
 ## System dependencies are found with CMake's conventions
@@ -52,11 +56,12 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+ add_message_files(
+   FILES
+   WheelEncoderCounts.msg
+   WheelSpeeds.msg
+   WheelPwmSpeeds.msg
+ )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -73,10 +78,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
+ generate_messages(
+   DEPENDENCIES
+   std_msgs
+ )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -109,8 +114,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include/${PROJECT_NAME}
-  LIBRARIES toulouse_rover
-  CATKIN_DEPENDS i2cpwm_board roscpp std_msgs pid
+  LIBRARIES ${PROJECT_NAME}_lib
+  CATKIN_DEPENDS ${catkin_dependencies}
 #  DEPENDS wiringPi
 )
 
@@ -121,21 +126,24 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-  include/${PROJECT_NAME}
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
-add_library(${PROJECT_NAME}
-   src/odom_calc.cpp
+add_library(${PROJECT_NAME}_lib
    src/util.cpp
-   src/wheels.cpp
+   src/wheel_speed_calculator.cpp
+   src/wheel_speed_controller.cpp
+   src/odom_calculator.cpp
 )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(${PROJECT_NAME}_lib ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
+target_link_libraries(${PROJECT_NAME}_lib ${catkin_LIBRARIES} ${LOG4CXX_LIBRARIES})
 
 ## Declare a C++ executable
 # checkign if we are running on raspberry pi
@@ -150,35 +158,17 @@ else()
     message([DEBUG] Not building on a Raspberry Pi)
 endif()
 
-add_executable(test_motors_ros src/test_motors_ros.cpp)
-if (${KERNELRELEASE} MATCHES "raspi$")
-    target_link_libraries(test_motors_ros ${catkin_LIBRARIES} -lwiringPi)
-    set_target_properties(test_motors_ros PROPERTIES COMPILE_FLAGS "-DRPI")
-else()
-    target_link_libraries(test_motors_ros ${catkin_LIBRARIES})
-endif()
+add_executable(wheel_speed_calculator_node src/wheel_speed_calculator_node.cpp)
+add_dependencies(wheel_speed_calculator_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(wheel_speed_calculator_node ${catkin_LIBRARIES} ${PROJECT_NAME}_lib)
 
-add_executable(test_ir_ros src/test_ir_ros.cpp)
-if (${KERNELRELEASE} MATCHES "raspi$")
-    target_link_libraries(test_ir_ros ${catkin_LIBRARIES} -lwiringPi)
-    set_target_properties(test_ir_ros PROPERTIES COMPILE_FLAGS "-DRPI")
-else()
-    target_link_libraries(test_ir_ros ${catkin_LIBRARIES})
-endif()
+add_executable(wheel_speed_controller_node src/wheel_speed_controller_node.cpp)
+add_dependencies(wheel_speed_controller_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${${PROJECT_NAME}_lib_EXPORTED_TARGETS}  ${catkin_EXPORTED_TARGETS})
+target_link_libraries(wheel_speed_controller_node ${catkin_LIBRARIES} ${PROJECT_NAME}_lib)
 
-add_executable(robot_control_node src/robot_control_node.cpp)
-if (${KERNELRELEASE} MATCHES "raspi$")
-    target_link_libraries(robot_control_node ${PROJECT_NAME} ${catkin_LIBRARIES} -lwiringPi)
-    set_target_properties(robot_control_node PROPERTIES COMPILE_FLAGS "-DRPI")
-else()
-    target_link_libraries(robot_control_node ${PROJECT_NAME} ${catkin_LIBRARIES})
-endif()
-
-## Add cmake target dependencies of the executable
-## same as for the library above
-add_dependencies(test_motors_ros ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(test_ir_ros ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(robot_control_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_executable(odom_calculator_node src/odom_calculator_node.cpp)
+add_dependencies(odom_calculator_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(odom_calculator_node ${catkin_LIBRARIES} ${PROJECT_NAME}_lib)
 
 #############
 ## Install ##
@@ -189,18 +179,19 @@ add_dependencies(robot_control_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-# catkin_install_python(PROGRAMS
-#   scripts/my_python_script
-#   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+catkin_install_python(PROGRAMS
+   scripts/serial_motor_driver.py
+   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark libraries for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_libraries.html
-install(TARGETS ${PROJECT_NAME}
+install(TARGETS ${PROJECT_NAME}_lib
    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
    RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
 )
+
 
 ## Mark cpp header files for installation
 install(DIRECTORY include/${PROJECT_NAME}/
@@ -210,12 +201,32 @@ install(DIRECTORY include/${PROJECT_NAME}/
 )
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
-install(DIRECTORY launch
+install(DIRECTORY launch urdf rviz param msg maps
    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
-install(TARGETS robot_control_node
+install(TARGETS wheel_speed_controller_node wheel_speed_calculator_node odom_calculator_node
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+
+if(CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED)
+
+  add_rostest_gtest(test_wheel_speed_calculator_node tests/test_wheel_speed_calculator/calculator.test tests/test_wheel_speed_calculator/test.cpp)
+  target_link_libraries(test_wheel_speed_calculator_node ${catkin_LIBRARIES} ${PROJECT_NAME}_lib)
+  add_dependencies(test_wheel_speed_calculator_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_lib)
+
+  add_rostest_gtest(test_wheel_speed_controller_node tests/test_wheel_speed_controller/controller.test tests/test_wheel_speed_controller/test.cpp)
+  target_link_libraries(test_wheel_speed_controller_node ${catkin_LIBRARIES} ${PROJECT_NAME}_lib)
+  add_dependencies(test_wheel_speed_controller_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_lib)
+
+  #add_rostest_gtest(test_wheel_speed_controller_pid_node tests/test_wheel_speed_controller_pid/controller.test tests/test_wheel_speed_controller_pid/test.cpp)
+  #target_link_libraries(test_wheel_speed_controller_pid_node ${catkin_LIBRARIES} ${PROJECT_NAME}_lib)
+  #add_dependencies(test_wheel_speed_controller_pid_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_lib)
+
+  add_rostest_gtest(test_odom_calculator_node tests/test_odom_calculator_node/calculator.test tests/test_odom_calculator_node/test.cpp)
+  target_link_libraries(test_odom_calculator_node ${catkin_LIBRARIES} ${PROJECT_NAME}_lib)
+  add_dependencies(test_odom_calculator_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_lib)
+endif()

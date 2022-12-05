@@ -1,6 +1,6 @@
-[submodule "src/ros-i2cpwmboard"]
-	path = src/ros-i2cpwmboard
-	url = https://gitlab.com/bradanlane/ros-i2cpwmboard.git
 [submodule "src/ydlidar_ros"]
 	path = src/ydlidar_ros
 	url = git@github.com:MZandtheRaspberryPi/ydlidar_ros.git
+[submodule "src/hector_slam"]
+	path = src/hector_slam
+	url = https://github.com/tu-darmstadt-ros-pkg/hector_slam.git

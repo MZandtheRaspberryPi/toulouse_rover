@@ -6,7 +6,6 @@
 #include <geometry_msgs/TransformStamped.h>
 #include <geometry_msgs/Twist.h>
 #include <nav_msgs/Odometry.h>
-#include <signal.h>
 #include <std_msgs/Float64.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,14 +14,7 @@
 #include <tf2_ros/transform_broadcaster.h>
 #include <cmath>
 
-#include "i2cpwm_board/Servo.h"
-#include "i2cpwm_board/ServoArray.h"
 
-#define SLP_PIN 22  // change pin number here
-
-#include <ros/xmlrpc_manager.h>
-// started at 900 can go to 4000
-#define SPEED 900
 
 #include <math.h>
 
@@ -31,7 +23,7 @@
 #include "odom_calc.h"
 #include "wheels.h"
 
-const int LOOP_RATE = 20;
+const int LOOP_RATE = 10;
 
 i2cpwm_board::ServoArray servo_array{};
 geometry_msgs::Twist latest_vel_msg;
@@ -131,14 +123,14 @@ int main(int argc, char** argv) {
   int back_right_wheel_pwm;
   while (!g_request_shutdown) {
     // the work...
-    ROS_INFO("x: %f, y: %f, angl_y: %f", latest_vel_msg.linear.x,
+    ROS_INFO_THROTTLE(1, "x: %f, y: %f, angl_y: %f", latest_vel_msg.linear.x,
            latest_vel_msg.linear.y, latest_vel_msg.angular.z);
     front_left_wheel_pwm = front_left_wheel.ctrlWheelCmdVel(latest_vel_msg);
     front_right_wheel_pwm =
       front_right_wheel.ctrlWheelCmdVel(latest_vel_msg);
     back_left_wheel_pwm = back_left_wheel.ctrlWheelCmdVel(latest_vel_msg);
     back_right_wheel_pwm = back_right_wheel.ctrlWheelCmdVel(latest_vel_msg);
-    ROS_INFO("FL: %d, FR: %d, BL: %d, BR: %d", front_left_wheel_pwm,
+    ROS_INFO_THROTTLE(1, "FL: %d, FR: %d, BL: %d, BR: %d", front_left_wheel_pwm,
              front_right_wheel_pwm, back_left_wheel_pwm, back_right_wheel_pwm);
     if (front_left_wheel_pwm < 0) {
       servo_array.servos[14].value = 0;
@@ -180,6 +172,8 @@ int main(int argc, char** argv) {
     double speed_front_right = front_right_wheel.getWheelSpeed();
     double speed_back_left = back_left_wheel.getWheelSpeed();
     double speed_back_right = back_right_wheel.getWheelSpeed();
+
+    ROS_INFO("back left wheel speed: %f", speed_back_left);
 
     odom_calc::Velocities velocities = odom_calculator.calc_velocities(
         speed_front_left, speed_front_right, speed_back_left, speed_back_right);

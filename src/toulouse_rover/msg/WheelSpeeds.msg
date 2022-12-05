@@ -1,0 +1,6 @@
+Header header
+string wheel_configuration_type
+float32 front_left_radians_per_sec
+float32 front_right_radians_per_sec
+float32 back_left_radians_per_sec
+float32 back_right_radians_per_sec
