@@ -18,8 +18,8 @@ const float MAX_WHEEL_SPEED = 6 * M_PI;
 const float MIN_WHEEL_SPEED = M_PI;
 const float SLOPE_WHEEL_SPEED = (MAX_PWM - MIN_PWM) / (MAX_WHEEL_SPEED - MIN_WHEEL_SPEED);
 
-const std::vector<std::string> POSSIBLE_WHEEL_CONFIGURATION_STRS{ "omni_wheels", "skid_steering",
-                                                                  "differential_drive" };
+const std::vector<std::string> POSSIBLE_WHEEL_CONFIGURATION_STRS{ "omni_wheels", "skid_steering", "differential_drive",
+                                                                  "fixed_pwm_speeds" };
 
 float convert_radians_per_sec_to_meters_per_sec(float radians_per_sec)
 {

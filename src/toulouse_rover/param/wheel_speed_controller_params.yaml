@@ -1,0 +1,13 @@
+fixed_pwm_speeds:
+  forward:
+    back_left: 50
+    back_right: 50
+  backward:
+    back_left: -50
+    back_right: -50
+  left:
+    back_left: -50
+    back_right: 50
+  right:
+    back_left: 50
+    back_right: -50

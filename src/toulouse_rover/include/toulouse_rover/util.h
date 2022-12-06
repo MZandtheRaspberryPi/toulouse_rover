@@ -44,7 +44,8 @@ enum WheelConfigurationType
 {
   OMNI_WHEELS,
   SKID_STEERING,
-  DIFFERENTIAL_DRIVE
+  DIFFERENTIAL_DRIVE,
+  FixedPWMSpeeds
 };
 
 bool validate_wheel_config_type(const std::string& wheel_config_type);
