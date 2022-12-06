@@ -185,7 +185,7 @@ float BackLeftWheelSpeedCalculator::calcWheelSpeed(const geometry_msgs::Twist& c
       wheel_back_left = util::convert_meters_per_sec_to_radians_per_sec(wheel_back_left);
       break;
     case util::WheelConfigurationType::FixedPWMSpeeds:
-      wheel_back_left = (cmd_vel_msg.linear.x + cmd_vel_msg.angular.z * util::WHEEL_SEP_WIDTH / 2.0);
+      wheel_back_left = (cmd_vel_msg.linear.x - cmd_vel_msg.angular.z * util::WHEEL_SEP_WIDTH / 2.0);
       wheel_back_left = util::convert_meters_per_sec_to_radians_per_sec(wheel_back_left);
       break;
     default:

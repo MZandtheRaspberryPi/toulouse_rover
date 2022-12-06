@@ -346,6 +346,10 @@ void WheelSpeedController::setFixedPwmSpeeds(controlEffort forward, controlEffor
 controlEffort WheelSpeedController::getCtrlEffortForFixedPwm(toulouse_rover::WheelSpeeds wheel_speeds)
 {
   controlEffort ctrl_effort{};
+  if (wheel_speeds_.back_left_radians_per_sec == 0 && wheel_speeds_.back_right_radians_per_sec == 0)
+  {
+    return ctrl_effort;
+  }
   // forward
   if (wheel_speeds.back_left_radians_per_sec > 0 && wheel_speeds.back_right_radians_per_sec > 0)
   {
