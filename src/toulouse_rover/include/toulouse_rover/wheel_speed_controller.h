@@ -48,6 +48,14 @@ struct controlEffort
   float back_left_control_effort = 0;
 };
 
+struct FixedPWMDirectionsAndSpeeds
+{
+  controlEffort forward;
+  controlEffort backward;
+  controlEffort left;
+  controlEffort right;
+};
+
 double adjustEncoderData(const double& raw_count, const double& prior_raw_count,
                          const float& max_encoder_ticks_per_cycle, const int& pwm_speed_1, const int& pwm_speed_2,
                          const float& wheel_speed);
@@ -132,6 +140,7 @@ public:
   void disableMotors();
   void spin();
   void spinOnce();
+  void setFixedPwmSpeeds(controlEffort forward, controlEffort backward, controlEffort left, controlEffort right);
 
 private:
   void rawEncoderCallback(const toulouse_rover::WheelEncoderCounts::ConstPtr& speeds_msg);
@@ -146,6 +155,7 @@ private:
   void publishAdjEncoderData();
   void publishWheelPwm(const controlEffort& control_effort);
   controlEffort get_control_efforts();
+  controlEffort getCtrlEffortForFixedPwm(toulouse_rover::WheelSpeeds wheel_speeds);
 
   ros::Rate loop_rate_;
 
@@ -166,6 +176,7 @@ private:
   BackLeftWheelSpeedController* back_left_speed_ctrl_;
 
   toulouse_rover::WheelEncoderCounts prior_enc_counts_;
+  FixedPWMDirectionsAndSpeeds fixed_pwm_speeds_;
 };
 
 }  // namespace wheel_speed_controller

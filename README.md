@@ -1,11 +1,15 @@
 # auto_rover
+
 this was a fun project where I made a wheeled ros based robot from scratch, including hardware, design, and substantial software for kinematics, control, and odometry (though I used existing SLAM and path planning packages).
 ![frontal_pic](demo_assets/frontal_pic.png)
 
-
 this robot has support for differential drive (with 2 driven wheels), skid steering (with 4 driven wheels), and omni wheels.
 
-This repo is structured as a catkin workspace, so you should just clone it with submodules, and use catkin to build the workspace.
+This repo is structured as a catkin workspace, so you should just clone it with submodules, and use catkin to build the workspace. Then the main entry point is:  
+
+```
+roslaunch toulouse_rover toulouse.launch wheel_config_type:=differential_drive autonomous_mode:=false
+```
 
 ## Demo GIFs
 
@@ -15,6 +19,7 @@ This repo is structured as a catkin workspace, so you should just clone it with 
 Not pictured above is the lidar or the serial communicator node with the arduino.
 
 You can run tests with:  
+
 ```
 catkin_make run_tests toulouse_rover
 ```
@@ -36,7 +41,6 @@ You can find the ros package for toulouse [here](src/toulouse_rover/).
 ![wheel_hardware](demo_assets/20221205_205958.jpg)  
 ![upper_hardware](demo_assets/20221205_210029.jpg)
 
-
 The basic hardware is all from Adafruit. The motors are yellow plastic TT Motors [here](https://www.adafruit.com/product/3777) and the motor drivers are dev boards based on the DRV8833 motor driver [here](https://www.adafruit.com/product/3297). This is all powered with a 2s LIPO at 7.4 volts, with two step down converters, one to the pi, one to the motors. The encoders are plastic encoder wheels with 20 ticks per rotation. A T slot IR interupt sensor was used to measure encoder ticks.
 
 The brains is a Raspberry PI 4 with 4gb RAM, running ubuntu 20.04.
@@ -44,6 +48,7 @@ The brains is a Raspberry PI 4 with 4gb RAM, running ubuntu 20.04.
 An Arduino Nano is used to measure the interupts from the IR sensor, as well as to send PWM to the motor driver boards. It talks to the Raspberry PI via Serial.
 
 ## Design
+
 I wanted to build a robot with wheels, as I hadnt worked with them a lot. From there I did some sketches, and it evolved into a turtle robot with a lidar on its shell, with stacked layers inside letting me mount different electronics:
 ![original_drawing](demo_assets/20210703_170028.jpg)
 

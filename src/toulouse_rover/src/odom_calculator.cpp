@@ -69,6 +69,14 @@ Velocities OdomCalculator::calc_velocities(double speed_front_left, double speed
       velocities.vth_radians_per_sec = (speed_meters_right - speed_meters_left) / util::WHEEL_SEP_WIDTH;
       break;
     }
+    case util::WheelConfigurationType::FixedPWMSpeeds: {
+      float speed_meters_left = util::convert_radians_per_sec_to_meters_per_sec(speed_back_left);
+      float speed_meters_right = util::convert_radians_per_sec_to_meters_per_sec(speed_back_right);
+      velocities.vx_meters_per_sec = (speed_meters_left + speed_meters_right) / 2;
+      velocities.vy_meters_per_sec = 0;
+      velocities.vth_radians_per_sec = (speed_meters_right - speed_meters_left) / util::WHEEL_SEP_WIDTH;
+      break;
+    }
     default:
       velocities.vx_meters_per_sec = 0;
       velocities.vy_meters_per_sec = 0;

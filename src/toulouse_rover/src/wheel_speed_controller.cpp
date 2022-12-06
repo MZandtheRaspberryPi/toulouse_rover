@@ -329,6 +329,52 @@ WheelSpeedController::WheelSpeedController(ros::NodeHandle& nh, std::string whee
   initial_enc_counts.front_left_encoder_count = 0;
   initial_enc_counts.front_right_encoder_count = 0;
   prior_enc_counts_ = initial_enc_counts;
+  setFixedPwmSpeeds(controlEffort{}, controlEffort{}, controlEffort{}, controlEffort{});
+}
+
+void WheelSpeedController::setFixedPwmSpeeds(controlEffort forward, controlEffort backward, controlEffort left,
+                                             controlEffort right)
+{
+  FixedPWMDirectionsAndSpeeds fixed_pwm_speeds{};
+  fixed_pwm_speeds.forward = forward;
+  fixed_pwm_speeds.backward = backward;
+  fixed_pwm_speeds.left = left;
+  fixed_pwm_speeds.right = right;
+  fixed_pwm_speeds_ = fixed_pwm_speeds;
+}
+
+controlEffort WheelSpeedController::getCtrlEffortForFixedPwm(toulouse_rover::WheelSpeeds wheel_speeds)
+{
+  controlEffort ctrl_effort{};
+  if (wheel_speeds_.back_left_radians_per_sec == 0 && wheel_speeds_.back_right_radians_per_sec == 0)
+  {
+    return ctrl_effort;
+  }
+  // forward
+  if (wheel_speeds.back_left_radians_per_sec > 0 && wheel_speeds.back_right_radians_per_sec > 0)
+  {
+    ctrl_effort.back_left_control_effort = fixed_pwm_speeds_.forward.back_left_control_effort;
+    ctrl_effort.back_right_control_effort = fixed_pwm_speeds_.forward.back_right_control_effort;
+  }
+  // left
+  else if (wheel_speeds.back_left_radians_per_sec < 0 && wheel_speeds.back_right_radians_per_sec > 0)
+  {
+    ctrl_effort.back_left_control_effort = fixed_pwm_speeds_.left.back_left_control_effort;
+    ctrl_effort.back_right_control_effort = fixed_pwm_speeds_.left.back_right_control_effort;
+  }
+  // right
+  else if (wheel_speeds.back_left_radians_per_sec > 0 && wheel_speeds.back_right_radians_per_sec < 0)
+  {
+    ctrl_effort.back_left_control_effort = fixed_pwm_speeds_.right.back_left_control_effort;
+    ctrl_effort.back_right_control_effort = fixed_pwm_speeds_.right.back_right_control_effort;
+  }
+  // back
+  else
+  {
+    ctrl_effort.back_left_control_effort = fixed_pwm_speeds_.backward.back_left_control_effort;
+    ctrl_effort.back_right_control_effort = fixed_pwm_speeds_.backward.back_right_control_effort;
+  }
+  return ctrl_effort;
 }
 
 WheelSpeedController::~WheelSpeedController()
@@ -452,6 +498,12 @@ void WheelSpeedController::publishWheelStates()
 controlEffort WheelSpeedController::get_control_efforts()
 {
   controlEffort control_efforts{};
+
+  if (wheel_config_type_ == util::WheelConfigurationType::FixedPWMSpeeds)
+  {
+    return getCtrlEffortForFixedPwm(wheel_speeds_);
+  }
+
   if (wheel_config_type_ == util::WheelConfigurationType::OMNI_WHEELS ||
       wheel_config_type_ == util::WheelConfigurationType::SKID_STEERING)
   {
