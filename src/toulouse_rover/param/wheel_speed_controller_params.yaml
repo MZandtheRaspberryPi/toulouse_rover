@@ -1,9 +1,9 @@
 fixed_pwm_speeds:
   forward:
-    back_left: 100
+    back_left: 110
     back_right: 120
   backward:
-    back_left: -100
+    back_left: -110
     back_right: -120
   left:
     back_left: -100
