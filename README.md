@@ -21,6 +21,8 @@ You can find a compressed bag demo in the root of this repo, `toulouse_autonomy_
 
 ## Demo GIFs
 
+![demo](./demo_assets/toulouse_demo.gif)
+
 ## Software
 
 ![node_graph](demo_assets/node_graph.PNG)  
