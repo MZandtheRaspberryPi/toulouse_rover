@@ -94,3 +94,5 @@ It takes a substantial amount of current to start the Lidar spinning and my rasp
 
 I used mostly dupont cables in this project, which come unconnected quite easily. I'd like to switch to jxt or something that stays connected and is similarly easy to unplug and re-plug.  
 
+## More support for wheels
+The way I designed the wheels, they only were attached to the body by a thin strip of plastic running in the plane from forward to backward. The wheels started to bow outward under the weight of the robot. I would design a better bracing system for the wheels that braced them forward backward as well as side to side, and perhaps connected them to each other.  
