@@ -1,0 +1,272 @@
+... logging to /home/ubuntu/.ros/log/b25e6b40-5dfb-11ed-aa10-73ca13725630/roslaunch-ubuntu-27287.log
+Checking log directory for disk usage. This may take a while.
+Press Ctrl-C to interrupt
+Done checking log file disk usage. Usage is <1GB.
+]2;/home/ubuntu/toulouse_rover/src/toulouse_rover/launch/toulouse.launch
+[1mstarted roslaunch server http://10.42.0.1:37997/[0m
+
+SUMMARY
+========
+
+PARAMETERS
+ * /hector_geotiff_node/draw_background_checkerboard: True
+ * /hector_geotiff_node/draw_free_space_grid: True
+ * /hector_geotiff_node/geotiff_save_period: 0.0
+ * /hector_geotiff_node/map_file_base_name: hector_slam_map
+ * /hector_geotiff_node/map_file_path: /home/ubuntu/toul...
+ * /hector_geotiff_node/plugins: hector_geotiff_pl...
+ * /hector_mapping/advertise_map_service: True
+ * /hector_mapping/base_frame: base_link
+ * /hector_mapping/laser_z_max_value: 1.0
+ * /hector_mapping/laser_z_min_value: -1.0
+ * /hector_mapping/map_frame: map
+ * /hector_mapping/map_multi_res_levels: 2
+ * /hector_mapping/map_resolution: 0.05
+ * /hector_mapping/map_size: 1024
+ * /hector_mapping/map_start_x: 0.5
+ * /hector_mapping/map_start_y: 0.5
+ * /hector_mapping/map_update_angle_thresh: 0.06
+ * /hector_mapping/map_update_distance_thresh: 0.4
+ * /hector_mapping/odom_frame: base_link
+ * /hector_mapping/pub_map_odom_transform: True
+ * /hector_mapping/pub_odometry: True
+ * /hector_mapping/scan_subscriber_queue_size: 5
+ * /hector_mapping/scan_topic: scan
+ * /hector_mapping/tf_map_scanmatch_transform_frame_name: scanmatcher_frame
+ * /hector_mapping/update_factor_free: 0.4
+ * /hector_mapping/update_factor_occupied: 0.9
+ * /hector_mapping/use_tf_pose_start_estimate: False
+ * /hector_mapping/use_tf_scan_transformation: True
+ * /hector_trajectory_server/source_frame_name: scanmatcher_frame
+ * /hector_trajectory_server/target_frame_name: /map
+ * /hector_trajectory_server/trajectory_publish_rate: 0.25
+ * /hector_trajectory_server/trajectory_update_rate: 4.0
+ * /move_base/TrajectoryPlannerROS/acc_lim_theta: 3.2
+ * /move_base/TrajectoryPlannerROS/acc_lim_x: 2.5
+ * /move_base/TrajectoryPlannerROS/acc_lim_y: 2.5
+ * /move_base/TrajectoryPlannerROS/holonomic_robot: False
+ * /move_base/TrajectoryPlannerROS/max_vel_theta: 8
+ * /move_base/TrajectoryPlannerROS/max_vel_x: 0.6
+ * /move_base/TrajectoryPlannerROS/min_in_place_vel_theta: 2
+ * /move_base/TrajectoryPlannerROS/min_vel_x: 0.3
+ * /move_base/TrajectoryPlannerROS/xy_goal_tolerance: 0.25
+ * /move_base/TrajectoryPlannerROS/yaw_goal_tolerance: 1
+ * /move_base/global_costmap/global_frame: map
+ * /move_base/global_costmap/inflation_radius: 0.55
+ * /move_base/global_costmap/observation_sources: scan
+ * /move_base/global_costmap/obstacle_range: 2.5
+ * /move_base/global_costmap/point_cloud_sensor/clearing: True
+ * /move_base/global_costmap/point_cloud_sensor/data_type: PointCloud
+ * /move_base/global_costmap/point_cloud_sensor/marking: True
+ * /move_base/global_costmap/point_cloud_sensor/sensor_frame: laser_link
+ * /move_base/global_costmap/point_cloud_sensor/topic: point_cloud
+ * /move_base/global_costmap/raytrace_range: 3.0
+ * /move_base/global_costmap/robot_base_frame: base_link
+ * /move_base/global_costmap/robot_radius: 0.3
+ * /move_base/global_costmap/scan/clearing: True
+ * /move_base/global_costmap/scan/data_type: LaserScan
+ * /move_base/global_costmap/scan/marking: True
+ * /move_base/global_costmap/scan/sensor_frame: laser_frame
+ * /move_base/global_costmap/scan/topic: scan
+ * /move_base/global_costmap/static_map: True
+ * /move_base/global_costmap/transform_tolerance: 1.1
+ * /move_base/global_costmap/update_frequency: 5.0
+ * /move_base/local_costmap/global_frame: map
+ * /move_base/local_costmap/height: 6.0
+ * /move_base/local_costmap/inflation_radius: 0.55
+ * /move_base/local_costmap/observation_sources: scan
+ * /move_base/local_costmap/obstacle_range: 2.5
+ * /move_base/local_costmap/point_cloud_sensor/clearing: True
+ * /move_base/local_costmap/point_cloud_sensor/data_type: PointCloud
+ * /move_base/local_costmap/point_cloud_sensor/marking: True
+ * /move_base/local_costmap/point_cloud_sensor/sensor_frame: laser_link
+ * /move_base/local_costmap/point_cloud_sensor/topic: point_cloud
+ * /move_base/local_costmap/publish_frequency: 2.0
+ * /move_base/local_costmap/raytrace_range: 3.0
+ * /move_base/local_costmap/resolution: 0.05
+ * /move_base/local_costmap/robot_base_frame: base_link
+ * /move_base/local_costmap/robot_radius: 0.3
+ * /move_base/local_costmap/rolling_window: True
+ * /move_base/local_costmap/scan/clearing: True
+ * /move_base/local_costmap/scan/data_type: LaserScan
+ * /move_base/local_costmap/scan/marking: True
+ * /move_base/local_costmap/scan/sensor_frame: laser_frame
+ * /move_base/local_costmap/scan/topic: scan
+ * /move_base/local_costmap/static_map: True
+ * /move_base/local_costmap/transform_tolerance: 1.1
+ * /move_base/local_costmap/update_frequency: 5.0
+ * /move_base/local_costmap/width: 6.0
+ * /odom_calculator_node/odom_frame_id: odom_wheels
+ * /odom_calculator_node/odom_topic: odom_wheels
+ * /robot_description: <?xml version="1....
+ * /rosdistro: noetic
+ * /rosversion: 1.15.14
+ * /speed_controller_loop_rate: 20.0
+ * /speed_controller_use_pid: False
+ * /use_sim_time: False
+ * /wheel_config_type: fixed_pwm_speeds
+ * /wheel_namespace: wheels
+ * /wheel_speed_controller_node/fixed_pwm_speeds/backward/back_left: -110
+ * /wheel_speed_controller_node/fixed_pwm_speeds/backward/back_right: -120
+ * /wheel_speed_controller_node/fixed_pwm_speeds/forward/back_left: 110
+ * /wheel_speed_controller_node/fixed_pwm_speeds/forward/back_right: 120
+ * /wheel_speed_controller_node/fixed_pwm_speeds/left/back_left: -100
+ * /wheel_speed_controller_node/fixed_pwm_speeds/left/back_right: 120
+ * /wheel_speed_controller_node/fixed_pwm_speeds/right/back_left: 100
+ * /wheel_speed_controller_node/fixed_pwm_speeds/right/back_right: -120
+ * /ydlidar_node/angle_max: 180.0
+ * /ydlidar_node/angle_min: -180.0
+ * /ydlidar_node/auto_reconnect: True
+ * /ydlidar_node/baudrate: 128000
+ * /ydlidar_node/frame_id: laser_frame
+ * /ydlidar_node/frequency: 8.0
+ * /ydlidar_node/ignore_array: 
+ * /ydlidar_node/port: /dev/ttyUSB0
+ * /ydlidar_node/range_max: 12.0
+ * /ydlidar_node/range_min: 0.1
+ * /ydlidar_node/resolution_fixed: True
+ * /ydlidar_node/reversion: False
+ * /ydlidar_node/samp_rate: 5
+
+NODES
+  /
+    hector_geotiff_node (hector_geotiff/geotiff_node)
+    hector_mapping (hector_mapping/hector_mapping)
+    hector_trajectory_server (hector_trajectory_server/hector_trajectory_server)
+    joint_state_publisher (joint_state_publisher/joint_state_publisher)
+    move_base (move_base/move_base)
+    odom_calculator_node (toulouse_rover/odom_calculator_node)
+    recorder (rosbag/record)
+    robot_state_publisher (robot_state_publisher/robot_state_publisher)
+    serial_motor_driver (toulouse_rover/serial_motor_driver.py)
+    wheel_speed_calculator_node (toulouse_rover/wheel_speed_calculator_node)
+    wheel_speed_controller_node (toulouse_rover/wheel_speed_controller_node)
+    ydlidar_node (ydlidar_ros/ydlidar_node)
+
+auto-starting new master
+[1mprocess[master]: started with pid [27307][0m
+[1mROS_MASTER_URI=http://localhost:11311[0m
+]2;/home/ubuntu/toulouse_rover/src/toulouse_rover/launch/toulouse.launch http://localhost:11311
+[1msetting /run_id to b25e6b40-5dfb-11ed-aa10-73ca13725630[0m
+[1mprocess[rosout-1]: started with pid [27326][0m
+started core service [/rosout]
+[1mprocess[serial_motor_driver-2]: started with pid [27339][0m
+[1mprocess[wheel_speed_calculator_node-3]: started with pid [27340][0m
+[1mprocess[wheel_speed_controller_node-4]: started with pid [27341][0m
+[1mprocess[odom_calculator_node-5]: started with pid [27344][0m
+[1mprocess[joint_state_publisher-6]: started with pid [27349][0m
+[1mprocess[robot_state_publisher-7]: started with pid [27354][0m
+[33m[ WARN] [1667757115.371171061]: odom_calculator_node: param odom_frame_id is not set. defaulting it[0m
+[33m[ WARN] [1667757115.379544191]: odom_calculator_node: param odom_topic is not set. defaulting it[0m
+[1mprocess[recorder-8]: started with pid [27360][0m
+[1mprocess[ydlidar_node-9]: started with pid [27361][0m
+[1mprocess[hector_trajectory_server-10]: started with pid [27363][0m
+__   ______  _     ___ ____    _    ____  
+\ \ / /  _ \| |   |_ _|  _ \  / \  |  _ \ 
+ \ V /| | | | |    | || | | |/ _ \ | |_) | 
+  | | | |_| | |___ | || |_| / ___ \|  _ <  
+  |_| |____/|_____|___|____/_/   \_\_| \_\ 
+
+[0m[ INFO] [1667757115.567185468]: wheel_speed_controller_node spinning[0m
+[1mprocess[hector_geotiff_node-11]: started with pid [27372][0m
+[1mprocess[hector_mapping-12]: started with pid [27378][0m
+YDLidar SDK initializing
+YDLidar SDK has been initialized
+[YDLIDAR]:SDK Version: 1.4.7
+[1mprocess[move_base-13]: started with pid [27383][0m
+LiDAR successfully connected
+HectorSM map lvl 0: cellLength: 0.05 res x:1024 res y: 1024
+HectorSM map lvl 1: cellLength: 0.1 res x:512 res y: 512
+[YDLIDAR]:Lidar running correctly ! The health status: good
+[YDLIDAR] Connection established in [/dev/ttyUSB0][128000]:
+Firmware version: 1.10
+Hardware version: 1
+Model: X4
+Serial: 2020060900000037
+LiDAR init success!
+[YDLIDAR INFO] Current Sampling Rate : 5K
+[YDLIDAR INFO] Now YDLIDAR is scanning ......
+[33m[ WARN] [1667757117.714765374]: global_costmap: Parameter "plugins" not provided, loading pre-Hydro parameters[0m
+[33m[ WARN] [1667757118.322368411]: local_costmap: Parameter "plugins" not provided, loading pre-Hydro parameters[0m
+[33m[ WARN] [1667757118.715964892]: Trajectory Rollout planner initialized with param meter_scoring not set. Set it to true to make your settings robust against changes of costmap resolution.[0m
+[33m[ WARN] [1667757166.188675549]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2979 seconds[0m
+[33m[ WARN] [1667757166.499298604]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.3106 seconds[0m
+[33m[ WARN] [1667757166.512506438]: Map update loop missed its desired rate of 5.0000Hz... the loop actually took 0.2599 seconds[0m
+[33m[ WARN] [1667757166.798265993]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2990 seconds[0m
+[33m[ WARN] [1667757167.081745493]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2835 seconds[0m
+[33m[ WARN] [1667757167.084266160]: Map update loop missed its desired rate of 5.0000Hz... the loop actually took 0.6316 seconds[0m
+[33m[ WARN] [1667757167.358409548]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2767 seconds[0m
+[33m[ WARN] [1667757167.642972752]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2846 seconds[0m
+[33m[ WARN] [1667757167.643260345]: Map update loop missed its desired rate of 5.0000Hz... the loop actually took 0.5591 seconds[0m
+[33m[ WARN] [1667757167.919439141]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2764 seconds[0m
+[33m[ WARN] [1667757167.928743548]: Map update loop missed its desired rate of 5.0000Hz... the loop actually took 0.2853 seconds[0m
+[33m[ WARN] [1667757171.963159842]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2784 seconds[0m
+[33m[ WARN] [1667757172.243738397]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2806 seconds[0m
+[33m[ WARN] [1667757172.245168712]: Map update loop missed its desired rate of 5.0000Hz... the loop actually took 0.4019 seconds[0m
+[33m[ WARN] [1667757172.543366860]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2996 seconds[0m
+[33m[ WARN] [1667757172.826803730]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2834 seconds[0m
+[33m[ WARN] [1667757173.125118952]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2984 seconds[0m
+[33m[ WARN] [1667757173.410458860]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2853 seconds[0m
+[33m[ WARN] [1667757173.411164137]: Map update loop missed its desired rate of 5.0000Hz... the loop actually took 0.5660 seconds[0m
+[33m[ WARN] [1667757173.683732119]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2733 seconds[0m
+[33m[ WARN] [1667757173.694179378]: Map update loop missed its desired rate of 5.0000Hz... the loop actually took 0.2826 seconds[0m
+[33m[ WARN] [1667757178.939447967]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2726 seconds[0m
+[33m[ WARN] [1667757179.211995597]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2725 seconds[0m
+[33m[ WARN] [1667757179.492874097]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2809 seconds[0m
+[33m[ WARN] [1667757179.493725412]: Map update loop missed its desired rate of 5.0000Hz... the loop actually took 0.6825 seconds[0m
+[33m[ WARN] [1667757179.766473078]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2736 seconds[0m
+[33m[ WARN] [1667757180.067789985]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.3008 seconds[0m
+[33m[ WARN] [1667757180.072567541]: Map update loop missed its desired rate of 5.0000Hz... the loop actually took 0.5738 seconds[0m
+[33m[ WARN] [1667757180.345678448]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2784 seconds[0m
+[33m[ WARN] [1667757180.356300059]: Map update loop missed its desired rate of 5.0000Hz... the loop actually took 0.2887 seconds[0m
+[33m[ WARN] [1667757185.483120667]: Map update loop missed its desired rate of 5.0000Hz... the loop actually took 0.2155 seconds[0m
+[33m[ WARN] [1667757185.489407667]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.3022 seconds[0m
+[33m[ WARN] [1667757185.770330537]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2809 seconds[0m
+[33m[ WARN] [1667757186.056338685]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2860 seconds[0m
+[33m[ WARN] [1667757186.057311130]: Map update loop missed its desired rate of 5.0000Hz... the loop actually took 0.3897 seconds[0m
+[33m[ WARN] [1667757186.335497982]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2792 seconds[0m
+[33m[ WARN] [1667757186.349490630]: Map update loop missed its desired rate of 5.0000Hz... the loop actually took 0.4819 seconds[0m
+[33m[ WARN] [1667757186.640476444]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.3050 seconds[0m
+[33m[ WARN] [1667757186.923100778]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2826 seconds[0m
+[33m[ WARN] [1667757187.208681740]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2856 seconds[0m
+[33m[ WARN] [1667757187.209017537]: Map update loop missed its desired rate of 5.0000Hz... the loop actually took 0.8594 seconds[0m
+[33m[ WARN] [1667757187.487052444]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2784 seconds[0m
+[33m[ WARN] [1667757187.772757110]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2857 seconds[0m
+[33m[ WARN] [1667757188.052908147]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2802 seconds[0m
+[33m[ WARN] [1667757188.053264629]: Map update loop missed its desired rate of 5.0000Hz... the loop actually took 0.8444 seconds[0m
+[33m[ WARN] [1667757188.331956054]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2790 seconds[0m
+[33m[ WARN] [1667757188.342545073]: Map update loop missed its desired rate of 5.0000Hz... the loop actually took 0.2892 seconds[0m
+[33m[ WARN] [1667757188.667183776]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.3352 seconds[0m
+[33m[ WARN] [1667757188.677898554]: Map update loop missed its desired rate of 5.0000Hz... the loop actually took 0.4245 seconds[0m
+[33m[ WARN] [1667757188.957547184]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2904 seconds[0m
+[33m[ WARN] [1667757189.251566054]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2940 seconds[0m
+[33m[ WARN] [1667757189.251900313]: Map update loop missed its desired rate of 5.0000Hz... the loop actually took 0.5741 seconds[0m
+[33m[ WARN] [1667757189.532392628]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2808 seconds[0m
+[33m[ WARN] [1667757189.826838276]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2945 seconds[0m
+[33m[ WARN] [1667757189.828741313]: Map update loop missed its desired rate of 5.0000Hz... the loop actually took 0.5768 seconds[0m
+[33m[ WARN] [1667757190.115997053]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2892 seconds[0m
+[33m[ WARN] [1667757190.405342738]: Map update loop missed its desired rate of 5.0000Hz... the loop actually took 0.3766 seconds[0m
+[33m[ WARN] [1667757190.412102868]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2961 seconds[0m
+[33m[ WARN] [1667757190.702482035]: Map update loop missed its desired rate of 5.0000Hz... the loop actually took 0.2738 seconds[0m
+[33m[ WARN] [1667757190.705137572]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.2918 seconds[0m
+[33m[ WARN] [1667757191.023226923]: Control loop missed its desired rate of 20.0000Hz... the loop actually took 0.3193 seconds[0m
+[33m[ WARN] [1667757191.036416516]: Map update loop missed its desired rate of 5.0000Hz... the loop actually took 0.2041 seconds[0m
+^C[hector_mapping-12] killing on exit
+[move_base-13] killing on exit
+[hector_geotiff_node-11] killing on exit
+[hector_trajectory_server-10] killing on exit
+[ydlidar_node-9] killing on exit
+[robot_state_publisher-7] killing on exit
+[joint_state_publisher-6] killing on exit
+[recorder-8] killing on exit
+[odom_calculator_node-5] killing on exit
+[wheel_speed_controller_node-4] killing on exit
+281473465860464 thread has been canceled
+[wheel_speed_calculator_node-3] killing on exit
+[serial_motor_driver-2] killing on exit
+[YDLIDAR INFO] Now YDLIDAR Scanning has stopped ......
+[rosout-1] killing on exit
+[master] killing on exit
+shutting down processing monitor...
+... shutting down processing monitor complete
+[1mdone[0m
