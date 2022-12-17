@@ -1,5 +1,9 @@
 <launch>
 
+  <arg name="record_bag" default="true" />
+
+  <node pkg="rosbag" type="record" name="recorder" output="screen" args="-a -o /home/ubuntu/toulouse_rover/toulouse_" if="$(arg record_bag)" />
+
   <!-- -->
   <include file="$(find ydlidar_ros)/launch/X4.launch">
     <arg name="port_lidar" value="/dev/ttyUSB0" />
