@@ -80,6 +80,12 @@ I made some early decisions on hardware for odometry that came back to bite me..
 
 The other aspect is that with such low resolution on my encoders, I found speed control of my motors to be challenging. I would like to use the encoders to also control how fast my wheels are turning, so the magnetic encoders with higher resolution should help with that in the future.
 
+## Front Wheel
+The front wheeel I had on the rover was pretty sturdy and given my motors were weak i could actually get thrown off my course by it. For example if the wheel was pointing left and i tried to go forward, my robot would tilt forward left instead of straight forward.
+
+To fix this, I could use a gearing system on my current motors to give them more torque and slow them down, or use different motors or a different front wheel, like a ball one.
+
+
 ## Lidar Power Consumption
 
 It takes a substantial amount of current to start the Lidar spinning and my raspberry pi cant deliver that from its USB 3.0 socket. I ended up plugging in a portable power bank, like the kind you use to recharge your phone, at startup so that the lidar could draw off of that. Then I unplugged the power bank once the lidar was spinning to run autonomously. I'd like to design a better power system that can handle the lidar current, and also has some safety measures built in like monitoring the Lipo and shutting down if the battery is too low.
@@ -87,3 +93,4 @@ It takes a substantial amount of current to start the Lidar spinning and my rasp
 ## Better Cable Connections
 
 I used mostly dupont cables in this project, which come unconnected quite easily. I'd like to switch to jxt or something that stays connected and is similarly easy to unplug and re-plug.  
+
